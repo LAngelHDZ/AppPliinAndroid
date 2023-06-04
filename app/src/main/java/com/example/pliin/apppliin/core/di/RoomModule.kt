@@ -22,9 +22,13 @@ object RoomModule {
 
     @Singleton
     @Provides
-    fun provideUserDao(db:PliinDatabase) = db.getUserDao()
+    fun provideUserDao(db: PliinDatabase) = db.getUserDao()
 
-   // @Singleton
-  //  @Provides
-  //  fun provideDataDao(db: PliinDatabase) = db.getDataDao()
+    @Singleton
+    @Provides
+    fun provideTokenDao(db: PliinDatabase) = db.getTokenDao()
+
+    @Singleton
+    @Provides
+    fun provideDataEmployeeDao(db: PliinDatabase) = db.getDataEmployeeDao()
 }

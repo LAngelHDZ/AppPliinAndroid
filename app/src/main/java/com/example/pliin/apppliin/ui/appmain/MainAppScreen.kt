@@ -1,47 +1,152 @@
 package com.example.pliin.apppliin.ui.appmain
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.ContentPaste
 import androidx.compose.material.icons.rounded.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.*
 import androidx.compose.ui.unit.*
 import androidx.navigation.NavHostController
+import coil.compose.AsyncImage
 import com.example.pliin.R
+import com.example.pliin.navigation.AppScreen
 
 
 @Composable
-fun MainAppScreen(navigationController: NavHostController) {
+fun MainAppScreen(navigationController: NavHostController, mainAppViewModel: MainAppViewModel) {
+
+    val isLogout: Boolean by mainAppViewModel.isLogout.observeAsState(false)
+    val isLoged: Boolean by mainAppViewModel.isLoged.observeAsState(true)
+    val nameEmployee: String by mainAppViewModel.nameEmployee.observeAsState("")
+    val areaEmployee: String by mainAppViewModel.areaEmployee.observeAsState("")
+
+    if (isLoged) {
+        mainAppViewModel.getDataEmployee()
+    }
+
     Box(modifier = Modifier.fillMaxSize()) {
-        Header(
-            Modifier
-                .align(Alignment.TopCenter)
-                .background(Color(0xFF4425a7))
-        )
-        Body(Modifier.align(Alignment.Center),navigationController)
-        Footer(Modifier.align(Alignment.BottomCenter),navigationController)
+        if (isLogout) {
+            ScreenConfirmation(
+                Modifier.align(
+                    Alignment.Center
+                )
+            )
+        } else {
+            Header(
+                Modifier
+                    .align(Alignment.TopStart)
+                    .background(Color(0xFF4425a7)), nameEmployee, areaEmployee
+            )
+            Body(Modifier.align(Alignment.Center), navigationController)
+            Footer(Modifier.align(Alignment.BottomCenter), navigationController, mainAppViewModel)
+        }
     }
 }
 
 @Composable
-fun Header(modifier: Modifier) {
-    HeadText(modifier = modifier)
+fun LoadWebImage(url: String) {
+
 }
 
 @Composable
-fun HeadText(modifier: Modifier) {
-    Box(modifier = modifier.fillMaxWidth()) {
+fun ScreenConfirmation(
+    modifier: Modifier
+) {
+    Column(
+        modifier = modifier.fillMaxWidth(),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Icon(
+            imageVector = Icons.Rounded.Logout,
+            contentDescription = null,
+            modifier = Modifier.size(100.dp),
+            tint = Color(0xFF4c51c6)
+        )
+        Spacer(modifier = Modifier.size(8.dp))
+        CircularProgressIndicator(color = Color(0xFF4c51c6), strokeWidth = 4.dp)
+    }
+}
+
+@Composable
+fun Header(modifier: Modifier, nameEmployee: String, areaEmployee: String) {
+    Row(
+        modifier
+            .fillMaxWidth()
+            .padding(vertical = 16.dp, horizontal = 8.dp),
+        horizontalArrangement = Arrangement.Center
+    ) {
+        Photo()
+        Spacer(modifier = Modifier.size(8.dp))
+        UserData(modifier = modifier, nameEmployee, areaEmployee)
+    }
+
+}
+
+@Composable
+fun Photo() {
+    Box(
+        modifier = Modifier
+            .clip(CircleShape)
+            .border(1.dp, Color(0xFFfd9369), CircleShape)
+            .background(Color.White)
+    ) {
+
+
+        if (false) {
+            GetPhoto()
+        } else {
+            DefaultPhoto()
+        }
+    }
+}
+
+@Composable
+fun GetPhoto() {
+    // val url = "https://ts2.cn.mm.bing.net/th?id=OIP-C.3-kN66uuTJWHyi4JxZqC6wAAAA"
+    val url =
+        "http://sidigq.ddns.net/Streaming/MainDB/B208529934F32482AFC22BBCCC7A117CE41DAA352F1C9980CE97DEEEAAD39DBB.jpg?RCType=EmbeddedRCFileProcessor"
+    AsyncImage(modifier = Modifier.size(60.dp), model = url, contentDescription = "")
+
+    //LoadWebImage("https://sidigq.ddns.net/Streaming/MainDB/B208529934F32482AFC22BBCCC7A117CE41DAA352F1C9980CE97DEEEAAD39DBB.jpg?RCType=EmbeddedRCFileProcessor")
+}
+
+@Composable
+fun DefaultPhoto() {
+    Icon(
+        imageVector = Icons.Rounded.Person,
+        contentDescription = null,
+        modifier = Modifier.size(60.dp),
+        tint = Color(0xFF4c51c6)
+    )
+}
+
+@Composable
+fun UserData(modifier: Modifier, nameEmployee: String, areaEmployee: String) {
+    Column(modifier.fillMaxWidth()) {
         Text(
-            modifier = modifier.padding(vertical = 16.dp),
-            text = "Menu principal",
-            fontSize = 30.sp,
+            text = nameEmployee,
+            fontSize = 20.sp,
+            fontWeight = FontWeight.Normal,
+            color = Color.White
+        )
+        Spacer(modifier = Modifier.size(2.dp))
+        Text(
+            text = areaEmployee,
+            fontSize = 20.sp,
             fontWeight = FontWeight.SemiBold,
             color = Color.White
         )
@@ -70,23 +175,25 @@ fun BodyLogo() {
     )
 }
 
+@SuppressLint("SuspiciousIndentation")
 @Composable
 fun GroupButton(modifier: Modifier, navigationController: NavHostController) {
     val spaces = (Modifier.size(20.dp))
-    ButtonCreateManifest(modifier)
+    ButtonCreateManifest(modifier, navigationController)
     Spacer(modifier = spaces)
-    ButtonRegisterDelivery(modifier,navigationController)
+    ButtonRegisterDelivery(modifier, navigationController)
     Spacer(modifier = spaces)
-    ButtonConsult(modifier)
+    //boton registra las guias al sistema
+    ButtonGuides(modifier, navigationController)
     Spacer(modifier = spaces)
     ButtonConsultDelivery(modifier)
 
 }
 
 @Composable
-fun ButtonCreateManifest(modifier: Modifier) {
+fun ButtonCreateManifest(modifier: Modifier, navigationController: NavHostController) {
     Button(
-        onClick = { },
+        onClick = { navigationController.navigate(AppScreen.ManifiestoMainScreen.route) },
         modifier = modifier,
         colors = ButtonDefaults.buttonColors(
             backgroundColor = Color.White,
@@ -94,13 +201,13 @@ fun ButtonCreateManifest(modifier: Modifier) {
         )
     ) {
         Icon(
-            imageVector = Icons.Rounded.PostAdd,
+            imageVector = Icons.Outlined.ContentPaste,
             contentDescription = null,
             modifier = Modifier.size(40.dp),
             tint = Color(76, 81, 198)
         )
         Text(
-            text = "Crear pre-manifiesto",
+            text = "Manifiesto",
             fontSize = 18.sp,
         )
     }
@@ -109,7 +216,7 @@ fun ButtonCreateManifest(modifier: Modifier) {
 @Composable
 fun ButtonRegisterDelivery(modifier: Modifier, navigationController: NavHostController) {
     Button(
-        onClick = {navigationController.navigate("RegisterDeliveryScreen") },
+        onClick = { navigationController.navigate(AppScreen.RegisterDeliveryScreen.route) },
         modifier = modifier,
         colors = ButtonDefaults.buttonColors(
             backgroundColor = Color.White,
@@ -131,24 +238,24 @@ fun ButtonRegisterDelivery(modifier: Modifier, navigationController: NavHostCont
 }
 
 @Composable
-fun ButtonConsult(modifier: Modifier) {
+fun ButtonGuides(modifier: Modifier, navigationController: NavHostController) {
     Button(
         modifier = modifier,
-        onClick = { },
+        onClick = { navigationController.navigate(AppScreen.MenuGuideScreen.route) },
         colors = ButtonDefaults.buttonColors(
             backgroundColor = Color.White,
             contentColor = Color.Black
         )
     ) {
         Icon(
-            imageVector = Icons.Rounded.ManageSearch,
+            imageVector = Icons.Rounded.StickyNote2,
             contentDescription = null,
             modifier = Modifier.size(40.dp),
             tint = Color(76, 81, 198)
         )
         //  Spacer(Modifier.size(5.dp))
         Text(
-            text = "Consultar guia",
+            text = "Guias",
             fontSize = 18.sp,
             modifier = Modifier.padding(end = 53.dp)
         )
@@ -160,6 +267,7 @@ fun ButtonConsultDelivery(modifier: Modifier) {
     Button(
         modifier = modifier,
         onClick = { },
+        enabled = false,
         colors = ButtonDefaults.buttonColors(
             backgroundColor = Color.White,
             contentColor = Color.Black
@@ -181,25 +289,33 @@ fun ButtonConsultDelivery(modifier: Modifier) {
 }
 
 @Composable
-fun Footer(modifier: Modifier, navigationController: NavHostController) {
+fun Footer(
+    modifier: Modifier,
+    navigationController: NavHostController,
+    mainAppViewModel: MainAppViewModel
+) {
     Button(
-        modifier = modifier.padding(horizontal = 50.dp, vertical = 20.dp ).height(60.dp).fillMaxWidth(),
-        onClick = { navigationController.popBackStack()},
+        modifier = modifier
+            .padding(horizontal = 50.dp, vertical = 20.dp)
+            .height(60.dp)
+            .fillMaxWidth(),
+        onClick = {
+            mainAppViewModel.logut(navigationController)
+        },
         colors = ButtonDefaults.buttonColors(
             backgroundColor = Color.White,
             contentColor = Color.Black
         )
     ) {
         Icon(
-            imageVector = Icons.Rounded.ExitToApp,
+            imageVector = Icons.Rounded.Logout,
             contentDescription = null,
             modifier = Modifier.size(70.dp),
-            tint = Color.Red
+            tint = Color(76, 81, 198)
         )
         Text(
-            text = "Salir",
+            text = "Cerrar Sesion",
             fontSize = 18.sp,
-
-            )
+        )
     }
 }

@@ -8,6 +8,7 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
+import androidx.compose.material.icons.rounded.PersonSearch
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -28,30 +29,71 @@ import com.example.pliin.R
 
 @Composable
 fun LoginScreen(loginViewModel: LoginViewModel, navigationController: NavHostController) {
+    val isLoginLoading: Boolean by loginViewModel.isLoginLoading.observeAsState(false)
+    val isSesionDialog: Boolean by loginViewModel.isSesionDialog.observeAsState(false)
+    val user: String by loginViewModel.user.observeAsState("")
+    val password: String by loginViewModel.password.observeAsState("")
+    val isLoginEnable: Boolean by loginViewModel.isLoginEnable.observeAsState(false)
+
     //Declaro un box el que contendra los elementos en pantalla con un modficador que ocupe el espacion en pantalla disponible
     Box(Modifier.fillMaxSize()) {
-        val isSesionDialog: Boolean by loginViewModel.isSesionDialog.observeAsState(false)
-        //Pinta en pantalla los componenetes visuales del head de la aplicaciòn con un aliniaciòn Arriba Central
-        Header(
-            Modifier.align(Alignment.TopCenter)
-        )
-        Body(
-            Modifier
-                .align(Alignment.Center)
-                .padding(top = 8.dp), loginViewModel, navigationController
-        )
-        Footer(
-            Modifier.align(Alignment.BottomCenter)
-        )
+        if (isLoginLoading) {
+            ScreenConfirmation(
+                Modifier.align(
+                    Alignment.Center
+                )
+            )
+        } else {
 
-        SesionDialog(show = isSesionDialog, loginViewModel)
+            //Pinta en pantalla los componenetes visuales del head de la aplicaciòn con un aliniaciòn Arriba Central
+            Header(
+                Modifier.align(Alignment.TopCenter)
+            )
+            Body(
+                Modifier
+                    .align(Alignment.Center)
+                    .padding(top = 8.dp),
+                loginViewModel,
+                navigationController,
+                user,
+                password,
+                isLoginEnable
+            )
+            Footer(
+                Modifier.align(Alignment.BottomCenter)
+            )
+
+            SesionDialog(show = isSesionDialog, loginViewModel)
+        }
+
+
+    }
+}
+
+@Composable
+fun ScreenConfirmation(
+    modifier: Modifier
+) {
+    Column(
+        modifier = modifier.fillMaxWidth(),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Icon(
+            imageVector = Icons.Rounded.PersonSearch,
+            contentDescription = null,
+            modifier = Modifier.size(100.dp),
+            tint = Color(0xFF4c51c6)
+        )
+        Spacer(modifier = Modifier.size(8.dp))
+        CircularProgressIndicator(color = Color(0xFF4c51c6), strokeWidth = 4.dp)
     }
 }
 
 @Composable
 fun SesionDialog(show: Boolean, loginViewModel: LoginViewModel) {
     if (show) {
-        AlertDialog(onDismissRequest = { loginViewModel.onSesionDialog() },
+        AlertDialog(
+            onDismissRequest = { loginViewModel.onSesionDialog() },
             title = { Text(text = "Advertencia") },
             text = { Text(text = "El usuario o contraseña son incorrectos") },
             confirmButton = {
@@ -95,10 +137,11 @@ fun Body(
     modifier: Modifier,
     loginViewModel: LoginViewModel,
     navigationController: NavHostController,
+    user: String,
+    password: String,
+    isLoginEnable: Boolean,
 ) {
-    val user: String by loginViewModel.user.observeAsState("")
-    val password: String by loginViewModel.password.observeAsState("")
-    val isLoginEnable: Boolean by loginViewModel.isLoginEnable.observeAsState(false)
+
     Column(modifier = modifier, horizontalAlignment = Alignment.CenterHorizontally) {
         TextSesion()
         Spacer(modifier = Modifier.size(24.dp))

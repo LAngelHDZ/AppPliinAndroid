@@ -1,16 +1,22 @@
 package com.example.pliin.apppliin.data.network.response.clients
 
-import com.example.pliin.apppliin.data.network.response.LoginRensponse
+import com.example.pliin.apppliin.data.network.response.loginresponse.LoginRensponse
+import com.example.pliin.apppliin.data.network.response.tokenapiresponse.ResponseLogoutModel
 import retrofit2.Response
-import retrofit2.http.Field
-import retrofit2.http.FormUrlEncoded
+import retrofit2.http.DELETE
+import retrofit2.http.Header
 import retrofit2.http.POST
+import retrofit2.http.Path
+
 
 interface LoginClient {
-    @FormUrlEncoded
-    @POST("/v3/ecb753f1-f4e0-4b79-882e-165eeb91c86a")
+    @POST("/fmi/data/v1/databases/PLIIN/sessions")
     suspend fun dologin(
-        @Field("user") user: String,
-        @Field("password") password: String,
+        @Header("Authorization") auth: String
     ): Response<LoginRensponse>
+
+    @DELETE("/fmi/data/v1/databases/PLIIN/sessions/{token}")
+    suspend fun dologout(
+        @Path("token") token: String
+    ): Response<ResponseLogoutModel>
 }

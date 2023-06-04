@@ -7,20 +7,20 @@ import com.example.pliin.apppliin.data.database.entities.relations.UserWithManif
 
 @Dao
 interface UserDao {
-    @Query("SELECT COUNT(*) FROM user_table WHERE user = :user AND password = :password")
+    @Query("SELECT COUNT(*) FROM user_table WHERE username = :user AND password = :password")
     suspend fun getUserLoginB(user:String, password:String):Boolean
 
-    @Query("SELECT * FROM user_table WHERE user = :user AND password = :password")
+    @Query("SELECT * FROM user_table WHERE username = :user AND password = :password")
     suspend fun getUserLogin(user:String, password:String):List<UserEntity>
 
     @Query("SELECT * FROM user_table")
     suspend fun getUser():List<UserEntity>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertAllUsers(users:List<UserEntity>)
+    suspend fun insertAllUsers(users: List<UserEntity>)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertAllGuides(guides:List<GuideEntity>)
+    suspend fun insertAllGuides(guides: List<GuideEntity>)
 
     @Query("DELETE FROM user_table")
     suspend fun deleteAllUser()
