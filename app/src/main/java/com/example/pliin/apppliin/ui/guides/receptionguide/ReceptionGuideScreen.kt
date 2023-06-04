@@ -165,15 +165,9 @@ fun ScreenConfirmation(
                 CircularProgressIndicator(
                     modifier = modifier.size(30.dp),
                     color = Color(0xFF4c51c6)
-
-
                 )
             }
-            LaunchedEffect(key1 = 1) {
-                delay(2000)
-                rgViewModel.loadingOk(countRegisterGuide, countGuide)
-            }
-
+            rgViewModel.loadingOk(countRegisterGuide, countGuide)
         }
     }
 }

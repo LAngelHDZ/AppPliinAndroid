@@ -119,24 +119,27 @@ class RGViewModel @Inject constructor(
                     launch(Dispatchers.Main) {
                         progres += 1
                         _countRegisterGuide.value = progres
-
                         _progressCircularLoad.value = _progressCircularLoad.value?.plus(loading)
                         // _progressCircularLoad.value= loadingporcentguide.value?.div(100)
                         progress = _progressCircularLoad.value
                         updateValue(progressCircularLoad.value!!)
-
-
                     }
                 }
             }
         }
     }
-
+    
     fun loadingOk(progres: Int, totalguides: Int) {
-        Log.i("Estoy en el metodo que verifica las guias registradas", "$progres de $totalguides")
-        if (progres >= totalguides) {
 
-            _isGuideRegisted.value = true
+        viewModelScope.launch(Dispatchers.Main) {
+            delay(2500)
+            Log.i(
+                "Estoy en el metodo que verifica las guias registradas",
+                "$progres de $totalguides"
+            )
+            if (progres >= totalguides) {
+                _isGuideRegisted.value = true
+            }
         }
     }
 
