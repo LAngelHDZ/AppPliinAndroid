@@ -5,18 +5,27 @@ import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
+import com.example.pliin.apppliin.generals.GeneralMethodsGuide
 import com.journeyapps.barcodescanner.ScanIntentResult
 import com.journeyapps.barcodescanner.ScanOptions
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.LocalTime
 import javax.inject.Inject
 
 @HiltViewModel
-class CMViewModel @Inject constructor() : ViewModel() {
+class CMViewModel @Inject constructor(
+    private val generalMethodsGuide: GeneralMethodsGuide
+
+) : ViewModel() {
+
+    private val _progressCircularLoad = MutableLiveData<Float>()
+    var progressCircularLoad: LiveData<Float> = _progressCircularLoad
+
+    private val _isSesionDialog = MutableLiveData<Boolean>()
+    var isSesionDialog: LiveData<Boolean> = _isSesionDialog
+
     private val _isAlertDialogexit = MutableLiveData<Boolean>()
     var isAlertDialogexit: LiveData<Boolean> = _isAlertDialogexit
 
@@ -59,6 +68,9 @@ class CMViewModel @Inject constructor() : ViewModel() {
     private val _status = MutableLiveData<String>()
     var status: LiveData<String> = _status
 
+    private val _conteQR = MutableLiveData<String>()
+    val contentQR: LiveData<String> = _conteQR
+
     private val _mapListGuide = MutableLiveData<Map<String, String>>()
     var mapListGuide: LiveData<Map<String, String>> = _mapListGuide
 
@@ -67,6 +79,13 @@ class CMViewModel @Inject constructor() : ViewModel() {
 
     private val _statusIntentos = MutableLiveData<String>()
     var statusIntentos: LiveData<String> = _statusIntentos
+
+    private val _countGuides = MutableLiveData<Int>()
+    val countGuides: LiveData<Int> = _countGuides
+
+    val keyGuide: Int = 1
+
+    fun enableLoadBtn(CountGuide: Int) = CountGuide >= 1
 
     fun onValueChanged(selected: String) {
         _selectedOption.value = selected
@@ -82,6 +101,11 @@ class CMViewModel @Inject constructor() : ViewModel() {
         _isDialogRuta.value = false
     }
 
+    fun onAlertDialog() {
+        _isSesionDialog.value = false
+        _isDialogLoadEnable.value = false
+    }
+
     fun onDialogLoadGuides() {
         _isDialogLoadEnable.value = true
         _messageGuideValidate.value = "Desea registrar las guias al sistema?"
@@ -94,12 +118,44 @@ class CMViewModel @Inject constructor() : ViewModel() {
     }
 
     fun getContentQR(guia: String, navigationController: NavHostController) {
+        val validate = generalMethodsGuide.validateFormatGuia(guia)
+        if (validate) {
+            val currentmap = _mapListGuide.value?.toMutableMap() ?: mutableMapOf()
+            val guiarepeted = currentmap.get(guia)
+            if (guiarepeted.isNullOrEmpty()) {
+                var key = currentmap.size + keyGuide
+                currentmap[guia] = guia
+                _mapListGuide.value = currentmap
+                _conteQR.value = guia
+                _countGuides.value = _mapListGuide.value?.size
+                //setData(guia)
+                _isLoadBtnEnable.value = enableLoadBtn(currentmap.size)
+            } else {
+                _isSesionDialog.value = true
+                Log.i("Ya ha agregado esta guia", guia)
+                _messageGuideValidate.value = "Ya ha agregado esta guia: $guia"
+            }
 
+            Log.i("Formato de Guia Valido", guia)
+            // _messageGuideValidate.value ="Formato de guia $guia Valido"
+            //  _isSesionDialog.value = true
+        } else {
+            _isSesionDialog.value = true
+            Log.i("Formato de Guia Invalido", guia)
+            _messageGuideValidate.value = "El formato de la guia $guia no es valido"
+        }
+    }
+
+    fun onRemoveguideList(guia: String, second: String) {
+        val currentmap = _mapListGuide.value?.toMutableMap() ?: mutableMapOf()
+        currentmap.remove(guia)
+        _mapListGuide.value = currentmap
+        _countGuides.value = _mapListGuide.value?.size
+        _isLoadBtnEnable.value = enableLoadBtn(currentmap.size)
     }
 
     fun clavePreGenerate() {
-
-        _clavePreManifest.value = "ZHT" + getdatenow() + "UPS"
+        _clavePreManifest.value = "LCA" + getdatenow() + "UPS"
         val clave = clavePreManifest.value
         Log.i("", "$clave")
     }
@@ -111,16 +167,17 @@ class CMViewModel @Inject constructor() : ViewModel() {
 
     fun getdatenow(): String {
         val year: String = LocalDate.now().year.toString()
-        val mes = LocalDate.now().monthValue
-
-        val month = if (mes < 10) {
-            "0$mes"
-        } else {
-            mes.toString()
-        }
-
-        val day = LocalDate.now().dayOfMonth.toString()
+        val month = addZeroDate(LocalDate.now().monthValue)
+        val day = addZeroDate(LocalDate.now().dayOfMonth)
         return "$year$month$day"
+    }
+
+    private fun addZeroDate(dayOrMonth: Int): String {
+        return if (dayOrMonth < 10) {
+            "0$dayOrMonth"
+        } else {
+            dayOrMonth.toString()
+        }
     }
 
     fun initScanner(scanLauncher: ManagedActivityResultLauncher<ScanOptions, ScanIntentResult>) {
