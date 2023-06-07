@@ -45,6 +45,7 @@ fun CreateManifestScreen(cmViewModel: CMViewModel, navigationController: NavHost
     val selectedOption: String by cmViewModel.selectedOption.observeAsState(" ")
     val isDialogRuta: Boolean by cmViewModel.isDialogRuta.observeAsState(true)
     val isSesionDialog: Boolean by cmViewModel.isSesionDialog.observeAsState(false)
+    val isDialogLoadGuides: Boolean by cmViewModel.isDialogLoadEnable.observeAsState(false)
     val messageGuideValidate: String by cmViewModel.messageGuideValidate.observeAsState("")
     val ruta: String by cmViewModel.ruta.observeAsState("")
     val claveManifest: String by cmViewModel.clavePreManifest.observeAsState("")
@@ -57,7 +58,7 @@ fun CreateManifestScreen(cmViewModel: CMViewModel, navigationController: NavHost
         contract = ScanContract(),
     ) { result ->
         if (result.contents != null) {
-            Log.i("quide scanner", "${result.contents}")
+            Log.i("quide scanner", result.contents)
             cmViewModel.getContentQR(result.contents, navigationController)
         }
     }
@@ -93,6 +94,12 @@ fun CreateManifestScreen(cmViewModel: CMViewModel, navigationController: NavHost
             messageGuideValidate
         )
         selectRuta(cmViewModel, selectedOption, navigationController, isDialogRuta)
+
+        AlertDialogLoadGuides(
+            show = isDialogLoadGuides,
+            cmViewModel,
+            messageGuideValidate
+        )
     }
 }
 
@@ -786,5 +793,29 @@ fun ButtonsConfirmation(
         TextButton(onClick = { cmViewModel.continueSetGuides() }) {
             Text(text = "Continuar")
         }
+    }
+}
+
+@Composable
+fun AlertDialogLoadGuides(
+    show: Boolean,
+    cmViewModel: CMViewModel,
+    message: String
+) {
+    if (show) {
+        AlertDialog(onDismissRequest = { cmViewModel.onAlertDialog() },
+            title = { Text(text = "Advertencia") },
+            text = { Text(text = message) },
+            confirmButton = {
+                TextButton(onClick = { cmViewModel.create() }) {
+                    Text(text = "Continuar")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { cmViewModel.onAlertDialog() }) {
+                    Text(text = "Cancelar")
+                }
+            }
+        )
     }
 }
