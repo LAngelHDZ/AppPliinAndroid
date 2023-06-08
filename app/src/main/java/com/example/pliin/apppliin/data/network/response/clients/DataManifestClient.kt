@@ -1,6 +1,8 @@
 package com.example.pliin.apppliin.data.network.response.clients
 
 import com.example.pliin.apppliin.data.model.consecutivomanifestmodel.ConsecutivoManModel
+import com.example.pliin.apppliin.data.model.responserudmodel.ResponseRUDModel
+import com.example.pliin.apppliin.data.network.dto.createmanifest.CreateManifestDto
 import com.example.pliin.apppliin.data.network.dto.getconsecutivomanifiesto.GetConsecutivoManifestDto
 import retrofit2.Response
 import retrofit2.http.Body
@@ -15,5 +17,11 @@ interface DataManifestClient {
         @Header("Authorization") bearer: String,
         @Body query: GetConsecutivoManifestDto,
     ): Response<ConsecutivoManModel>
+
+    @POST("/fmi/data/v2/databases/PLIIN/layouts/APIManTest/records/")
+    suspend fun createManifest(
+        @Header("Authorization") bearer: String,
+        @Body query: CreateManifestDto,
+    ): Response<ResponseRUDModel>
 
 }

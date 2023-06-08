@@ -14,8 +14,8 @@ class BasicAuthInterceptor : Interceptor {
         val request: Request = chain.request()
         val authenticatedRequest: Request = request.newBuilder()
             .addHeader("Content-Type", "application/json")
-            .addHeader("Accept", "application/json")
-            .addHeader("Accept-Encoding", "gzip,deflate,br")
+            .addHeader("Accept", "/")
+            .addHeader("Accept-Encoding", "UTF-8")
             .build()
         return chain.proceed(authenticatedRequest)
     }

@@ -7,7 +7,9 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
+import com.example.pliin.apppliin.domain.usecase.CreateManifestUseCase
 import com.example.pliin.apppliin.domain.usecase.GetConsecManUseCase
+import com.example.pliin.apppliin.domain.usecase.LoadEmployeeUseCase
 import com.example.pliin.apppliin.generals.GeneralMethodsGuide
 import com.journeyapps.barcodescanner.ScanIntentResult
 import com.journeyapps.barcodescanner.ScanOptions
@@ -24,7 +26,9 @@ import javax.inject.Inject
 @HiltViewModel
 class CMViewModel @Inject constructor(
     private val generalMethodsGuide: GeneralMethodsGuide,
-    private val getConsecManUseCase: GetConsecManUseCase
+    private val getConsecManUseCase: GetConsecManUseCase,
+    private val loadEmployeeUseCase: LoadEmployeeUseCase,
+    private val createManifestUseCase: CreateManifestUseCase
 
 ) : ViewModel() {
 
@@ -91,6 +95,9 @@ class CMViewModel @Inject constructor(
     private val _countGuides = MutableLiveData<Int>()
     val countGuides: LiveData<Int> = _countGuides
 
+    private val _consecutiveMan = MutableLiveData<Int>()
+    val consecutiveMan: LiveData<Int> = _consecutiveMan
+
     private val _isLoadingDataGuide = MutableLiveData<Boolean>()
     var isLoadingDataGuide: LiveData<Boolean> = _isLoadingDataGuide
 
@@ -117,7 +124,14 @@ class CMViewModel @Inject constructor(
     fun reset() {
         _selectedOption.value = ""
         _ruta.value = ""
-        _isDialogRuta.value = false
+        _consecutiveMan.value = 0
+        _countGuides.value = 0
+        _clavePreManifest.value = ""
+        _ruta.value = ""
+        _mapListGuide.value = emptyMap()
+        _progressCircularLoad.value = 0.0f
+        _isDialogLoadEnable.value = false
+        _isDialogRuta.value = true
     }
 
     fun onAlertDialog() {
@@ -191,29 +205,66 @@ class CMViewModel @Inject constructor(
         return "$year$month$day"
     }
 
-    fun create() {
-        getConsecutivoManifest()
+    fun create(navigationController: NavHostController) {
+        viewModelScope.launch {
+            getConsecutivoManifest()
+            Thread.sleep(1000)
+
+
+        }
+        backScreen(navigationController)
+
+
     }
 
     fun getConsecutivoManifest() {
         val year: String = LocalDate.now().year.toString()
         val month = addZeroDate(LocalDate.now().monthValue)
         val day = addZeroDate(LocalDate.now().dayOfMonth)
-        val dateDTO = "<=/05/$year"
-        // val dateDTO= "<=06/06/2023"
-        Log.i("Fecha now format DTO", "$dateDTO")
+
+        val dateDTO = "$month/$day/$year"
+        Log.i("Fecha now format DTO", dateDTO)
+
         viewModelScope.launch {
-            val consecutivo = getConsecManUseCase.invoke(dateDTO)
+            val consecutivo = getConsecManUseCase.invoke(dateDTO).plus(1)
+            _consecutiveMan.value = consecutivo
             val clave = clavePreManifest.value
             _clavePreManifest.value = "$clave$consecutivo"
 
             Log.i("Clave Completa PreM", "${clavePreManifest.value}")
+            createManifest(consecutivo)
         }
-
     }
 
-    fun createManifest() {
+    fun createManifest(consecutivo: Int) {
 
+        viewModelScope.launch {
+            val employee = loadEmployeeUseCase.invoke()
+
+            val claveManifest = clavePreManifest.value
+            val nodo = "UPS"
+            val totalPqt = countGuides.value.toString()
+            val consecutivoMan = consecutiveMan.value.toString()
+            val nameEmployee = "${employee.nombre} ${employee.aPaterno} ${employee.aMaterno}"
+            val typeManifest = "LCA"
+            val ruta = generalMethodsGuide.toUpperLetter(ruta.value!!)
+
+            val dataDto: List<String?> = listOf(
+                claveManifest,
+                consecutivoMan,
+                nodo,
+                nameEmployee,
+                ruta,
+                totalPqt,
+                totalPqt,
+                typeManifest,
+            )
+
+            createManifestUseCase.invoke(dataDto)
+            Log.i("Datos dto Manifest", "$dataDto")
+
+            reset()
+        }
     }
 
     fun LoadGuideServer() {

@@ -98,7 +98,9 @@ fun CreateManifestScreen(cmViewModel: CMViewModel, navigationController: NavHost
         AlertDialogLoadGuides(
             show = isDialogLoadGuides,
             cmViewModel,
-            messageGuideValidate
+            messageGuideValidate,
+            navigationController
+
         )
     }
 }
@@ -800,14 +802,15 @@ fun ButtonsConfirmation(
 fun AlertDialogLoadGuides(
     show: Boolean,
     cmViewModel: CMViewModel,
-    message: String
+    message: String,
+    navigationController: NavHostController
 ) {
     if (show) {
         AlertDialog(onDismissRequest = { cmViewModel.onAlertDialog() },
             title = { Text(text = "Advertencia") },
             text = { Text(text = message) },
             confirmButton = {
-                TextButton(onClick = { cmViewModel.create() }) {
+                TextButton(onClick = { cmViewModel.create(navigationController) }) {
                     Text(text = "Continuar")
                 }
             },
