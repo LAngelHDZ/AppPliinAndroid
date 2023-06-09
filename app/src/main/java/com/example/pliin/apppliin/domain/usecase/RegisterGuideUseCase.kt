@@ -27,7 +27,7 @@ class RegisterGuideUseCase @Inject constructor(
 
         return ((messageCreateStatus == "0") and (messageInsertGuide == "0"))
     }
-    
+
     //Valida que la guia exista en el sistema para tomar una decision de ingresaerla o solo actualizar su status de seguimiento
     suspend fun validateGuide(guide: String): List<String> {
         var code: String
