@@ -43,6 +43,13 @@ class UpdateStatusGuideService @Inject constructor(
                                 response.body()?.response
                             )
                         }
+                        401 -> {
+                            ResponseUpdateStatusModel(
+                                listOf(Message("952", "Invalid FileMaker Data API token (*)")),
+                                response.body()?.response
+                            )
+                        }
+
                         else -> {
                             ResponseUpdateStatusModel(
                                 listOf(Message("500", "No records match the request")),
@@ -83,6 +90,14 @@ class UpdateStatusGuideService @Inject constructor(
                                 response.body()?.response
                             )
                         }
+                        401 -> {
+                            ResponseUpdateStatusModel(
+                                listOf(Message("952", "Invalid FileMaker Data API token (*)")),
+                                response.body()?.response
+                            )
+                        }
+
+
                         else -> {
                             ResponseUpdateStatusModel(
                                 listOf(Message("500", "No records match the request")),

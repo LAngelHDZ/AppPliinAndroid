@@ -6,59 +6,32 @@ import javax.inject.Inject
 
 class RegisterGuideUseCase @Inject constructor(
     private val repository: GuideRepository,
-    private val deliveryR: DeliveryRepository
+    private val createStatusUSeCase: CreateStatusUSeCase,
+    private val insertGuideUseCase: InsertGuideUseCase,
+    private val updateStatusUseCase: UpdateStatusUseCase,
+    private val reloginUseCase: ReloginUseCase
 ) {
     private var recordId = ""
     suspend operator fun invoke(
         guide: String
     ): Boolean {
+
+        reloginUseCase()
         val code = validateGuide(guide)
-        val messageInsertGuide = if (code == "401") {
-            insertGuide(guide)
+        val messageInsertGuide = if (code.component1() == "401") {
+            insertGuideUseCase(guide)
         } else {
-            updateStatus("EN RUTA SALTER")
+            updateStatusUseCase("EN RUTA SALTER", code.component2())
         }
-        val messageCreateStatus = createStatus(guide, "EN RUTA SALTER")
+        val messageCreateStatus = createStatusUSeCase(guide, "EN RUTA SALTER")
 
-        return (messageCreateStatus.equals("0") and (messageInsertGuide == "0"))
+        return ((messageCreateStatus == "0") and (messageInsertGuide == "0"))
     }
-
-    //MEtodo para crear un status de seguimiento de guia
-    suspend fun createStatus(guide: String, status: String): String {
-        var code: String
-        do {
-            val responseCreateStatus = deliveryR.setCreateStatus(guide, status)
-            val messageCreateStatus = responseCreateStatus.messages!![0]!!.code
-            code = messageCreateStatus!!
-        } while (!messageCreateStatus.equals("0"))
-        return code
-    }
-
-    //Metodo ACtualiza el status de la guia existente en el sistema
-    suspend fun updateStatus(Status: String): String {
-        var code: String
-        do {
-            val response = deliveryR.setUpdateStatus(Status, recordId)
-            val message = response.messages!![0]!!.code
-            code = message!!
-        } while (!message.equals("0"))
-        return code
-    }
-
-    //Metodo crea un nuevo registro insertando el numero de guia cuando se valida de que no existe en el sistema
-    suspend fun insertGuide(guide: String): String {
-        var code: String
-        do {
-            val response = repository.InsertGuidetoApi(guide)
-            val message = response.messages!![0]!!.code
-            code = message!!
-        } while (!message.equals("0"))
-        return code
-    }
-
+    
     //Valida que la guia exista en el sistema para tomar una decision de ingresaerla o solo actualizar su status de seguimiento
-    suspend fun validateGuide(guide: String): String {
+    suspend fun validateGuide(guide: String): List<String> {
         var code: String
+        var recordId = ""
         do {
             val response = repository.validateGuideApi(guide)
             val messageGuideValidate = response.messages!![0]!!.code
@@ -67,6 +40,6 @@ class RegisterGuideUseCase @Inject constructor(
             }
             code = messageGuideValidate!!
         } while (messageGuideValidate.equals("500"))
-        return code
+        return listOf(code, recordId)
     }
 }

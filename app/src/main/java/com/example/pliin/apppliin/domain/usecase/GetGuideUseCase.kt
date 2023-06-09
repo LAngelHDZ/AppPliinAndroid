@@ -26,11 +26,11 @@ class GetGuideUseCase @Inject constructor(
             message = guides.messages!![0]!!.message
             codeStatus = guides.messages!![0]!!.code
 
-            if (codeStatus.equals("952")) {
+            login = if (codeStatus.equals("952")) {
                 val resposelogin = reloginUseCase.invoke()
-                login = true
+                true
             } else {
-                login = false
+                false
             }
         } while (login)
 
