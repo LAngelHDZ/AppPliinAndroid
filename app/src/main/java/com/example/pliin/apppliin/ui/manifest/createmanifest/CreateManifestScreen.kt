@@ -28,23 +28,37 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.unit.toSize
 import androidx.compose.ui.window.Dialog
 import androidx.navigation.NavHostController
-import com.example.pliin.apppliin.ui.guides.receptionguide.RGViewModel
-import com.example.pliin.apppliin.ui.guides.receptionguide.TotalGuias
 import com.journeyapps.barcodescanner.ScanContract
 import com.journeyapps.barcodescanner.ScanIntentResult
 import com.journeyapps.barcodescanner.ScanOptions
+import java.time.LocalDate
 
+
+fun getdatenow(): String {
+    return LocalDate.now().toString()
+}
 
 @Composable
 fun CreateManifestScreen(cmViewModel: CMViewModel, navigationController: NavHostController) {
+    val progressCircular: Float by cmViewModel.progressCircularLoad.observeAsState(0f)
+    val countGuide: Int by cmViewModel.countGuides.observeAsState(0)
     val selectedOption: String by cmViewModel.selectedOption.observeAsState(" ")
-    val isDialogRuta: Boolean by cmViewModel.isDialogRuta.observeAsState(false)
+    val isDialogRuta: Boolean by cmViewModel.isDialogRuta.observeAsState(true)
+    val isSesionDialog: Boolean by cmViewModel.isSesionDialog.observeAsState(false)
+    val isDialogLoadGuides: Boolean by cmViewModel.isDialogLoadEnable.observeAsState(false)
+    val messageGuideValidate: String by cmViewModel.messageGuideValidate.observeAsState("")
+    val ruta: String by cmViewModel.ruta.observeAsState("")
+    val claveManifest: String by cmViewModel.clavePreManifest.observeAsState("")
     val isLoadBtnEnable: Boolean by cmViewModel.isisLoadBtnEnable.observeAsState(false)
+    val mapListGuide: Map<String, String> by cmViewModel.mapListGuide.observeAsState(
+        mutableMapOf()
+    )
+    val date: String = getdatenow()
     val scanLauncher = rememberLauncherForActivityResult(
         contract = ScanContract(),
     ) { result ->
         if (result.contents != null) {
-            Log.i("quide scanner", "${result.contents}")
+            Log.i("quide scanner", result.contents)
             cmViewModel.getContentQR(result.contents, navigationController)
         }
     }
@@ -63,10 +77,10 @@ fun CreateManifestScreen(cmViewModel: CMViewModel, navigationController: NavHost
                 Modifier
                     .weight(2.2f)
                     .padding(horizontal = 8.dp),
-                cmViewModel,
+                cmViewModel, mapListGuide, countGuide, ruta, claveManifest, date
 
 
-                )
+            )
             Footer(
                 Modifier
                     .weight(0.6f)
@@ -74,7 +88,35 @@ fun CreateManifestScreen(cmViewModel: CMViewModel, navigationController: NavHost
                 navigationController, scanLauncher, cmViewModel, isLoadBtnEnable
             )
         }
+        AlertDialogGuide(
+            show = isSesionDialog,
+            cmViewModel,
+            messageGuideValidate
+        )
         selectRuta(cmViewModel, selectedOption, navigationController, isDialogRuta)
+
+        AlertDialogLoadGuides(
+            show = isDialogLoadGuides,
+            cmViewModel,
+            messageGuideValidate,
+            navigationController
+
+        )
+    }
+}
+
+@Composable
+fun AlertDialogGuide(show: Boolean, cmViewModel: CMViewModel, message: String) {
+    if (show) {
+        AlertDialog(onDismissRequest = { cmViewModel.onAlertDialog() },
+            title = { Text(text = "Advertencia") },
+            text = { Text(text = message) },
+            confirmButton = {
+                TextButton(onClick = { cmViewModel.onAlertDialog() }) {
+                    Text(text = "Cerrar")
+                }
+            }
+        )
     }
 }
 
@@ -100,28 +142,65 @@ fun Header(modifier: Modifier, cmViewModel: CMViewModel, navigationController: N
 }
 
 @Composable
-fun Body(modifier: Modifier, cmViewModel: CMViewModel) {
-    Box(modifier = modifier.fillMaxWidth()) {
+fun Body(
+    modifier: Modifier,
+    cmViewModel: CMViewModel,
+    mapListGuide: Map<String, String>,
+    countGuide: Int,
+    ruta: String,
+    claveManifest: String,
+    date: String
+) {
+    Box(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(top = 3.dp)
+    ) {
         Column {
+            Row(modifier = Modifier.padding(horizontal = 2.dp)) {
+                Box(modifier = modifier
+                    .weight(1f)
+                    .fillMaxWidth()) {
+                    Row() {
+                        Text(
+                            text = "Nodo:",
+                            fontWeight = FontWeight.SemiBold,
+                            fontSize = 18.sp
+                        )
+                        Text(text = "UPS", fontSize = 18.sp)
+                    }
+                }
+                Box(
+                    modifier = modifier
+                        .weight(1f)
+                        .fillMaxWidth(),
+                    contentAlignment = Alignment.TopEnd
+                ) {
+                    Text(text = date)
+                }
+
+            }
+
             DataManifest(
-                Modifier.padding(vertical = 4.dp)
+                Modifier.padding(bottom = 2.dp), ruta, claveManifest
             )
             ListGuide(
                 Modifier
                     .weight(3f),
-                cmViewModel,
+                cmViewModel, mapListGuide, countGuide
             )
-            FooterTable()
+            FooterTable(countGuide)
         }
     }
 }
 
 @Composable
-fun DataManifest(modifier: Modifier) {
+fun DataManifest(modifier: Modifier, ruta: String, claveManifest: String) {
     Box(
         modifier = modifier.fillMaxWidth()
 //        .background(Color(0xFFcfd9fb))
     ) {
+
         Card(
             modifier = modifier
                 .fillMaxWidth()
@@ -134,9 +213,9 @@ fun DataManifest(modifier: Modifier) {
                 modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                ClaveManifest(listOf())
+                ClaveManifest(ruta, claveManifest)
                 Spacer(modifier = Modifier.size(5.dp))
-                headguide(listOf())
+                nameOperator(listOf())
 //                Spacer(modifier = Modifier.size(5.dp))
 //                RutaAndLogo(data)
 //                Spacer(modifier = Modifier.size(5.dp))
@@ -153,7 +232,7 @@ fun DataManifest(modifier: Modifier) {
 }
 
 @Composable
-fun headguide(data: List<String>) {
+fun nameOperator(data: List<String>) {
     Row(modifier = Modifier.fillMaxWidth()) {
         // Spacer(modifier = Modifier.size(4.dp))
         Box(modifier = Modifier.weight(1f)) {
@@ -171,11 +250,11 @@ fun headguide(data: List<String>) {
 }
 
 @Composable
-fun ClaveManifest(data: List<String>) {
+fun ClaveManifest(ruta: String, claveManifest: String) {
     Row(modifier = Modifier.fillMaxWidth()) {
         // Spacer(modifier = Modifier.size(4.dp))
         Box(modifier = Modifier.weight(1.3f)) {
-            ClavePMTextField("ZHT20230601UPS-XXX")
+            ClavePMTextField(claveManifest)
         }
         Spacer(modifier = Modifier.size(4.dp))
         Box(
@@ -183,7 +262,7 @@ fun ClaveManifest(data: List<String>) {
                 .weight(1f)
             //.background(Color(0xFFf9f9f9)),
         ) {
-            EmpresaTextField("PAQUETEXPRESS")
+            EmpresaTextField(ruta)
         }
     }
 }
@@ -213,9 +292,9 @@ fun NameOPTextField(guia: String) {
                             color = Color(0xFF4425a7),
                             shape = RoundedCornerShape(size = 6.dp)
                         )
-                        .padding(all = 4.dp), // inner padding,
+                        .padding(vertical = 4.dp, horizontal = 2.dp), // inner padding,
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Center
+//                    horizontalArrangement = Arrangement.Center
                 ) {
                     Spacer(modifier = Modifier.width(width = 8.dp))
                     innerTextField()
@@ -226,11 +305,11 @@ fun NameOPTextField(guia: String) {
 }
 
 @Composable
-fun ClavePMTextField(guia: String) {
+fun ClavePMTextField(claveManifest: String) {
     Column() {
         TextLabelClavePM()
         BasicTextField(
-            value = guia,
+            value = "$claveManifest-XXX",
             readOnly = true,
             onValueChange = {
             },
@@ -263,11 +342,11 @@ fun ClavePMTextField(guia: String) {
 }
 
 @Composable
-fun EmpresaTextField(guia: String) {
+fun EmpresaTextField(ruta: String) {
     Column() {
         TextLabelEmpresa()
         BasicTextField(
-            value = guia,
+            value = ruta,
             readOnly = true,
             onValueChange = {
             },
@@ -306,12 +385,12 @@ fun TextLabelNameOp() {
 
 @Composable
 fun TextLabelClavePM() {
-    Text(text = "Folio", fontWeight = FontWeight.Bold)
+    Text(text = "Pre-folio", fontWeight = FontWeight.Bold)
 }
 
 @Composable
 fun TextLabelEmpresa() {
-    Text(text = "Nodo", fontWeight = FontWeight.Bold)
+    Text(text = "Ruta", fontWeight = FontWeight.Bold)
 }
 
 
@@ -320,7 +399,8 @@ fun TextLabelEmpresa() {
 fun ListGuide(
     modifier: Modifier,
     cmViewModel: CMViewModel,
-//    countGuide: Int,
+    mapListGuide: Map<String, String>,
+    countGuide: Int,
 //    qrcontent: String
 ) {
     val listguides = listOf(
@@ -353,7 +433,7 @@ fun ListGuide(
             HeadTable()
 
         }
-        items(listguides) {
+        items(mapListGuide.toList()) {
             Card(
                 modifier.fillMaxWidth(),
                 // border = BorderStroke(1.dp, Color(0xFF4425a7))
@@ -373,7 +453,7 @@ fun ListGuide(
                                 tint = Color(0xFF4425a7)
                             )
                             Text(
-                                text = "$it",
+                                text = "${it.second}",
                                 //modifier =modifier.padding(horizontal = 4.dp),
                                 fontWeight = FontWeight.SemiBold,
                                 fontSize = 16.sp
@@ -391,7 +471,7 @@ fun ListGuide(
                     ) {
                         IconButton(
                             onClick = {
-                                // rdViewModel.onRemoveguideList(it.first, it.second)
+                                cmViewModel.onRemoveguideList(it.first, it.second)
                             },
                             modifier = modifier
                         ) {
@@ -449,7 +529,7 @@ fun HeadTable() {
 }
 
 @Composable
-fun FooterTable() {
+fun FooterTable(countGuide: Int) {
     Card(
         modifier = Modifier,
         backgroundColor = Color.White,
@@ -467,7 +547,7 @@ fun FooterTable() {
                 contentAlignment = Alignment.CenterStart
             ) {
                 Text(
-                    text = "Total guias: 17", fontWeight = FontWeight.SemiBold
+                    text = "Total guias: $countGuide", fontWeight = FontWeight.SemiBold
                 )
             }
 //            Box(modifier = Modifier
@@ -715,5 +795,30 @@ fun ButtonsConfirmation(
         TextButton(onClick = { cmViewModel.continueSetGuides() }) {
             Text(text = "Continuar")
         }
+    }
+}
+
+@Composable
+fun AlertDialogLoadGuides(
+    show: Boolean,
+    cmViewModel: CMViewModel,
+    message: String,
+    navigationController: NavHostController
+) {
+    if (show) {
+        AlertDialog(onDismissRequest = { cmViewModel.onAlertDialog() },
+            title = { Text(text = "Advertencia") },
+            text = { Text(text = message) },
+            confirmButton = {
+                TextButton(onClick = { cmViewModel.create(navigationController) }) {
+                    Text(text = "Continuar")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { cmViewModel.onAlertDialog() }) {
+                    Text(text = "Cancelar")
+                }
+            }
+        )
     }
 }

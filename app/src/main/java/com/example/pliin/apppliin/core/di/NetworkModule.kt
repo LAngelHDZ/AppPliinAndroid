@@ -134,4 +134,10 @@ class NetworkModule {
     fun provideDataEmployeeClient(retrofit: Retrofit): DataEmployeeClient {
         return retrofit.create(DataEmployeeClient::class.java)
     }
+
+    @Singleton
+    @Provides
+    fun provideManifest(retrofit: Retrofit): DataManifestClient {
+        return retrofit.create(DataManifestClient::class.java)
+    }
 }

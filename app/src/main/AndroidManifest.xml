@@ -14,7 +14,7 @@
         android:name=".JetpackComposeApp"
         android:theme="@style/Theme.Pliin"
         android:hardwareAccelerated="true"
-        tools:targetApi="31">
+        tools:targetApi="33">
         <activity
             android:name=".MainActivity"
             android:exported="true"

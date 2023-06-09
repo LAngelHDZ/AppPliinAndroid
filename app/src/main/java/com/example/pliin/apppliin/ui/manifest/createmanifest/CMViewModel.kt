@@ -7,16 +7,37 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
+import com.example.pliin.apppliin.domain.usecase.CreateManifestUseCase
+import com.example.pliin.apppliin.domain.usecase.GetConsecManUseCase
+import com.example.pliin.apppliin.domain.usecase.LoadEmployeeUseCase
+import com.example.pliin.apppliin.generals.GeneralMethodsGuide
 import com.journeyapps.barcodescanner.ScanIntentResult
 import com.journeyapps.barcodescanner.ScanOptions
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
+import java.text.NumberFormat
 import java.time.LocalDate
 import java.time.LocalTime
+import java.util.*
 import javax.inject.Inject
 
 @HiltViewModel
-class CMViewModel @Inject constructor() : ViewModel() {
+class CMViewModel @Inject constructor(
+    private val generalMethodsGuide: GeneralMethodsGuide,
+    private val getConsecManUseCase: GetConsecManUseCase,
+    private val loadEmployeeUseCase: LoadEmployeeUseCase,
+    private val createManifestUseCase: CreateManifestUseCase
+
+) : ViewModel() {
+
+    private val _progressCircularLoad = MutableLiveData<Float>()
+    var progressCircularLoad: LiveData<Float> = _progressCircularLoad
+
+    private val _isSesionDialog = MutableLiveData<Boolean>()
+    var isSesionDialog: LiveData<Boolean> = _isSesionDialog
+
     private val _isAlertDialogexit = MutableLiveData<Boolean>()
     var isAlertDialogexit: LiveData<Boolean> = _isAlertDialogexit
 
@@ -59,6 +80,9 @@ class CMViewModel @Inject constructor() : ViewModel() {
     private val _status = MutableLiveData<String>()
     var status: LiveData<String> = _status
 
+    private val _conteQR = MutableLiveData<String>()
+    val contentQR: LiveData<String> = _conteQR
+
     private val _mapListGuide = MutableLiveData<Map<String, String>>()
     var mapListGuide: LiveData<Map<String, String>> = _mapListGuide
 
@@ -67,6 +91,27 @@ class CMViewModel @Inject constructor() : ViewModel() {
 
     private val _statusIntentos = MutableLiveData<String>()
     var statusIntentos: LiveData<String> = _statusIntentos
+
+    private val _countGuides = MutableLiveData<Int>()
+    val countGuides: LiveData<Int> = _countGuides
+
+    private val _consecutiveMan = MutableLiveData<Int>()
+    val consecutiveMan: LiveData<Int> = _consecutiveMan
+
+    private val _isLoadingDataGuide = MutableLiveData<Boolean>()
+    var isLoadingDataGuide: LiveData<Boolean> = _isLoadingDataGuide
+
+    private val _countRegisterGuide = MutableLiveData<Int>()
+    var countRegisterGuide: LiveData<Int> = _countRegisterGuide
+
+    val numberFormat = NumberFormat.getNumberInstance(Locale.getDefault()).apply {
+        maximumFractionDigits = 1
+        minimumFractionDigits = 1
+    }
+
+    val keyGuide: Int = 1
+
+    fun enableLoadBtn(CountGuide: Int) = CountGuide >= 1
 
     fun onValueChanged(selected: String) {
         _selectedOption.value = selected
@@ -79,7 +124,19 @@ class CMViewModel @Inject constructor() : ViewModel() {
     fun reset() {
         _selectedOption.value = ""
         _ruta.value = ""
-        _isDialogRuta.value = false
+        _consecutiveMan.value = 0
+        _countGuides.value = 0
+        _clavePreManifest.value = ""
+        _ruta.value = ""
+        _mapListGuide.value = emptyMap()
+        _progressCircularLoad.value = 0.0f
+        _isDialogLoadEnable.value = false
+        _isDialogRuta.value = true
+    }
+
+    fun onAlertDialog() {
+        _isSesionDialog.value = false
+        _isDialogLoadEnable.value = false
     }
 
     fun onDialogLoadGuides() {
@@ -94,12 +151,44 @@ class CMViewModel @Inject constructor() : ViewModel() {
     }
 
     fun getContentQR(guia: String, navigationController: NavHostController) {
+        val validate = generalMethodsGuide.validateFormatGuia(guia)
+        if (validate) {
+            val currentmap = _mapListGuide.value?.toMutableMap() ?: mutableMapOf()
+            val guiarepeted = currentmap.get(guia)
+            if (guiarepeted.isNullOrEmpty()) {
+                var key = currentmap.size + keyGuide
+                currentmap[guia] = guia
+                _mapListGuide.value = currentmap
+                _conteQR.value = guia
+                _countGuides.value = _mapListGuide.value?.size
+                //setData(guia)
+                _isLoadBtnEnable.value = enableLoadBtn(currentmap.size)
+            } else {
+                _isSesionDialog.value = true
+                Log.i("Ya ha agregado esta guia", guia)
+                _messageGuideValidate.value = "Ya ha agregado esta guia: $guia"
+            }
 
+            Log.i("Formato de Guia Valido", guia)
+            // _messageGuideValidate.value ="Formato de guia $guia Valido"
+            //  _isSesionDialog.value = true
+        } else {
+            _isSesionDialog.value = true
+            Log.i("Formato de Guia Invalido", guia)
+            _messageGuideValidate.value = "El formato de la guia $guia no es valido"
+        }
+    }
+
+    fun onRemoveguideList(guia: String, second: String) {
+        val currentmap = _mapListGuide.value?.toMutableMap() ?: mutableMapOf()
+        currentmap.remove(guia)
+        _mapListGuide.value = currentmap
+        _countGuides.value = _mapListGuide.value?.size
+        _isLoadBtnEnable.value = enableLoadBtn(currentmap.size)
     }
 
     fun clavePreGenerate() {
-
-        _clavePreManifest.value = "ZHT" + getdatenow() + "UPS"
+        _clavePreManifest.value = "LCA" + getdatenow() + "UPS"
         val clave = clavePreManifest.value
         Log.i("", "$clave")
     }
@@ -111,16 +200,122 @@ class CMViewModel @Inject constructor() : ViewModel() {
 
     fun getdatenow(): String {
         val year: String = LocalDate.now().year.toString()
-        val mes = LocalDate.now().monthValue
-
-        val month = if (mes < 10) {
-            "0$mes"
-        } else {
-            mes.toString()
-        }
-
-        val day = LocalDate.now().dayOfMonth.toString()
+        val month = addZeroDate(LocalDate.now().monthValue)
+        val day = addZeroDate(LocalDate.now().dayOfMonth)
         return "$year$month$day"
+    }
+
+    fun create(navigationController: NavHostController) {
+        viewModelScope.launch {
+            getConsecutivoManifest()
+            Thread.sleep(1000)
+
+
+        }
+        backScreen(navigationController)
+
+
+    }
+
+    fun getConsecutivoManifest() {
+        val year: String = LocalDate.now().year.toString()
+        val month = addZeroDate(LocalDate.now().monthValue)
+        val day = addZeroDate(LocalDate.now().dayOfMonth)
+
+        val dateDTO = "$month/$day/$year"
+        Log.i("Fecha now format DTO", dateDTO)
+
+        viewModelScope.launch {
+            val consecutivo = getConsecManUseCase.invoke(dateDTO).plus(1)
+            _consecutiveMan.value = consecutivo
+            val clave = clavePreManifest.value
+            _clavePreManifest.value = "$clave$consecutivo"
+
+            Log.i("Clave Completa PreM", "${clavePreManifest.value}")
+            createManifest(consecutivo)
+        }
+    }
+
+    fun createManifest(consecutivo: Int) {
+
+        viewModelScope.launch {
+            val employee = loadEmployeeUseCase.invoke()
+
+            val claveManifest = clavePreManifest.value
+            val nodo = "UPS"
+            val totalPqt = countGuides.value.toString()
+            val consecutivoMan = consecutiveMan.value.toString()
+            val nameEmployee = "${employee.nombre} ${employee.aPaterno} ${employee.aMaterno}"
+            val typeManifest = "LCA"
+            val ruta = generalMethodsGuide.toUpperLetter(ruta.value!!)
+
+            val dataDto: List<String?> = listOf(
+                claveManifest,
+                consecutivoMan,
+                nodo,
+                nameEmployee,
+                ruta,
+                totalPqt,
+                totalPqt,
+                typeManifest,
+            )
+
+            createManifestUseCase.invoke(dataDto)
+            Log.i("Datos dto Manifest", "$dataDto")
+
+            reset()
+        }
+    }
+
+    fun LoadGuideServer() {
+        var progres = 0
+        _progressCircularLoad.value = 0f
+        _isLoadingDataGuide.value = true
+        val currentmap = _mapListGuide.value?.toMutableMap() ?: mutableMapOf()
+        val totalguides = countGuides.value
+        val loading: Float = 100 / totalguides!!.toFloat()
+        Log.i("Load", "$loading")
+        Log.i("Load", "$totalguides")
+
+        currentmap.let {
+
+            viewModelScope.launch(Dispatchers.IO) {
+
+                for ((key, value) in currentmap) {
+                    Log.i(key, value)
+                    var progress = progressCircularLoad.value
+                    Log.i("Agregado", "$progress")
+                    val deferred = async { }
+
+
+                    Log.i("Agregado", "listo")
+                    deferred.await()
+                    Thread.sleep(1000)
+                    launch(Dispatchers.Main) {
+                        progres += 1
+                        _countRegisterGuide.value = progres
+                        _progressCircularLoad.value = _progressCircularLoad.value?.plus(loading)
+                        // _progressCircularLoad.value= loadingporcentguide.value?.div(100)
+                        progress = _progressCircularLoad.value
+                        updateValue(progressCircularLoad.value!!)
+                    }
+                }
+            }
+        }
+    }
+
+    fun updateValue(value: Float) {
+        val formatted = numberFormat.format(value)
+        _progressCircularLoad.value = formatted.toFloat()
+    }
+
+
+    private fun addZeroDate(dayOrMonth: Int): String {
+        return if (dayOrMonth < 10) {
+            "0$dayOrMonth"
+        } else {
+            dayOrMonth.toString()
+        }
     }
 
     fun initScanner(scanLauncher: ManagedActivityResultLauncher<ScanOptions, ScanIntentResult>) {

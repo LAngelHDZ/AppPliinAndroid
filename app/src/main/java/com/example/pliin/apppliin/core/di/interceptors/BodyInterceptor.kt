@@ -27,7 +27,7 @@ class BodyInterceptor : Interceptor {
         val restq = reemplazaCaracter(requestString, '/', ' ')
 
         // Elimina barras diagonales del RequestBody
-        val modifiedRequestBody = converterJson(restq)
+        val modifiedRequestBody = converterJson(requestString)
 
         // Crea una solicitud nueva con el RequestBody modificado
         val newRequest = originalRequest.newBuilder()
