@@ -1,7 +1,6 @@
 package com.example.pliin.apppliin.data.network.services
 
 import android.annotation.SuppressLint
-import android.util.Log
 import com.example.pliin.apppliin.data.database.dao.TokenDao
 import com.example.pliin.apppliin.data.model.datainfo.DataInfoModel
 import com.example.pliin.apppliin.data.model.deliverymodel.GetDataGuideDRModel
@@ -10,7 +9,10 @@ import com.example.pliin.apppliin.data.model.deliverymodel.ResponseModel
 import com.example.pliin.apppliin.data.model.message.Message
 import com.example.pliin.apppliin.data.model.queryguide.QueryGuidePliinModel
 import com.example.pliin.apppliin.data.model.queryguide.Response
-import com.example.pliin.apppliin.data.model.responseregisterdelivery.ResponseRegisterDeliveryModel
+import com.example.pliin.apppliin.data.model.responserudmodel.ResponseRUDModel
+import com.example.pliin.apppliin.data.model.responserudmodel.ResponseSetModel
+import com.example.pliin.apppliin.data.network.dto.addguidemanifest.AddGuideToManifest
+import com.example.pliin.apppliin.data.network.dto.addguidemanifest.FieldDataAGM
 import com.example.pliin.apppliin.data.network.dto.insertguide.FieldData
 import com.example.pliin.apppliin.data.network.dto.insertguide.InsertGuideDto
 import com.example.pliin.apppliin.data.network.dto.queryguidescanner.QueryGuideDto
@@ -24,7 +26,7 @@ import java.io.IOException
 import javax.inject.Inject
 
 class GuideService @Inject constructor(
-    private val apiclient: DataGuideClient,
+    private val guideapiclient: DataGuideClient,
     private val daotoken: TokenDao
 ) {
     @SuppressLint("SuspiciousIndentation")
@@ -32,7 +34,7 @@ class GuideService @Inject constructor(
         val query = QueryGuideDto(listOf(query(guide, "Asignado")))
         val bearer = daotoken.getToken().token
         return withContext(Dispatchers.IO) {
-            val response = apiclient.getDataguide("Bearer $bearer", query)
+            val response = guideapiclient.getDataguide("Bearer $bearer", query)
             val data = if (response.isSuccessful) {
                 response.body()!!
             } else {
@@ -67,7 +69,7 @@ class GuideService @Inject constructor(
         val bearer = daotoken.getToken().token
         return withContext(Dispatchers.IO) {
             try {
-                val response = apiclient.guideArrastreValidate("Bearer $bearer", query)
+                val response = guideapiclient.guideArrastreValidate("Bearer $bearer", query)
                 val data = if (response.isSuccessful) {
                     response.body()!!
                 } else {
@@ -97,21 +99,12 @@ class GuideService @Inject constructor(
                 GetDataGuideDRModel(
                     ResponseModel(
                         emptyList(),
-                        com.example.pliin.apppliin.data.model.deliverymodel.DataInfoModel(
-                            "",
-                            "",
-                            "",
-                            0,
-                            0,
-                            0
-                        )
+                        DataInfoModel("", 0, "", 0, "", 0)
                     ),
                     listOf(MessageModel("401", "Invalid FileMaker Data API token (*)"))
                 )
             }
-
         }
-
     }
 
     suspend fun queryGuide(guide: String): QueryGuidePliinModel {
@@ -119,7 +112,7 @@ class GuideService @Inject constructor(
         val bearer = daotoken.getToken().token
         return withContext(Dispatchers.IO) {
             try {
-                val response = apiclient.queryGuide("Bearer $bearer", query)
+                val response = guideapiclient.queryGuide("Bearer $bearer", query)
                 val data = if (response.isSuccessful) {
                     response.body()!!
                 } else {
@@ -154,50 +147,92 @@ class GuideService @Inject constructor(
                     )
                 )
             }
-
         }
-
     }
 
-    suspend fun insertyGuide(guide: String): ResponseRegisterDeliveryModel {
+    suspend fun insertyGuide(guide: String): ResponseRUDModel {
         val query = InsertGuideDto(FieldData(guide))
         val bearer = daotoken.getToken().token
         return withContext(Dispatchers.IO) {
             try {
-                val response = apiclient.insertGuide("Bearer $bearer", query)
+                val response = guideapiclient.insertGuide("Bearer $bearer", query)
                 val data = if (response.isSuccessful) {
                     response.body()!!
                 } else {
                     when (response.code()) {
                         500 -> {
-                            ResponseRegisterDeliveryModel(
-                                listOf(Message("401", "No records match the request")),
-                                response.body()?.response
+                            ResponseRUDModel(
+                                response.body()?.response,
+                                listOf(Message("500", "No found Record"))
                             )
                         }
-                        401 -> {
-                            ResponseRegisterDeliveryModel(
-                                listOf(Message("952", "Invalid FileMaker Data API token (*)")),
+                        400 -> {
+                            ResponseRUDModel(
                                 response.body()?.response,
+                                listOf(Message("400", "No found Record"))
                             )
                         }
                         else -> {
-                            ResponseRegisterDeliveryModel(
-                                listOf(Message("401", "Invalid FileMaker Data API token (*)")),
-                                response.body()?.response
+                            ResponseRUDModel(
+                                response.body()?.response,
+                                listOf(Message("400", "No found Record"))
                             )
                         }
                     }
                 }
                 data
             } catch (e: IOException) {
-                ResponseRegisterDeliveryModel(
-                    listOf(
-                        Message(
-                            "500", "Internet Connection Error"
-                        )
-                    ),
-                    com.example.pliin.apppliin.data.model.responseregisterdelivery.Response("", "")
+                ResponseRUDModel(
+                    ResponseSetModel("", ""),
+                    listOf(Message("500", "No internet conection"))
+                )
+            }
+        }
+    }
+
+    suspend fun addGuideManifest(data: List<String>): ResponseRUDModel {
+        val query = AddGuideToManifest(
+            FieldDataAGM(
+                data.component1(),
+                data.component2(),
+                data.component3(),
+                data.component4()
+            )
+        )
+
+        val bearer = daotoken.getToken().token
+        return withContext(Dispatchers.IO) {
+            try {
+                val response = guideapiclient.addGuideManifest("Bearer $bearer", query)
+                val data = if (response.isSuccessful) {
+                    response.body()!!
+                } else {
+                    when (response.code()) {
+                        500 -> {
+                            ResponseRUDModel(
+                                response.body()?.response,
+                                listOf(Message("500", "No found Record"))
+                            )
+                        }
+                        400 -> {
+                            ResponseRUDModel(
+                                response.body()?.response,
+                                listOf(Message("400", "No found Record"))
+                            )
+                        }
+                        else -> {
+                            ResponseRUDModel(
+                                response.body()?.response,
+                                listOf(Message("400", "No found Record"))
+                            )
+                        }
+                    }
+                }
+                data
+            } catch (e: IOException) {
+                ResponseRUDModel(
+                    ResponseSetModel("", ""),
+                    listOf(Message("500", "No found Record"))
                 )
             }
         }

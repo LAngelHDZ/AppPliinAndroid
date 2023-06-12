@@ -10,6 +10,8 @@ import com.example.pliin.apppliin.domain.model.queryguideitem.QueryGuidePliinIte
 import com.example.pliin.apppliin.domain.model.queryguideitem.toDomain
 import com.example.pliin.apppliin.domain.model.responseregisterdeliveryi.ResponseRegisterDeliveryItem
 import com.example.pliin.apppliin.domain.model.responseregisterdeliveryi.toDomain
+import com.example.pliin.apppliin.domain.model.responseruditem.ResponseRUDItem
+import com.example.pliin.apppliin.domain.model.responseruditem.toDomain
 import javax.inject.Inject
 
 class GuideRepository @Inject constructor(private val apiguide: GuideService) {
@@ -31,7 +33,7 @@ class GuideRepository @Inject constructor(private val apiguide: GuideService) {
     }
 
     //Opbtiene las guias de la API
-    suspend fun InsertGuidetoApi(guide: String): ResponseRegisterDeliveryItem {
+    suspend fun InsertGuidetoApi(guide: String): ResponseRUDItem {
         val response = apiguide.insertyGuide(guide)
         Log.i("response", "$response")
         // tokenDao.insertToken(response.toDatabase())
@@ -41,6 +43,14 @@ class GuideRepository @Inject constructor(private val apiguide: GuideService) {
     //Opbtiene las guias de la API
     suspend fun GuideQueryAarrastre(guide: String): GetDataGuideRDItem {
         val response = apiguide.getGuide(guide)
+        Log.i("response", "$response")
+        // tokenDao.insertToken(response.toDatabase())
+        return response.toDomain()
+    }
+
+    //Agrega la guia a un manifiesto
+    suspend fun setGuideManifest(data: List<String>): ResponseRUDItem {
+        val response = apiguide.addGuideManifest(data)
         Log.i("response", "$response")
         // tokenDao.insertToken(response.toDatabase())
         return response.toDomain()

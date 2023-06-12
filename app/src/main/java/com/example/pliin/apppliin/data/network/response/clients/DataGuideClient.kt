@@ -4,8 +4,10 @@ package com.example.pliin.apppliin.data.network.response.clients
 import com.example.pliin.apppliin.data.model.deliverymodel.GetDataGuideDRModel
 import com.example.pliin.apppliin.data.model.queryguide.QueryGuidePliinModel
 import com.example.pliin.apppliin.data.model.responseregisterdelivery.ResponseRegisterDeliveryModel
+import com.example.pliin.apppliin.data.model.responserudmodel.ResponseRUDModel
 import com.example.pliin.apppliin.data.model.responseupdatestatus.ResponseUpdateStatusModel
-import com.example.pliin.apppliin.data.network.dto.createstatus.CreateStatusGuideDto
+import com.example.pliin.apppliin.data.network.dto.addguidemanifest.AddGuideToManifest
+import com.example.pliin.apppliin.data.network.dto.queryguidescanner.createstatus.CreateStatusGuideDto
 import com.example.pliin.apppliin.data.network.dto.insertguide.InsertGuideDto
 import com.example.pliin.apppliin.data.network.dto.intentoentrega.TryingDeliveryDto
 import com.example.pliin.apppliin.data.network.dto.queryguidescanner.QueryGuideDto
@@ -55,7 +57,14 @@ interface DataGuideClient {
     suspend fun insertGuide(
         @Header("Authorization") bearer: String,
         @Body Guide: InsertGuideDto
-    ): Response<ResponseRegisterDeliveryModel>
+    ): Response<ResponseRUDModel>
+
+    //Enpoint para agregar una guia a un manifiesto
+    @POST("/fmi/data/v2/databases/PLIIN/layouts/APIRGuiasManifest/records/")
+    suspend fun addGuideManifest(
+        @Header("Authorization") bearer: String,
+        @Body Guide: AddGuideToManifest
+    ): Response<ResponseRUDModel>
 
 
     //Enpoint para actualizar el status de una guia

@@ -7,6 +7,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
+import com.example.pliin.apppliin.domain.usecase.AddGuideManifestUseCase
 import com.example.pliin.apppliin.domain.usecase.CreateManifestUseCase
 import com.example.pliin.apppliin.domain.usecase.GetConsecManUseCase
 import com.example.pliin.apppliin.domain.usecase.LoadEmployeeUseCase
@@ -16,6 +17,7 @@ import com.journeyapps.barcodescanner.ScanOptions
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.text.NumberFormat
 import java.time.LocalDate
@@ -28,7 +30,8 @@ class CMViewModel @Inject constructor(
     private val generalMethodsGuide: GeneralMethodsGuide,
     private val getConsecManUseCase: GetConsecManUseCase,
     private val loadEmployeeUseCase: LoadEmployeeUseCase,
-    private val createManifestUseCase: CreateManifestUseCase
+    private val createManifestUseCase: CreateManifestUseCase,
+    private val addGuideManifestUseCase: AddGuideManifestUseCase
 
 ) : ViewModel() {
 
@@ -49,6 +52,9 @@ class CMViewModel @Inject constructor(
 
     private val _isDialogRuta = MutableLiveData<Boolean>()
     var isDialogRuta: LiveData<Boolean> = _isDialogRuta
+
+    private val _isSelectbtn = MutableLiveData<Boolean>()
+    var isSelectbtn: LiveData<Boolean> = _isSelectbtn
 
     private val _selectedOption = MutableLiveData<String>()
     var selectedOption: LiveData<String> = _selectedOption
@@ -92,6 +98,9 @@ class CMViewModel @Inject constructor(
     private val _statusIntentos = MutableLiveData<String>()
     var statusIntentos: LiveData<String> = _statusIntentos
 
+    private val _isGuideRegisted = MutableLiveData<Boolean>()
+    var isGuideRegisted: LiveData<Boolean> = _isGuideRegisted
+
     private val _countGuides = MutableLiveData<Int>()
     val countGuides: LiveData<Int> = _countGuides
 
@@ -115,6 +124,21 @@ class CMViewModel @Inject constructor(
 
     fun onValueChanged(selected: String) {
         _selectedOption.value = selected
+        _isSelectbtn.value = enableSelectbtn(selected)
+    }
+
+    fun enableSelectbtn(select: String) = select.length > 1
+
+    fun guideregistedOk(navigationController: NavHostController) {
+        backScreen(navigationController)
+        _isDialogLoadEnable.value = false
+        _isLoadingDataGuide.value = false
+        _isGuideRegisted.value = false
+        _countGuides.value = 0
+        _countRegisterGuide.value = 0
+        _mapListGuide.value = emptyMap()
+        _conteQR.value = ""
+        reset()
     }
 
     fun backScreen(navigationController: NavHostController) {
@@ -132,11 +156,28 @@ class CMViewModel @Inject constructor(
         _progressCircularLoad.value = 0.0f
         _isDialogLoadEnable.value = false
         _isDialogRuta.value = true
+
+
     }
 
     fun onAlertDialog() {
         _isSesionDialog.value = false
         _isDialogLoadEnable.value = false
+    }
+
+    fun loadingOk(progres: Int, totalguides: Int) {
+
+        viewModelScope.launch(Dispatchers.Main) {
+            delay(2500)
+            Log.i(
+                "Estoy en el metodo que verifica las guias registradas",
+                "$progres de $totalguides"
+            )
+            if (progres >= totalguides) {
+                _isGuideRegisted.value = true
+
+            }
+        }
     }
 
     fun onDialogLoadGuides() {
@@ -209,12 +250,8 @@ class CMViewModel @Inject constructor(
         viewModelScope.launch {
             getConsecutivoManifest()
             Thread.sleep(1000)
-
-
         }
-        backScreen(navigationController)
-
-
+        // backScreen(navigationController)
     }
 
     fun getConsecutivoManifest() {
@@ -262,12 +299,12 @@ class CMViewModel @Inject constructor(
 
             createManifestUseCase.invoke(dataDto)
             Log.i("Datos dto Manifest", "$dataDto")
-
-            reset()
+            loadGuideServer()
         }
+
     }
 
-    fun LoadGuideServer() {
+    fun loadGuideServer() {
         var progres = 0
         _progressCircularLoad.value = 0f
         _isLoadingDataGuide.value = true
@@ -280,13 +317,22 @@ class CMViewModel @Inject constructor(
         currentmap.let {
 
             viewModelScope.launch(Dispatchers.IO) {
+                val idPreM = clavePreManifest.value!!
+                val numPaquetes = "1"
+                val observacion = "Asignado"
 
                 for ((key, value) in currentmap) {
+                    var dataDto = listOf(
+                        idPreM,
+                        value,
+                        numPaquetes,
+                        observacion
+                    )
+                    var datalist = emptyList<String>()
                     Log.i(key, value)
                     var progress = progressCircularLoad.value
                     Log.i("Agregado", "$progress")
-                    val deferred = async { }
-
+                    val deferred = async { addGuideManifestUseCase.invoke(dataDto) }
 
                     Log.i("Agregado", "listo")
                     deferred.await()
@@ -299,6 +345,7 @@ class CMViewModel @Inject constructor(
                         progress = _progressCircularLoad.value
                         updateValue(progressCircularLoad.value!!)
                     }
+                    dataDto = emptyList()
                 }
             }
         }

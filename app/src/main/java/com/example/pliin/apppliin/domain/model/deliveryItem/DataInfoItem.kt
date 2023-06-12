@@ -1,7 +1,7 @@
 package com.example.pliin.apppliin.domain.model.deliveryItem
 
 
-import com.example.pliin.apppliin.data.model.deliverymodel.DataInfoModel
+import com.example.pliin.apppliin.data.model.datainfo.DataInfoModel
 import com.google.gson.annotations.SerializedName
 
 data class DataInfoItem(

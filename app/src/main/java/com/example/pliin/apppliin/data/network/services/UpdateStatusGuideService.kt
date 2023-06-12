@@ -2,12 +2,12 @@ package com.example.pliin.apppliin.data.network.services
 
 import com.example.pliin.apppliin.data.database.dao.TokenDao
 import com.example.pliin.apppliin.data.model.message.Message
-import com.example.pliin.apppliin.data.model.responseupdatestatus.MessageUpdate
 import com.example.pliin.apppliin.data.model.responseupdatestatus.ResponseUpdate
 import com.example.pliin.apppliin.data.model.responseupdatestatus.ResponseUpdateStatusModel
-import com.example.pliin.apppliin.data.network.dto.createstatus.*
 import com.example.pliin.apppliin.data.network.dto.intentoentrega.FieldDataTryD
 import com.example.pliin.apppliin.data.network.dto.intentoentrega.TryingDeliveryDto
+import com.example.pliin.apppliin.data.network.dto.queryguidescanner.createstatus.CreateStatusGuideDto
+import com.example.pliin.apppliin.data.network.dto.queryguidescanner.createstatus.FieldDataCreateS
 import com.example.pliin.apppliin.data.network.dto.updatestatus.*
 import com.example.pliin.apppliin.data.network.dto.updatestatus.FieldData
 import com.example.pliin.apppliin.data.network.response.clients.DataGuideClient

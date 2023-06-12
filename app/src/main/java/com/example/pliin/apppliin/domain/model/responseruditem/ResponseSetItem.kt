@@ -1,18 +1,18 @@
 package com.example.pliin.apppliin.domain.model.responseruditem
 
 
-import com.example.pliin.apppliin.data.model.responserudmodel.ResponseModel
+import com.example.pliin.apppliin.data.model.responserudmodel.ResponseSetModel
 import com.google.gson.annotations.SerializedName
 
-data class ResponseItem(
+data class ResponseSetItem(
     @SerializedName("modId")
     val modId: String?,
     @SerializedName("recordId")
     val recordId: String?
 )
 
-fun ResponseModel.toDomain() =
-    ResponseItem(
+fun ResponseSetModel.toDomain() =
+    ResponseSetItem(
         modId, recordId
     )
 

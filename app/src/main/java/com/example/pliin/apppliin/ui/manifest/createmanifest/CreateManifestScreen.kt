@@ -23,6 +23,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.unit.toSize
@@ -31,6 +32,7 @@ import androidx.navigation.NavHostController
 import com.journeyapps.barcodescanner.ScanContract
 import com.journeyapps.barcodescanner.ScanIntentResult
 import com.journeyapps.barcodescanner.ScanOptions
+import kotlinx.coroutines.delay
 import java.time.LocalDate
 
 
@@ -44,8 +46,11 @@ fun CreateManifestScreen(cmViewModel: CMViewModel, navigationController: NavHost
     val countGuide: Int by cmViewModel.countGuides.observeAsState(0)
     val selectedOption: String by cmViewModel.selectedOption.observeAsState(" ")
     val isDialogRuta: Boolean by cmViewModel.isDialogRuta.observeAsState(true)
+    val isSelectbtn: Boolean by cmViewModel.isSelectbtn.observeAsState(false)
     val isSesionDialog: Boolean by cmViewModel.isSesionDialog.observeAsState(false)
+    val isLoadingDatGuide: Boolean by cmViewModel.isLoadingDataGuide.observeAsState(false)
     val isDialogLoadGuides: Boolean by cmViewModel.isDialogLoadEnable.observeAsState(false)
+    val isGuideRegisted: Boolean by cmViewModel.isGuideRegisted.observeAsState(false)
     val messageGuideValidate: String by cmViewModel.messageGuideValidate.observeAsState("")
     val ruta: String by cmViewModel.ruta.observeAsState("")
     val claveManifest: String by cmViewModel.clavePreManifest.observeAsState("")
@@ -65,42 +70,114 @@ fun CreateManifestScreen(cmViewModel: CMViewModel, navigationController: NavHost
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
-        Column() {
-            Header(
-                Modifier
-                    .weight(0.2f)
-                    .background(Color(0xFF4425a7)),
+
+        if (isLoadingDatGuide) {
+            ScreenConfirmation(
+                Modifier.align(Alignment.Center),
+                isGuideRegisted,
                 cmViewModel,
+                countGuide,
                 navigationController
             )
-            Body(
-                Modifier
-                    .weight(2.2f)
-                    .padding(horizontal = 8.dp),
-                cmViewModel, mapListGuide, countGuide, ruta, claveManifest, date
-
-
+        } else {
+            Column() {
+                Header(
+                    Modifier
+                        .weight(0.2f)
+                        .background(Color(0xFF4425a7)),
+                    cmViewModel,
+                    navigationController
+                )
+                Body(
+                    Modifier
+                        .weight(2.2f)
+                        .padding(horizontal = 8.dp),
+                    cmViewModel, mapListGuide, countGuide, ruta, claveManifest, date
+                )
+                Footer(
+                    Modifier
+                        .weight(0.6f)
+                        .padding(horizontal = 8.dp, vertical = 8.dp),
+                    navigationController, scanLauncher, cmViewModel, isLoadBtnEnable
+                )
+            }
+            AlertDialogGuide(
+                show = isSesionDialog,
+                cmViewModel,
+                messageGuideValidate
             )
-            Footer(
-                Modifier
-                    .weight(0.6f)
-                    .padding(horizontal = 8.dp, vertical = 8.dp),
-                navigationController, scanLauncher, cmViewModel, isLoadBtnEnable
+            selectRuta(cmViewModel, selectedOption, navigationController, isDialogRuta, isSelectbtn)
+
+            AlertDialogLoadGuides(
+                show = isDialogLoadGuides,
+                cmViewModel,
+                messageGuideValidate,
+                navigationController
             )
         }
-        AlertDialogGuide(
-            show = isSesionDialog,
-            cmViewModel,
-            messageGuideValidate
-        )
-        selectRuta(cmViewModel, selectedOption, navigationController, isDialogRuta)
+    }
+}
 
-        AlertDialogLoadGuides(
-            show = isDialogLoadGuides,
-            cmViewModel,
-            messageGuideValidate,
-            navigationController
+@Composable
+fun ScreenConfirmation(
+    modifier: Modifier,
+    isGuideRegisted: Boolean,
+    cmViewModel: CMViewModel,
+    countGuide: Int,
+    navigationController: NavHostController,
+) {
+    val countRegisterGuide: Int by cmViewModel.countRegisterGuide.observeAsState(0)
+    val progressCircular: Float by cmViewModel.progressCircularLoad.observeAsState(0.1f)
+    Column(
+        modifier = modifier.fillMaxWidth(),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        /*  Icon(
+              imageVector = Icons.Rounded.LocalShipping,
+              contentDescription = null,
+              modifier = Modifier.size(100.dp),
+              tint = Color(0xFF4c51c6)
+          )*/
+        Spacer(modifier = Modifier.size(8.dp))
+        if (isGuideRegisted) {
+            Incon()
+            LaunchedEffect(key1 = 1) {
+                delay(2000)
+                cmViewModel.guideregistedOk(navigationController)
+            }
+        } else {
+            // Text(text = "Registrando $countRegisterGuide de $countGuide")
+            var progress = progressCircular / 100
+            LinearProgressIndicator(progress = progress, color = Color(0xFF4c51c6))
+            Text(text = "$progressCircular%")
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "Registrando $countRegisterGuide de $countGuide",
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.SemiBold
+                )
+                Spacer(modifier = modifier.size(4.dp))
+                CircularProgressIndicator(
+                    modifier = modifier.size(30.dp),
+                    color = Color(0xFF4c51c6)
+                )
+            }
+            cmViewModel.loadingOk(countRegisterGuide, countGuide)
+        }
+    }
+}
 
+@Preview
+@Composable
+fun Incon() {
+    Box() {
+        Icon(
+            imageVector = Icons.Rounded.CheckCircle,
+            contentDescription = null,
+            modifier = Modifier.size(100.dp),
+            tint = Color(0xFF4c51c6)
         )
     }
 }
@@ -108,7 +185,8 @@ fun CreateManifestScreen(cmViewModel: CMViewModel, navigationController: NavHost
 @Composable
 fun AlertDialogGuide(show: Boolean, cmViewModel: CMViewModel, message: String) {
     if (show) {
-        AlertDialog(onDismissRequest = { cmViewModel.onAlertDialog() },
+        AlertDialog(
+            onDismissRequest = { cmViewModel.onAlertDialog() },
             title = { Text(text = "Advertencia") },
             text = { Text(text = message) },
             confirmButton = {
@@ -676,7 +754,8 @@ fun selectRuta(
     cmViewModel: CMViewModel,
     selectedOption: String,
     navigationController: NavHostController,
-    isDialogRuta: Boolean
+    isDialogRuta: Boolean,
+    isSelectbtn: Boolean
 ) {
     if (isDialogRuta) {
         Dialog(onDismissRequest = { }) {
@@ -693,7 +772,7 @@ fun selectRuta(
                     selectedOption
                 )
                 Spacer(modifier = Modifier.size(4.dp))
-                ButtonsConfirmation(cmViewModel, navigationController)
+                ButtonsConfirmation(cmViewModel, navigationController, isSelectbtn)
             }
         }
     }
@@ -787,12 +866,16 @@ fun DromMenu(
 fun ButtonsConfirmation(
     cmViewModel: CMViewModel,
     navigationController: NavHostController,
+    isSelectbtn: Boolean,
 ) {
     Row() {
         TextButton(onClick = { cmViewModel.backScreen(navigationController) }) {
             Text(text = "Cancelar")
         }
-        TextButton(onClick = { cmViewModel.continueSetGuides() }) {
+        TextButton(
+            onClick = { cmViewModel.continueSetGuides() },
+            enabled = isSelectbtn
+        ) {
             Text(text = "Continuar")
         }
     }

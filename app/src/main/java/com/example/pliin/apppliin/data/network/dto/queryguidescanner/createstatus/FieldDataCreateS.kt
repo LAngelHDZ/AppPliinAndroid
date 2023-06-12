@@ -1,4 +1,4 @@
-package com.example.pliin.apppliin.data.network.dto.createstatus
+package com.example.pliin.apppliin.data.network.dto.queryguidescanner.createstatus
 
 
 import com.google.gson.annotations.SerializedName

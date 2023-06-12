@@ -7,7 +7,7 @@ import com.google.gson.annotations.SerializedName
 
 data class ResponseRUDModel(
     @SerializedName("response")
-    val response: ResponseModel?,
+    val response: ResponseSetModel?,
     @SerializedName("messages")
     val messages: List<Message>?
 

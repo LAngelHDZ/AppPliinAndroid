@@ -12,7 +12,7 @@ data class ResponseRUDItem(
     @SerializedName("messages")
     val messages: List<MessageItem>?,
     @SerializedName("response")
-    val response: ResponseItem?
+    val response: ResponseSetItem?
 )
 
 fun ResponseRUDModel.toDomain() =
