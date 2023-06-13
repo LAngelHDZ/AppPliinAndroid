@@ -19,7 +19,7 @@ class GeneralMethodsGuide @Inject constructor() {
         }
         var StringConvert = arreglo.joinToString(separator = "")
         Log.i("String ", StringConvert)
-        return StringConvert.replace("\\s+".toRegex(), "")
+        return StringConvert
     }
 
 
