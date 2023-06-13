@@ -18,7 +18,7 @@ interface DataManifestClient {
         @Body query: GetConsecutivoManifestDto,
     ): Response<ConsecutivoManModel>
 
-    @POST("/fmi/data/v2/databases/PLIIN/layouts/APIManTest/records/")
+    @POST("/fmi/data/v2/databases/PLIIN/layouts/PreManifiesto/records/")
     suspend fun createManifest(
         @Header("Authorization") bearer: String,
         @Body query: CreateManifestDto,
