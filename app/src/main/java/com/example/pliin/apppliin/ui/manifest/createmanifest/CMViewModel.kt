@@ -156,8 +156,6 @@ class CMViewModel @Inject constructor(
         _progressCircularLoad.value = 0.0f
         _isDialogLoadEnable.value = false
         _isDialogRuta.value = true
-
-
     }
 
     fun onAlertDialog() {
@@ -267,7 +265,6 @@ class CMViewModel @Inject constructor(
             _consecutiveMan.value = consecutivo
             val clave = clavePreManifest.value
             _clavePreManifest.value = "$clave$consecutivo"
-
             Log.i("Clave Completa PreM", "${clavePreManifest.value}")
             createManifest(consecutivo)
         }
@@ -301,7 +298,6 @@ class CMViewModel @Inject constructor(
             Log.i("Datos dto Manifest", "$dataDto")
             loadGuideServer()
         }
-
     }
 
     fun loadGuideServer() {
