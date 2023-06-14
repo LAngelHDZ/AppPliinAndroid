@@ -12,7 +12,7 @@ import com.example.pliin.apppliin.domain.model.TokenItem
 data class TokenEntity(
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "id") val id: Int = 0,
-    @ColumnInfo(name = "token") val token: String?
+    @ColumnInfo(name = "token") val token: String? = ""
 )
 
 fun TokenItem.toDatabase() = TokenEntity(token = token)

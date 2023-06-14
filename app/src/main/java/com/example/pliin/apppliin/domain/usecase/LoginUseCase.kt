@@ -13,8 +13,6 @@ class LoginUseCase @Inject constructor(
     private val usersRepository: UsersRepository,
     private val employeeRepository: EmployeeRepository
 ) {
-
-    //@SuppressLint("SuspiciousIndentation")
     suspend operator fun invoke(
         user: String,
         password: String
@@ -23,10 +21,12 @@ class LoginUseCase @Inject constructor(
         val userexiste = usersRepository.getLoginUserDatabaseB(user, password)
         var userValidate: String = ""
         var employeeActive: String = ""
+
         if (!userexiste) {
             val dataUser = usersRepository.SetUserItem(user, password)
             usersRepository.insertUsers(dataUser.map { it.toDatabase() })
         }
+
         val token = Loginrepository.dologin(user, password)
         if (!token.token.isNullOrEmpty()) {
             Loginrepository.clearToken()
@@ -41,8 +41,6 @@ class LoginUseCase @Inject constructor(
             }
             employeeActive = employeeRepository.getEmployeeDB(user).statusLaboral.toString()
         }
-
-
         return token.token.isNullOrEmpty()
     }
 }

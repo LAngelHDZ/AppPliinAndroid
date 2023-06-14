@@ -16,7 +16,7 @@ class LogoutService @Inject constructor(
     suspend fun dologout(): ResponseLogoutModel {
         val token = dao.getToken()
         return withContext(Dispatchers.IO) {
-            val respopnse = loginClient.dologout(token.token!!)
+            val respopnse = loginClient.dologout(token?.token!!)
             respopnse.body() ?: ResponseLogoutModel(
                 listOf(
                     MessageLogout(

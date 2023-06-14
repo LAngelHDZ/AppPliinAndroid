@@ -32,7 +32,7 @@ class GuideService @Inject constructor(
     @SuppressLint("SuspiciousIndentation")
     suspend fun getGuide(guide: String): GetDataGuideDRModel {
         val query = QueryGuideDto(listOf(query(guide, "Asignado")))
-        val bearer = daotoken.getToken().token
+        val bearer = daotoken.getToken()?.token
         return withContext(Dispatchers.IO) {
             val response = guideapiclient.getDataguide("Bearer $bearer", query)
             val data = if (response.isSuccessful) {
@@ -66,7 +66,7 @@ class GuideService @Inject constructor(
     suspend fun guideValidateA(guide: String): GetDataGuideDRModel {
         // val query = QueryGuidePliinDto(listOf(Query(guide)))
         val query = QueryGuideDto(listOf(query(guide, "Asignado")))
-        val bearer = daotoken.getToken().token
+        val bearer = daotoken.getToken()?.token
         return withContext(Dispatchers.IO) {
             try {
                 val response = guideapiclient.guideArrastreValidate("Bearer $bearer", query)
@@ -109,7 +109,7 @@ class GuideService @Inject constructor(
 
     suspend fun queryGuide(guide: String): QueryGuidePliinModel {
         val query = QueryGuidePliinDto(listOf(Query(guide)))
-        val bearer = daotoken.getToken().token
+        val bearer = daotoken.getToken()?.token
         return withContext(Dispatchers.IO) {
             try {
                 val response = guideapiclient.queryGuide("Bearer $bearer", query)
@@ -152,7 +152,7 @@ class GuideService @Inject constructor(
 
     suspend fun insertyGuide(guide: String): ResponseRUDModel {
         val query = InsertGuideDto(FieldData(guide))
-        val bearer = daotoken.getToken().token
+        val bearer = daotoken.getToken()?.token
         return withContext(Dispatchers.IO) {
             try {
                 val response = guideapiclient.insertGuide("Bearer $bearer", query)
@@ -200,7 +200,7 @@ class GuideService @Inject constructor(
             )
         )
 
-        val bearer = daotoken.getToken().token
+        val bearer = daotoken.getToken()?.token
         return withContext(Dispatchers.IO) {
             try {
                 val response = guideapiclient.addGuideManifest("Bearer $bearer", query)

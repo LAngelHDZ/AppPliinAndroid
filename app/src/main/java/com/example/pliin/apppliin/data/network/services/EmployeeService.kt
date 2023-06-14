@@ -15,7 +15,7 @@ class EmployeeService @Inject constructor(
     private var username: String = ""
     suspend fun getDataEmployee(user: String): EmployeeModel {
         username = user
-        val bearer = daotoken.getToken().token
+        val bearer = daotoken.getToken()?.token
         val query = DataEmployeeDto(listOf(Query(user)))
 
         return withContext(Dispatchers.IO) {

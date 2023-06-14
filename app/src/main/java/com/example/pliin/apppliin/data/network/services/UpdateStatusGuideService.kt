@@ -23,7 +23,7 @@ class UpdateStatusGuideService @Inject constructor(
 ) {
 
     suspend fun setUpdateStatus(status: String?, recordId: String): ResponseUpdateStatusModel {
-        val bearer = daotoken.getToken().token
+        val bearer = daotoken.getToken()?.token
         val query = UpdatStatusDto(
             FieldData(
                 status
@@ -73,7 +73,7 @@ class UpdateStatusGuideService @Inject constructor(
     }
 
     suspend fun setCreateStatus(guide: String, status: String): ResponseUpdateStatusModel {
-        val bearer = daotoken.getToken().token
+        val bearer = daotoken.getToken()?.token
         val queryCreate = CreateStatusGuideDto(FieldDataCreateS(guide, status))
 
         return withContext(Dispatchers.IO) {
@@ -121,7 +121,7 @@ class UpdateStatusGuideService @Inject constructor(
     }
 
     suspend fun setIntentoEntrega(guide: String, status: String): ResponseUpdateStatusModel {
-        val bearer = daotoken.getToken().token
+        val bearer = daotoken.getToken()?.token
         val queryCreate = TryingDeliveryDto(FieldDataTryD(guide, status))
 
         return withContext(Dispatchers.IO) {

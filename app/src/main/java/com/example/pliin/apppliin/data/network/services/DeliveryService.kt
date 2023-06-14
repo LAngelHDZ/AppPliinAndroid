@@ -22,7 +22,7 @@ class DeliveryService @Inject constructor(
         recibe: String?,
         parent: String?
     ): ResponseRegisterDeliveryModel {
-        val bearer = daotoken.getToken().token
+        val bearer = daotoken.getToken()?.token
         val query = RegisterDeliveryDto(FieldData(guide, parent, recibe))
 
         return withContext(Dispatchers.IO) {
