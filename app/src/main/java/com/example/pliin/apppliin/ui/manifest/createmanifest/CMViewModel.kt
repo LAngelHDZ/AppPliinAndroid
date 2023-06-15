@@ -368,8 +368,8 @@ class CMViewModel @Inject constructor(
         scanOptions.setOrientationLocked(true)
         scanOptions.setPrompt("Scanner QR/Barcode")
         //   scanOptions.setBarcodeImageEnabled(true)
-        scanOptions.setBeepEnabled(true)
-        scanOptions.setTorchEnabled(false)
+        scanOptions.setBeepEnabled(false)
+        scanOptions.setTorchEnabled(true)
         scanLauncher.launch(scanOptions)
     }
 
