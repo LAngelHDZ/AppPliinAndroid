@@ -1,5 +1,6 @@
 package com.example.pliin.apppliin.ui.manifest.createmanifest
 
+import android.content.Context
 import android.util.Log
 import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.lifecycle.LiveData
@@ -362,13 +363,13 @@ class CMViewModel @Inject constructor(
     }
 
     fun initScanner(scanLauncher: ManagedActivityResultLauncher<ScanOptions, ScanIntentResult>) {
-
         val scanOptions = ScanOptions()
         scanOptions.setDesiredBarcodeFormats(ScanOptions.ALL_CODE_TYPES)
         scanOptions.setOrientationLocked(true)
         scanOptions.setPrompt("Scanner QR/Barcode")
         //   scanOptions.setBarcodeImageEnabled(true)
-        scanOptions.setBeepEnabled(false)
+        scanOptions.setBeepEnabled(true)
+        scanOptions.setTorchEnabled(false)
         scanLauncher.launch(scanOptions)
     }
 

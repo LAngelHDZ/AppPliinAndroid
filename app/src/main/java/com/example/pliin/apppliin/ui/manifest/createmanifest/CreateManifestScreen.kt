@@ -118,6 +118,10 @@ fun CreateManifestScreen(cmViewModel: CMViewModel, navigationController: NavHost
     }
 }
 
+fun tryScanner() {
+
+}
+
 @Composable
 fun ScreenConfirmation(
     modifier: Modifier,
