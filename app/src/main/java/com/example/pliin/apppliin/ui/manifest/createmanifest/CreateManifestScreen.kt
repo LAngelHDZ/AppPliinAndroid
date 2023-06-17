@@ -600,10 +600,8 @@ fun HeadTable() {
                 )
             }
             Spacer(modifier = Modifier.size(2.dp))
-
         }
     }
-
 }
 
 @Composable

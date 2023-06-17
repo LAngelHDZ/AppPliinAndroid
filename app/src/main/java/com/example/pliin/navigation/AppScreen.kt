@@ -14,6 +14,7 @@ sealed class AppScreen(val route:String){
     }
 
     object ManifiestoMainScreen : AppScreen("ManifiestoMainScreen")
+    object ManifestScreen : AppScreen("ManifestScreen")
     object MenuGuideScreen : AppScreen("MenuGuideScreen")
     object CreateManifestScreen : AppScreen("CreateManifestScreen")
     object RegisterDeliveryScreen : AppScreen("RegisterDeliveryScreen")

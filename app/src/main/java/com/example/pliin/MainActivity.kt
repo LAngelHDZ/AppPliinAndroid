@@ -33,6 +33,8 @@ import com.example.pliin.apppliin.ui.mainloading.MainLoadScreen
 import com.example.pliin.apppliin.ui.manifest.ManifiestoMainScreen
 import com.example.pliin.apppliin.ui.manifest.createmanifest.CMViewModel
 import com.example.pliin.apppliin.ui.manifest.createmanifest.CreateManifestScreen
+import com.example.pliin.apppliin.ui.manifest.mymanifest.MFViewModel
+import com.example.pliin.apppliin.ui.manifest.mymanifest.ManifestScreen
 import com.example.pliin.apppliin.ui.registerdelivery.RDViewModel
 import com.example.pliin.apppliin.ui.registerdelivery.RegisterDeliveryScreen
 import com.example.pliin.navigation.AppScreen
@@ -49,6 +51,7 @@ class MainActivity : ComponentActivity() {
     private val rgsViewModel: RGViewModel by viewModels()
     private val vaViewModel: VAViewModel by viewModels()
     private val cmViewModel: CMViewModel by viewModels()
+    private val mfViewModel: MFViewModel by viewModels()
     private lateinit var connectionLiveData: NetworkConectivity
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -114,6 +117,10 @@ class MainActivity : ComponentActivity() {
             //Ruta de Screen para crear un manifiesto
             composable(route = AppScreen.CreateManifestScreen.route) {
                 CreateManifestScreen(cmViewModel, navigationController)
+            }
+
+            composable(route = AppScreen.ManifestScreen.route) {
+                ManifestScreen(navigationController, mfViewModel)
             }
 
             //Ruta de Screen para registrar guias al sistema Pliin que llegan de UPS a Salter

@@ -88,7 +88,7 @@ fun GroupButton(modifier: Modifier, navigationController: NavHostController) {
     val spaces = (Modifier.size(20.dp))
     ButtonCreateManifest(modifier, navigationController)
     Spacer(modifier = spaces)
-    ButtonRegisterDelivery(modifier, navigationController)
+    ButtonManifest(modifier, navigationController)
     // Spacer(modifier = spaces)
     // ButtonConsult(modifier)
     //  Spacer(modifier = spaces)
@@ -120,9 +120,9 @@ fun ButtonCreateManifest(modifier: Modifier, navigationController: NavHostContro
 }
 
 @Composable
-fun ButtonRegisterDelivery(modifier: Modifier, navigationController: NavHostController) {
+fun ButtonManifest(modifier: Modifier, navigationController: NavHostController) {
     Button(
-        onClick = { },
+        onClick = { navigationController.navigate(AppScreen.ManifestScreen.route) },
         modifier = modifier,
         colors = ButtonDefaults.buttonColors(
             backgroundColor = Color.White,
@@ -136,7 +136,7 @@ fun ButtonRegisterDelivery(modifier: Modifier, navigationController: NavHostCont
             tint = Color(0xFF4c51c6)
         )
         Text(
-            text = "Mis Manifiestos",
+            text = "Ver Manifiestos",
             fontSize = 18.sp,
             modifier = Modifier.padding(end = 28.dp)
         )
