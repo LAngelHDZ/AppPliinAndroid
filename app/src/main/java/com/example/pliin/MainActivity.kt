@@ -29,6 +29,7 @@ import com.example.pliin.apppliin.ui.guides.validationarrastre.VAViewModel
 import com.example.pliin.apppliin.ui.guides.validationarrastre.ValidationArrastreScreen
 import com.example.pliin.apppliin.ui.login.LoginScreen
 import com.example.pliin.apppliin.ui.login.LoginViewModel
+import com.example.pliin.apppliin.ui.mainloading.MLViewModel
 import com.example.pliin.apppliin.ui.mainloading.MainLoadScreen
 import com.example.pliin.apppliin.ui.manifest.ManifiestoMainScreen
 import com.example.pliin.apppliin.ui.manifest.createmanifest.CMViewModel
@@ -44,6 +45,7 @@ import dagger.hilt.android.AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     private val loginViewModel: LoginViewModel by viewModels()
     private val mainAppViewModel: MainAppViewModel by viewModels()
+    private val mlViewModel: MLViewModel by viewModels()
     private val rdViewModel: RDViewModel by viewModels()
     private val dgsViewModel: DGSViewModel by viewModels()
     private val rgsViewModel: RGViewModel by viewModels()
@@ -77,7 +79,7 @@ class MainActivity : ComponentActivity() {
         ) {
             //Ruta de Screen principal de carga de la app
             composable(route = AppScreen.MainLoadScreen.route) {
-                MainLoadScreen(navigationController, isNetworkAvailable)
+                MainLoadScreen(navigationController, isNetworkAvailable, mlViewModel)
             }
             //Ruta de Screen de error de conexion  a internet
             composable(route = AppScreen.FailLoadScreen.route) {

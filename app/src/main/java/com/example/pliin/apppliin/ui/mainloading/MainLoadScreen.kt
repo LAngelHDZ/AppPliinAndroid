@@ -20,19 +20,22 @@ import kotlinx.coroutines.delay
 private var status: Boolean = false
 
 @Composable
-fun MainLoadScreen(navigationController: NavHostController, NetworkConectivity: Boolean) {
+fun MainLoadScreen(
+    navigationController: NavHostController,
+    NetworkConectivity: Boolean,
+    mlViewModel: MLViewModel
+) {
     status = NetworkConectivity
-    Loading(navigationController)
+    Loading(navigationController, mlViewModel)
 }
 
 @Composable
-fun Loading(navigationController: NavHostController) {
+fun Loading(navigationController: NavHostController, mlViewModel: MLViewModel) {
     Screen()
     LaunchedEffect(key1 = true) {
-        delay(5000)
-        if (status) {
-            navigationController.popBackStack()
-            navigationController.navigate(AppScreen.LoginScreen.route)
+        delay(2000)
+        if (true) {
+            mlViewModel.noToken(navigationController)
         } else {
             navigationController.popBackStack()
             navigationController.navigate(AppScreen.FailLoadScreen.route)

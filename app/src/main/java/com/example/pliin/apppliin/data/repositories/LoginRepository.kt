@@ -40,8 +40,19 @@ class LoginRepository @Inject constructor(
 
     //Consulta el token de la DB
     suspend fun getTokenDB(): TokenItem {
-        val response: TokenEntity = tokenDao.getToken()
-        return response.toDomain()
+        val response: TokenEntity? = tokenDao.getToken()
+        return response!!.toDomain()
+    }
+
+    suspend fun getToken(): String? {
+        val response: TokenEntity? = tokenDao.getToken()
+        var token: String = ""
+        if (response?.token.isNullOrBlank()) {
+            token = ""
+        } else {
+            token = response?.token!!
+        }
+        return token
     }
 
     //Elimina el token  de la DB
