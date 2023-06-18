@@ -36,18 +36,20 @@ class GeneralMethodsGuide @Inject constructor() {
                 'í' -> {
                     arreglo[i] = 'i'
                 }
+
                 'ó' -> {
                     arreglo[i] = 'o'
                 }
+
                 'ú' -> {
                     arreglo[i] = 'u'
                 }
             }
             Log.i("Cambiado", arreglo[i].toString())
         }
-        var StringConvert = arreglo.joinToString(separator = "")
-        Log.i("String ", StringConvert)
-        return StringConvert.replace("\\s+".toRegex(), "")
+        var stringConvert = arreglo.joinToString(separator = "")
+        Log.i("String ", stringConvert)
+        return stringConvert
     }
 
     fun toUpperLetter(text: String): String {
