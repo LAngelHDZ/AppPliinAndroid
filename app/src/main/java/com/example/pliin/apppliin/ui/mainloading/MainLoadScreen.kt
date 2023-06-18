@@ -34,7 +34,7 @@ fun Loading(navigationController: NavHostController, mlViewModel: MLViewModel) {
     Screen()
     LaunchedEffect(key1 = true) {
         delay(2000)
-        if (status) {
+        if (true) {
             mlViewModel.noToken(navigationController)
         } else {
             navigationController.popBackStack()
