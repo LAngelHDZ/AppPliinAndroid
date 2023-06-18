@@ -76,12 +76,19 @@ class RDViewModel @Inject() constructor(
                             Log.i("Status Guia", result[6].toString())
                             messageGuideValidate("La guia No. $guia ha sido registrada como ENTREGADO")
                         }
+
                         "DEVUELTO A SALTER" -> {
                             messageGuideValidate("La guia No. $guia ha sido registrada como DEVUELTO A SALTER")
                         }
+
+                        "ENTREGA FALLIDA" -> {
+                            messageGuideValidate("La guia No. $guia esta en ENTREGA FALLIDA")
+                        }
+
                         "ARRASTRE" -> {
                             messageGuideValidate("La guia No. $guia se encuentra en ARRASTRE")
                         }
+
                         else -> {
                             navigationController.navigate(
                                 AppScreen.DataGuideScannerScreen.createRoute(
