@@ -126,6 +126,7 @@ class RDViewModel @Inject() constructor(
         scanOptions.setOrientationLocked(true)
         scanOptions.setPrompt("Scannear QR/Barcode")
         scanOptions.setBeepEnabled(false)
+        scanOptions.setTorchEnabled(true)
         scanLauncher.launch(scanOptions)
     }
 
