@@ -62,8 +62,8 @@ class RDViewModel @Inject() constructor(
             viewModelScope.launch {
                 delay(1500)
                 val result = getGuideUseCase.invoke(guia)
-                Log.i("Status intento", result[12].toString())
-                Log.i("Status Guia", result[6].toString())
+//                Log.i("Status intento", result[12].toString())
+//                Log.i("Status Guia", result[6].toString())
                 //  Log.i("System guide","$guia")
                 val guia = result[0]
 
