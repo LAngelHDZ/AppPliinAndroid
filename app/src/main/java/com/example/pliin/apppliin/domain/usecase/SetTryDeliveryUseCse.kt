@@ -13,7 +13,8 @@ class SetTryDeliveryUseCse @Inject constructor(
         guide: String?,
         recordId: String?,
         status: String?,
-        parentOrFailDelivery: String
+        parentOrFailDelivery: String,
+        comment: String
     ): Boolean {
         val userData = usersRepository.getAllUserDatabase()
         val user = userData[0].user
@@ -31,7 +32,7 @@ class SetTryDeliveryUseCse @Inject constructor(
         val messageUpdateStatus = responseUpdateStaus.messages!![0]!!.code
         val responseCreateStatus = deliveryR.setCreateStatus(guide!!, status!!)
         val messageCreateStatus = responseCreateStatus.messages!![0]!!.code
-        val responseTryDelivery = deliveryR.setTryDelivery(guide!!, parentOrFailDelivery)
+        val responseTryDelivery = deliveryR.setTryDelivery(guide!!, parentOrFailDelivery, comment)
         val messageTryDelivery = responseTryDelivery.messages!![0]!!.code
 
         //  return false
