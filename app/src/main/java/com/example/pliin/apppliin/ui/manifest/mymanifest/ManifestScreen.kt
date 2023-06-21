@@ -47,8 +47,7 @@ fun ManifestScreen(navigationController: NavHostController, mfViewModel: MFViewM
             Header(
                 Modifier
                     .weight(0.2f)
-                    .background(Color(0xFF4425a7)),
-                navigationController
+                    .background(Color(0xFF4425a7)), navigationController
             )
             Body(
                 Modifier
@@ -67,23 +66,20 @@ fun ManifestScreen(navigationController: NavHostController, mfViewModel: MFViewM
 
 @Composable
 fun Header(modifier: Modifier, navigationController: NavHostController) {
-    TopAppBar(
-        modifier = modifier.fillMaxWidth(),
+    TopAppBar(modifier = modifier.fillMaxWidth(),
         title = { Text(text = "Manifiestos") },
         backgroundColor = Color(0xFF4425a7),
         contentColor = Color.White,
         elevation = 4.dp,
         navigationIcon = {
-            IconButton(onClick = { navigationController.popBackStack() }
-            ) {
+            IconButton(onClick = { navigationController.popBackStack() }) {
                 Icon(
                     imageVector = Icons.Rounded.Cancel,
                     contentDescription = null,
                     modifier = Modifier.size(30.dp),
                 )
             }
-        }
-    )
+        })
 }
 
 @Composable
@@ -132,7 +128,7 @@ fun manifestList(
 @Composable
 fun itemManifest(modifier: Modifier, manifest: FieldData) {
     Card(
-        modifier
+        Modifier
             .fillMaxWidth()
             .clickable {
                 Log.i("Clic", "Le di clic al texto  ${manifest.clavePrincipal}")
@@ -141,11 +137,10 @@ fun itemManifest(modifier: Modifier, manifest: FieldData) {
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            modifier = modifier.padding(horizontal = 4.dp, vertical = 4.dp)
+            modifier = modifier.padding(horizontal = 4.dp, vertical = 16.dp)
         ) {
             Box(
-                modifier = Modifier
-                    .weight(2f)
+                modifier = Modifier.weight(2f)
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(
@@ -159,8 +154,7 @@ fun itemManifest(modifier: Modifier, manifest: FieldData) {
                     Text(
                         text = "${manifest.clavePrincipal}",
                         //modifier =modifier.padding(horizontal = 4.dp),
-                        fontWeight = FontWeight.SemiBold,
-                        fontSize = 18.sp
+                        fontWeight = FontWeight.Normal, fontSize = 16.sp
                     )
                 }
             }
@@ -170,29 +164,27 @@ fun itemManifest(modifier: Modifier, manifest: FieldData) {
                     .fillMaxWidth()
                     .weight(1.5f)
 //                            .padding(start = 8.dp)
-                ,
-                contentAlignment = Alignment.Center
+                , contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = "${manifest.fecha}",
+                    //modifier =modifier.padding(horizontal = 4.dp),
+                    fontWeight = FontWeight.Normal, fontSize = 16.sp
+                )
+            }
+
+            Box(
+                Modifier
+                    .fillMaxWidth()
+                    .weight(0.5f)
+//                            .padding(start = 8.dp)
+                , contentAlignment = Alignment.Center
             ) {
                 Text(
                     text = "${manifest.totalpqt}",
                     //modifier =modifier.padding(horizontal = 4.dp),
-                    fontWeight = FontWeight.SemiBold,
-                    fontSize = 18.sp
+                    fontWeight = FontWeight.Normal, fontSize = 16.sp
                 )
-//                IconButton(
-//                    onClick = {
-//
-//                    },
-//                    modifier = modifier
-//                ) {
-//
-//                    Icon(
-//                        imageVector = Icons.Rounded.Assignment,
-//                        contentDescription = null,
-//                        modifier = modifier.size(30.dp),
-//                        tint = Color.Green
-//                    )
-//                }
             }
         }
     }
@@ -206,14 +198,12 @@ fun HeadTable() {
         border = BorderStroke(1.dp, Color(0xFF4425a7)),
     ) {
         Row(
-            modifier = Modifier
-                .padding(vertical = 6.dp)
+            modifier = Modifier.padding(vertical = 6.dp)
         ) {
             Box(
                 modifier = Modifier
                     .weight(2f)
-                    .fillMaxWidth(),
-                contentAlignment = Alignment.Center
+                    .fillMaxWidth(), contentAlignment = Alignment.Center
             ) {
                 Text(
                     text = "Manifiesto", fontWeight = FontWeight.SemiBold
@@ -222,14 +212,22 @@ fun HeadTable() {
             Box(
                 modifier = Modifier
                     .weight(1.5f)
-                    .fillMaxWidth(),
-                contentAlignment = Alignment.Center
+                    .fillMaxWidth(), contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = "Fecha", fontWeight = FontWeight.SemiBold
+                )
+            }
+            Spacer(modifier = Modifier.size(2.dp))
+            Box(
+                modifier = Modifier
+                    .weight(0.5f)
+                    .fillMaxWidth(), contentAlignment = Alignment.Center
             ) {
                 Text(
                     text = "Guias", fontWeight = FontWeight.SemiBold
                 )
             }
-            Spacer(modifier = Modifier.size(2.dp))
         }
     }
 }
