@@ -93,7 +93,7 @@ fun DataGuideScannerScreen(
     val isAlertDialogConfirmation: Boolean by dgsViewModel.isAlertDialogConfirmation.observeAsState(
         false
     )
-    val listStatusIntentos: List<String> by dgsViewModel.listStatusIntentos.observeAsState(listOf())
+    val listStatusIntentos: List<String> by dgsViewModel.listStatusIntentos.observeAsState(emptyList())
     val isDeliveryConfirmation: Boolean by dgsViewModel.isDeliveryConfirmation.observeAsState(false)
     val isAnotherParent: Boolean by dgsViewModel.isAnotherParent.observeAsState(false)
     val title: String by dgsViewModel.titleAlertDialog.observeAsState(" ")

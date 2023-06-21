@@ -18,6 +18,8 @@ import androidx.compose.material.icons.rounded.ArrowRight
 import androidx.compose.material.icons.rounded.Assignment
 import androidx.compose.material.icons.rounded.Cancel
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -25,11 +27,21 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import com.example.pliin.apppliin.domain.model.consecutivomanifestitem.Data
+import com.example.pliin.apppliin.domain.model.consecutivomanifestitem.FieldData
 
 
 @Composable
 fun ManifestScreen(navigationController: NavHostController, mfViewModel: MFViewModel) {
-    mfViewModel.loadManifest()
+
+
+    val listManifest: List<Data> by mfViewModel.listManifest.observeAsState(listOf())
+    val enableLoadManifest: Boolean by mfViewModel.enableLoadManifest.observeAsState(true)
+
+    if (enableLoadManifest) {
+        mfViewModel.loadManifest()
+    }
+
     Box() {
         Column() {
             Header(
@@ -41,7 +53,7 @@ fun ManifestScreen(navigationController: NavHostController, mfViewModel: MFViewM
             Body(
                 Modifier
                     .weight(2.2f)
-                    .padding(horizontal = 8.dp)
+                    .padding(horizontal = 2.dp), listManifest
             )
             Footer(
                 Modifier
@@ -75,10 +87,10 @@ fun Header(modifier: Modifier, navigationController: NavHostController) {
 }
 
 @Composable
-fun Body(modifier: Modifier) {
+fun Body(modifier: Modifier, listManifest: List<Data>) {
     Box(modifier = modifier.fillMaxWidth()) {
         Column() {
-            manifestList(modifier.weight(3f))
+            manifestList(modifier.weight(3f), listManifest)
         }
     }
 
@@ -89,6 +101,7 @@ fun Body(modifier: Modifier) {
 @Composable
 fun manifestList(
     modifier: Modifier,
+    listManifest: List<Data>,
     //cmViewModel: CMViewModel,
     // mapListGuide: Map<String, String>,
 //    countGuide: Int,
@@ -110,62 +123,76 @@ fun manifestList(
         stickyHeader {
             HeadTable()
         }
-        items(listmanifest) {
-            Card(
-                modifier.fillMaxWidth(),
-                // border = BorderStroke(1.dp, Color(0xFF4425a7))
+        items(listManifest) {
+            itemManifest(modifier = modifier, manifest = it.fieldData!!)
+        }
+    }
+}
+
+@Composable
+fun itemManifest(modifier: Modifier, manifest: FieldData) {
+    Card(
+        modifier
+            .fillMaxWidth()
+            .clickable {
+                Log.i("Clic", "Le di clic al texto  ${manifest.clavePrincipal}")
+            },
+        // border = BorderStroke(1.dp, Color(0xFF4425a7))
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = modifier.padding(horizontal = 4.dp, vertical = 4.dp)
+        ) {
+            Box(
+                modifier = Modifier
+                    .weight(2f)
             ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = modifier.padding(horizontal = 4.dp)
-                ) {
-                    Box(modifier = Modifier
-                        .weight(2f)
-                        .clickable {
-                            Log.i("Clic", "Le di clic al texto ")
-                        }
-                    ) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Icon(
-                                imageVector = Icons.Rounded.ArrowRight,
-                                contentDescription = null,
-                                modifier = modifier
-                                    .size(50.dp)
-                                    .padding(0.dp),
-                                tint = Color(0xFF4425a7)
-                            )
-                            Text(
-                                text = "$it",
-                                //modifier =modifier.padding(horizontal = 4.dp),
-                                fontWeight = FontWeight.SemiBold,
-                                fontSize = 18.sp
-                            )
-                        }
-                    }
-
-                    Box(
-                        Modifier
-                            .fillMaxWidth()
-                            .weight(1.5f)
-//                            .padding(start = 8.dp)
-                        ,
-                        contentAlignment = Alignment.Center
-                    ) {
-                        IconButton(
-                            onClick = {
-
-                            },
-                            modifier = modifier
-                        ) {
-                            Icon(
-                                imageVector = Icons.Rounded.Assignment,
-                                contentDescription = null,
-                                modifier = modifier.size(30.dp),
-                                tint = Color.Green
-                            )
-                        }
-                    }
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(
+                        imageVector = Icons.Rounded.ArrowRight,
+                        contentDescription = null,
+                        modifier = Modifier
+                            .size(20.dp)
+                            .padding(0.dp),
+                        tint = Color(0xFF4425a7)
+                    )
+                    Text(
+                        text = "${manifest.clavePrincipal}",
+                        //modifier =modifier.padding(horizontal = 4.dp),
+                        fontWeight = FontWeight.SemiBold,
+                        fontSize = 18.sp
+                    )
                 }
+            }
+
+            Box(
+                Modifier
+                    .fillMaxWidth()
+                    .weight(1.5f)
+//                            .padding(start = 8.dp)
+                ,
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = "${manifest.totalpqt}",
+                    //modifier =modifier.padding(horizontal = 4.dp),
+                    fontWeight = FontWeight.SemiBold,
+                    fontSize = 18.sp
+                )
+//                IconButton(
+//                    onClick = {
+//
+//                    },
+//                    modifier = modifier
+//                ) {
+//
+//                    Icon(
+//                        imageVector = Icons.Rounded.Assignment,
+//                        contentDescription = null,
+//                        modifier = modifier.size(30.dp),
+//                        tint = Color.Green
+//                    )
+//                }
             }
         }
     }
@@ -199,7 +226,7 @@ fun HeadTable() {
                 contentAlignment = Alignment.Center
             ) {
                 Text(
-                    text = "Acciones", fontWeight = FontWeight.SemiBold
+                    text = "Guias", fontWeight = FontWeight.SemiBold
                 )
             }
             Spacer(modifier = Modifier.size(2.dp))
