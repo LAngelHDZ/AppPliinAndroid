@@ -940,28 +940,6 @@ fun AlertDialogConfirmation(
                 ButtonsConfirmation(dgsViewModel, idGuia, recordId, navigationController)
             }
         }
-
-        /* AlertDialog(
-             onDismissRequest = {
-                 dgsViewModel.reset()
-             },
-             title = { Text(text = title) },
-             text = { Text(text = text) },
-             confirmButton = {
-                 TextButton(onClick = {
-                     dgsViewModel.setDelivery(idGuia, recordId,navigationController)
-                 }) {
-                     Text(text = "Continuar")
-                 }
-             },
-             dismissButton = {
-                 TextButton(onClick = {
-                     dgsViewModel.reset()
-                 }) {
-                     Text(text = "No")
-                 }
-             }
-         )*/
     }
 }
 
@@ -1021,7 +999,7 @@ fun ConfirmarEntregaDialog(
         AnotherParent(anotherParents) { dgsViewModel.onValueChangedParents(otherparent = it) }
     }
     Text(text = "Quien recibe")
-    Recibe(parents) { dgsViewModel.onValueChangedRecibe(nameparent = it) }
+    RecibeOrComment(parents) { dgsViewModel.onValueChangedRecibe(nameparent = it) }
 
 }
 
@@ -1030,6 +1008,7 @@ fun AnotherParent(anotherParents: String, onTextChanged: (String) -> Unit) {
     OutlinedTextField(
         value = anotherParents,
         onValueChange = { onTextChanged(it) },
+        placeholder = { Text(text = "Selected") },
         shape = RoundedCornerShape(10),
         colors = TextFieldDefaults.outlinedTextFieldColors(
             focusedBorderColor = Color(96, 127, 243),
@@ -1043,7 +1022,7 @@ fun AnotherParent(anotherParents: String, onTextChanged: (String) -> Unit) {
 }
 
 @Composable
-fun Recibe(parents: String, onTextChanged: (String) -> Unit) {
+fun RecibeOrComment(parents: String, onTextChanged: (String) -> Unit) {
     OutlinedTextField(
         value = parents,
         onValueChange = { onTextChanged(it) },
@@ -1184,7 +1163,8 @@ fun ConfirmarDevueltoDialog(
         )
     }
     Spacer(modifier = Modifier.size(14.dp))
-
+    Text(text = "Comentario")
+    RecibeOrComment(parents) { dgsViewModel.onValueChangedRecibe(nameparent = it) }
     // Text(text = "Quien recibe")
     // Recibe(parents){dgsViewModel.onValueChangedRecibe(nameparent = it)}
 }

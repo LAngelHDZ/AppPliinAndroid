@@ -120,9 +120,13 @@ class UpdateStatusGuideService @Inject constructor(
         }
     }
 
-    suspend fun setIntentoEntrega(guide: String, status: String): ResponseUpdateStatusModel {
+    suspend fun setIntentoEntrega(
+        guide: String,
+        status: String,
+        comment: String
+    ): ResponseUpdateStatusModel {
         val bearer = daotoken.getToken()?.token
-        val queryCreate = TryingDeliveryDto(FieldDataTryD(guide, status))
+        val queryCreate = TryingDeliveryDto(FieldDataTryD(guide, status, comment))
 
         return withContext(Dispatchers.IO) {
             try {

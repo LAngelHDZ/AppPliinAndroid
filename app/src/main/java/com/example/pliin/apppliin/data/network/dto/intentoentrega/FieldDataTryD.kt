@@ -7,5 +7,7 @@ data class FieldDataTryD(
     @SerializedName("idGuia")
     val idGuia: String?,
     @SerializedName("observacion")
-    val observacion: String?
+    val observacion: String?,
+    @SerializedName("comentario")
+    val comentario: String?
 )

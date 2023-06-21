@@ -40,7 +40,7 @@ class RechazadoUseCase @Inject constructor(
         val messageUpdateStatus = responseUpdateStaus.messages!![0]!!.code
         val responseCreateStatus = deliveryR.setCreateStatus(guide!!, status!!)
         val messageCreateStatus = responseCreateStatus.messages!![0]!!.code
-        val responseTryDelivery = deliveryR.setTryDelivery(guide, status)
+        val responseTryDelivery = deliveryR.setTryDelivery(guide, status, "-")
         val messageTryDelivery = responseTryDelivery.messages!![0]!!.code
 
         // return false

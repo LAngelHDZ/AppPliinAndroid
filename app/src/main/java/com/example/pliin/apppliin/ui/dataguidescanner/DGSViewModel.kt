@@ -2,7 +2,6 @@ package com.example.pliin.apppliin.ui.dataguidescanner
 
 import android.annotation.SuppressLint
 import android.util.Log
-import androidx.compose.ui.text.toUpperCase
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -267,7 +266,8 @@ class DGSViewModel @Inject() constructor(
             else {
                 responseOK = setTryDeliveryUseCse.invoke(
                     guide, recordId,
-                    textfieldvacio(status.value), textfieldvacio(parentOrFailDelivery.value)
+                    textfieldvacio(status.value), textfieldvacio(parentOrFailDelivery.value),
+                    textfieldvacio(nameRecibe.value)
                 )
             }
 
