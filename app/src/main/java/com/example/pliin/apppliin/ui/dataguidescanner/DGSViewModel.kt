@@ -2,6 +2,7 @@ package com.example.pliin.apppliin.ui.dataguidescanner
 
 import android.annotation.SuppressLint
 import android.util.Log
+import androidx.activity.ComponentActivity
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -63,6 +64,7 @@ class DGSViewModel @Inject() constructor(
 
     private val _statusIntentos = MutableLiveData<String>()
     var statusIntentos: LiveData<String> = _statusIntentos
+
 
     fun onAlertDialogexit(exitConfirmation: Boolean, navigationController: NavHostController) {
         _isAlertDialogexit.value = false

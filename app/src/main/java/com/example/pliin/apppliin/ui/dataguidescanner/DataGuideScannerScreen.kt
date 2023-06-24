@@ -1,7 +1,9 @@
 package com.example.pliin.apppliin.ui.dataguidescanner
 
 import android.annotation.SuppressLint
+import android.net.Uri
 import android.util.Log
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -29,10 +31,14 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.unit.toSize
 import androidx.compose.ui.window.Dialog
 import androidx.navigation.NavHostController
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
 import com.example.pliin.R
+import java.io.File
 import java.time.LocalDate
 import java.time.LocalTime
 import java.util.*
+import java.util.concurrent.ExecutorService
 
 @Preview(showSystemUi = true)
 @Composable
@@ -49,7 +55,7 @@ fun getdatenow(): String {
     return LocalDate.now().toString()
 }
 
-@SuppressLint("SuspiciousIndentation")
+@SuppressLint("SuspiciousIndentation", "UnrememberedMutableState")
 @Composable
 fun DataGuideScannerScreen(
     dgsViewModel: DGSViewModel,
@@ -68,6 +74,31 @@ fun DataGuideScannerScreen(
     recordId: String,
     statusIntento: String
 ) {
+
+    /* lateinit var outputDirectory: File
+      lateinit var cameraExecutor: ExecutorService
+
+       var shouldShowCamera: MutableState<Boolean> = mutableStateOf(false)
+
+       lateinit var photoUri: Uri
+      var shouldShowPhoto: MutableState<Boolean> = mutableStateOf(false)
+
+       val requestPermissionLauncher = registerForActivityResult(
+          ActivityResultContracts.RequestPermission()
+      ) { isGranted ->
+          if (isGranted) {
+              Log.i("kilo", "Permission granted")
+              shouldShowCamera.value = true
+          } else {
+              Log.i("kilo", "Permission denied")
+          }
+      }*/
+
+
+
+
+
+
     Log.i("recordid ene view", "$recordId")
     Log.i("status entrega ene view", "$statusIntento")
     val hora = obtenerHoraActual()
