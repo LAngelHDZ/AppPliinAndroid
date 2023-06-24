@@ -55,4 +55,8 @@ class GeneralMethodsGuide @Inject constructor() {
     fun toUpperLetter(text: String): String {
         return text.uppercase()
     }
+
+    fun toLowerLetter(text: String): String {
+        return text.lowercase()
+    }
 }
