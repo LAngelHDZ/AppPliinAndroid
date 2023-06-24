@@ -59,13 +59,13 @@ class NetworkConectivity(context: Context) : LiveData<Boolean>() {
                             checkValidNetworks()
                         }
                     }
-                    if (DoesNetworkHaveInternet.execute(network.socketFactory, "1.1.1.1")) {
-                        withContext(Dispatchers.Main) {
-                            Log.i(TAG, "onAvailable: adding network. $network")
-                            validNetworks.add(network)
-                            checkValidNetworks()
-                        }
-                    }
+//                    if (DoesNetworkHaveInternet.execute(network.socketFactory, "1.1.1.1")) {
+//                        withContext(Dispatchers.Main) {
+//                            Log.i(TAG, "onAvailable: adding network. $network")
+//                            validNetworks.add(network)
+//                            checkValidNetworks()
+//                        }
+//                    }
                 }
             }
         }
@@ -83,7 +83,7 @@ class NetworkConectivity(context: Context) : LiveData<Boolean>() {
             return try {
                 Log.i(TAG, "PINGING Google...")
                 val socket = socketFactory.createSocket() ?: throw IOException("Socket is null.")
-                socket.connect(InetSocketAddress(hostname, 53), 1500)
+                socket.connect(InetSocketAddress("www.google.com", 80), 5000)
                 socket.close()
                 Log.i(TAG, "PING success.")
                 true
