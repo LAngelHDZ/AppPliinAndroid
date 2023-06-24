@@ -1,5 +1,6 @@
 package com.example.pliin.apppliin.ui.mainloading
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -19,7 +20,7 @@ import kotlinx.coroutines.delay
 import java.io.BufferedReader
 import java.io.InputStreamReader
 
-private var status: Boolean = false
+private var status: Boolean = true
 
 @Composable
 fun MainLoadScreen(
@@ -27,6 +28,7 @@ fun MainLoadScreen(
     NetworkConectivity: Boolean,
     mlViewModel: MLViewModel
 ) {
+    Log.i("Check Internet", "$NetworkConectivity")
     status = NetworkConectivity
     Loading(navigationController, mlViewModel, NetworkConectivity)
 }
@@ -37,10 +39,14 @@ fun Loading(
     mlViewModel: MLViewModel,
     NetworkConectivity: Boolean
 ) {
+
+    Log.d("Check Internet", "$NetworkConectivity")
     Screen()
     LaunchedEffect(key1 = true) {
-        delay(2000)
-        if (NetworkConectivity) {
+        delay(5000)
+        val checknetwork = ping("www.google.com")
+
+        if (checknetwork) {
             mlViewModel.noToken(navigationController)
         } else {
             navigationController.popBackStack()
