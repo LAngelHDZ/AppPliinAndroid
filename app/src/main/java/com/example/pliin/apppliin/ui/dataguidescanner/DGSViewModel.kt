@@ -1,13 +1,17 @@
 package com.example.pliin.apppliin.ui.dataguidescanner
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.util.Log
 import androidx.activity.ComponentActivity
+import androidx.camera.view.PreviewView
+import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
+import com.example.pliin.apppliin.domain.repository.CustomCameraX
 import com.example.pliin.apppliin.domain.usecase.RechazadoUseCase
 import com.example.pliin.apppliin.domain.usecase.SetDeliveryUseCase
 import com.example.pliin.apppliin.domain.usecase.SetTryDeliveryUseCse
@@ -24,10 +28,14 @@ class DGSViewModel @Inject() constructor(
     private val setDeliveryUseCase: SetDeliveryUseCase,
     private val setTryDeliveryUseCse: SetTryDeliveryUseCse,
     private val rechazadoUseCase: RechazadoUseCase,
-    private val generalMethodsGuide: GeneralMethodsGuide
+    private val generalMethodsGuide: GeneralMethodsGuide,
+    private val repo: CustomCameraX
 ) : ViewModel() {
     private val _isAlertDialogexit = MutableLiveData<Boolean>()
     var isAlertDialogexit: LiveData<Boolean> = _isAlertDialogexit
+
+    private val _isShowCameraX = MutableLiveData<Boolean>()
+    var isShowCameraX: LiveData<Boolean> = _isShowCameraX
 
     private val _isAlertDialogConfirmation = MutableLiveData<Boolean>()
     var isAlertDialogConfirmation: LiveData<Boolean> = _isAlertDialogConfirmation
@@ -64,6 +72,37 @@ class DGSViewModel @Inject() constructor(
 
     private val _statusIntentos = MutableLiveData<String>()
     var statusIntentos: LiveData<String> = _statusIntentos
+
+    private val _directoryPhoto = MutableLiveData<String>()
+    var directoryPhoto: LiveData<String> = _directoryPhoto
+
+
+    fun showCameraPreview(
+        previewView: PreviewView,
+        lifecycleOwner: LifecycleOwner
+    ) {
+        viewModelScope.launch {
+            repo.showCameraPreview(
+                previewView,
+                lifecycleOwner
+            )
+        }
+    }
+
+    fun captureAndSave(context: Context) {
+        viewModelScope.launch {
+            repo.captureAndSaveImage(context)
+            delay(1500)
+            _directoryPhoto.value = repo.getDirectoryPhoto()
+            delay(1500)
+            _isShowCameraX.value = false
+            Log.d("Directorio de la photo en DSGVIewmodel", directoryPhoto.value!!)
+        }
+    }
+
+    fun onShowCameraX() {
+        _isShowCameraX.value = true
+    }
 
 
     fun onAlertDialogexit(exitConfirmation: Boolean, navigationController: NavHostController) {
