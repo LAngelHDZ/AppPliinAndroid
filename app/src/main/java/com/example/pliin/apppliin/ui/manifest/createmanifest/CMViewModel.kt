@@ -57,8 +57,20 @@ class CMViewModel @Inject constructor(
     private val _isSelectbtn = MutableLiveData<Boolean>()
     var isSelectbtn: LiveData<Boolean> = _isSelectbtn
 
-    private val _selectedOption = MutableLiveData<String>()
-    var selectedOption: LiveData<String> = _selectedOption
+    private val _isSelectRutaEnabled = MutableLiveData<Boolean>()
+    var isSelectRutaEnabled: LiveData<Boolean> = _isSelectRutaEnabled
+
+    private val _nameEmployye = MutableLiveData<String>()
+    var nameEmployye: LiveData<String> = _nameEmployye
+
+    private val _areaEmployye = MutableLiveData<String>()
+    var areaEmployye: LiveData<String> = _areaEmployye
+
+    private val _selectedOptionRuta = MutableLiveData<String>()
+    var selectedOptionRuta: LiveData<String> = _selectedOptionRuta
+
+    private val _selectedOptionTM = MutableLiveData<String>()
+    var selectedOptionTM: LiveData<String> = _selectedOptionTM
 
     private val _isLoadBtnEnable = MutableLiveData<Boolean>()
     val isisLoadBtnEnable: LiveData<Boolean> = _isLoadBtnEnable
@@ -123,10 +135,25 @@ class CMViewModel @Inject constructor(
 
     fun enableLoadBtn(CountGuide: Int) = CountGuide >= 1
 
-    fun onValueChanged(selected: String) {
-        _selectedOption.value = selected
+
+    fun onValueChangedMT(selected: String) {
+        if (!selectedOptionTM.value.equals(selected)) {
+            _selectedOptionRuta.value = ""
+        }
+        _selectedOptionTM.value = selected
+        _isSelectRutaEnabled.value = enableSelectTM(selected)
+    }
+
+    fun onValueChangeEmployee(name: String) {
+        _nameEmployye.value = name
+    }
+
+    fun onValueChangedRuta(selected: String) {
+        _selectedOptionRuta.value = selected
         _isSelectbtn.value = enableSelectbtn(selected)
     }
+
+    fun enableSelectTM(select: String) = select.length > 1
 
     fun enableSelectbtn(select: String) = select.length > 1
 
@@ -143,19 +170,22 @@ class CMViewModel @Inject constructor(
     }
 
     fun backScreen(navigationController: NavHostController) {
+        reset()
         navigationController.popBackStack()
     }
 
     fun reset() {
-        _selectedOption.value = ""
+        _selectedOptionRuta.value = ""
+        _selectedOptionTM.value = ""
         _ruta.value = ""
         _consecutiveMan.value = 0
         _countGuides.value = 0
         _clavePreManifest.value = ""
-        _ruta.value = ""
         _mapListGuide.value = emptyMap()
         _progressCircularLoad.value = 0.0f
         _isDialogLoadEnable.value = false
+        _isSelectbtn.value = false
+        _isSelectRutaEnabled.value = false
         _isDialogRuta.value = true
     }
 
@@ -186,8 +216,20 @@ class CMViewModel @Inject constructor(
 
     fun continueSetGuides() {
         _isDialogRuta.value = false
-        _ruta.value = selectedOption.value
+        _ruta.value = selectedOptionRuta.value
+
+        getDataEmployee()
         clavePreGenerate()
+    }
+
+    fun getDataEmployee() {
+        viewModelScope.launch {
+            val data = loadEmployeeUseCase.invoke()
+            if (data.area.equals("Operador Logistico")) {
+                _nameEmployye.value = "${data.nombre} ${data.aPaterno}"
+            }
+            _areaEmployye.value = data.area
+        }
     }
 
     fun getContentQR(guia: String, navigationController: NavHostController) {
@@ -228,7 +270,12 @@ class CMViewModel @Inject constructor(
     }
 
     fun clavePreGenerate() {
-        _clavePreManifest.value = "LCA" + getdatenow() + "UPS"
+        val typeManifest = if (selectedOptionTM.value.equals("Local")) {
+            "LCA"
+        } else {
+            "TRF"
+        }
+        _clavePreManifest.value = typeManifest + getdatenow() + "UPS"
         val clave = clavePreManifest.value
         Log.i("", "$clave")
     }
