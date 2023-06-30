@@ -61,7 +61,7 @@ fun CreateManifestScreen(cmViewModel: CMViewModel, navigationController: NavHost
     val ruta: String by cmViewModel.ruta.observeAsState("")
     val claveManifest: String by cmViewModel.clavePreManifest.observeAsState("")
     val isLoadBtnEnable: Boolean by cmViewModel.isisLoadBtnEnable.observeAsState(false)
-    val listEmployees:List<DataEI> by cmViewModel.listEmployees.observeAsState(initial = emptyList())
+    val listEmployees: List<DataEI> by cmViewModel.listEmployees.observeAsState(initial = emptyList())
     val mapListGuide: Map<String, String> by cmViewModel.mapListGuide.observeAsState(
         mutableMapOf()
     )
@@ -347,7 +347,7 @@ fun DataManifest(
             ) {
                 ClaveManifest(ruta, claveManifest)
                 Spacer(modifier = Modifier.size(5.dp))
-                nameOperator(nameEmployee, areaEmployee, cmViewModel,listEmployees)
+                nameOperator(nameEmployee, areaEmployee, cmViewModel, listEmployees)
 //                Spacer(modifier = Modifier.size(5.dp))
 //                RutaAndLogo(data)
 //                Spacer(modifier = Modifier.size(5.dp))
@@ -376,7 +376,11 @@ fun nameOperator(
             if (areaEmployee.equals("Operador Logistico")) {
                 NameOPTextField(nameEmployee)
             } else {
-                SelectOPTextField(nameEmployee,listEmployees) { cmViewModel.onValueChangeEmployee(name = it) }
+                SelectOPTextField(nameEmployee, listEmployees) {
+                    cmViewModel.onValueChangeEmployee(
+                        name = it
+                    )
+                }
             }
         }
 //        Spacer(modifier = Modifier.size(4.dp))
