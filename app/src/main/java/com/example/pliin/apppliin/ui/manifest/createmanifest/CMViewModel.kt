@@ -8,9 +8,13 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
+import com.example.pliin.apppliin.domain.model.emproyeeitem.DataEI
+import com.example.pliin.apppliin.domain.model.emproyeeitem.FieldDataEI
 import com.example.pliin.apppliin.domain.usecase.AddGuideManifestUseCase
 import com.example.pliin.apppliin.domain.usecase.CreateManifestUseCase
+import com.example.pliin.apppliin.domain.usecase.GetAllEmployeesUseCase
 import com.example.pliin.apppliin.domain.usecase.GetConsecManUseCase
+import com.example.pliin.apppliin.domain.usecase.GetGuideUseCase
 import com.example.pliin.apppliin.domain.usecase.LoadEmployeeUseCase
 import com.example.pliin.apppliin.generals.GeneralMethodsGuide
 import com.journeyapps.barcodescanner.ScanIntentResult
@@ -32,7 +36,9 @@ class CMViewModel @Inject constructor(
     private val getConsecManUseCase: GetConsecManUseCase,
     private val loadEmployeeUseCase: LoadEmployeeUseCase,
     private val createManifestUseCase: CreateManifestUseCase,
-    private val addGuideManifestUseCase: AddGuideManifestUseCase
+    private val addGuideManifestUseCase: AddGuideManifestUseCase,
+    private val getAllEmployeesUseCase: GetAllEmployeesUseCase,
+    private val getGuideUseCase: GetGuideUseCase
 
 ) : ViewModel() {
 
@@ -102,6 +108,9 @@ class CMViewModel @Inject constructor(
     private val _conteQR = MutableLiveData<String>()
     val contentQR: LiveData<String> = _conteQR
 
+    private val _listEmployees = MutableLiveData<List<DataEI>>()
+    val listEmployees: LiveData<List<DataEI>> = _listEmployees
+
     private val _mapListGuide = MutableLiveData<Map<String, String>>()
     var mapListGuide: LiveData<Map<String, String>> = _mapListGuide
 
@@ -144,8 +153,8 @@ class CMViewModel @Inject constructor(
         _isSelectRutaEnabled.value = enableSelectTM(selected)
     }
 
-    fun onValueChangeEmployee(name: String) {
-        _nameEmployye.value = name
+    fun onValueChangeEmployee(name: FieldDataEI) {
+        _nameEmployye.value = name.nombre + name.aPaterno + name.aMaterno
     }
 
     fun onValueChangedRuta(selected: String) {
@@ -227,6 +236,8 @@ class CMViewModel @Inject constructor(
             val data = loadEmployeeUseCase.invoke()
             if (data.area.equals("Operador Logistico")) {
                 _nameEmployye.value = "${data.nombre} ${data.aPaterno}"
+            } else {
+                _listEmployees.value = getAllEmployeesUseCase.invoke() as List<DataEI>?
             }
             _areaEmployye.value = data.area
         }
@@ -234,23 +245,30 @@ class CMViewModel @Inject constructor(
 
     fun getContentQR(guia: String, navigationController: NavHostController) {
         val validate = generalMethodsGuide.validateFormatGuia(guia)
+        val guideAtManifest = guideOtherManifest(guia)
         if (validate) {
             val currentmap = _mapListGuide.value?.toMutableMap() ?: mutableMapOf()
             val guiarepeted = currentmap.get(guia)
             if (guiarepeted.isNullOrEmpty()) {
-                var key = currentmap.size + keyGuide
-                currentmap[guia] = guia
-                _mapListGuide.value = currentmap
-                _conteQR.value = guia
-                _countGuides.value = _mapListGuide.value?.size
-                //setData(guia)
-                _isLoadBtnEnable.value = enableLoadBtn(currentmap.size)
+                if (!guideAtManifest) {
+                    var key = currentmap.size + keyGuide
+                    currentmap[guia] = guia
+                    _mapListGuide.value = currentmap
+                    _conteQR.value = guia
+                    _countGuides.value = _mapListGuide.value?.size
+                    //setData(guia)
+                    _isLoadBtnEnable.value = enableLoadBtn(currentmap.size)
+                } else {
+                    _isSesionDialog.value = true
+                    Log.i("Esta guia se encuentra asignada a otro manifiesto", guia)
+                    _messageGuideValidate.value =
+                        "Esta guia ya se encuentra asignada a un manifiesto"
+                }
             } else {
                 _isSesionDialog.value = true
                 Log.i("Ya ha agregado esta guia", guia)
                 _messageGuideValidate.value = "Ya ha agregado esta guia: $guia"
             }
-
             Log.i("Formato de Guia Valido", guia)
             // _messageGuideValidate.value ="Formato de guia $guia Valido"
             //  _isSesionDialog.value = true
@@ -259,6 +277,14 @@ class CMViewModel @Inject constructor(
             Log.i("Formato de Guia Invalido", guia)
             _messageGuideValidate.value = "El formato de la guia $guia no es valido"
         }
+    }
+
+    fun guideOtherManifest(guide: String): Boolean {
+        var guideOtherManifest: List<String?> = emptyList()
+        viewModelScope.launch {
+            guideOtherManifest = getGuideUseCase.invoke(guide)
+        }
+        return guideOtherManifest.isEmpty()
     }
 
     fun onRemoveguideList(guia: String, second: String) {

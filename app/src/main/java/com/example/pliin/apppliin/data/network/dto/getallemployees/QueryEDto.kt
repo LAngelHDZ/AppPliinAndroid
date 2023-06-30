@@ -3,7 +3,7 @@ package com.example.pliin.apppliin.data.network.dto.getallemployees
 
 import com.google.gson.annotations.SerializedName
 
-data class Query(
+data class QueryEDto(
     @SerializedName("Area")
     val area: String = "Operador Logistico",
     @SerializedName("statusLaboral")

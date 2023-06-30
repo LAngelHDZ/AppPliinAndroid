@@ -1,9 +1,11 @@
 package com.example.pliin.apppliin.data.network.services
 
+import androidx.room.util.query
 import com.example.pliin.apppliin.data.database.dao.TokenDao
 import com.example.pliin.apppliin.data.model.employeemodel.*
 import com.example.pliin.apppliin.data.network.dto.dataemployee.*
 import com.example.pliin.apppliin.data.network.dto.getallemployees.AllEmployeeDataDto
+import com.example.pliin.apppliin.data.network.dto.getallemployees.QueryEDto
 import com.example.pliin.apppliin.data.network.response.clients.DataEmployeeClient
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -51,7 +53,7 @@ class EmployeeService @Inject constructor(
 
     suspend fun getAllEmployee(): EmployeeModel {
         val bearer = daotoken.getToken().token
-        val query = AllEmployeeDataDto(listOf())
+        val query = AllEmployeeDataDto(listOf(QueryEDto()))
 
         return withContext(Dispatchers.IO) {
             val response = employeeclient.getAllEmployees("Bearer $bearer", query)

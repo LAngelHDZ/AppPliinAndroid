@@ -29,6 +29,8 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.unit.toSize
 import androidx.compose.ui.window.Dialog
 import androidx.navigation.NavHostController
+import com.example.pliin.apppliin.domain.model.emproyeeitem.DataEI
+import com.example.pliin.apppliin.domain.model.emproyeeitem.FieldDataEI
 import com.journeyapps.barcodescanner.ScanContract
 import com.journeyapps.barcodescanner.ScanIntentResult
 import com.journeyapps.barcodescanner.ScanOptions
@@ -59,6 +61,7 @@ fun CreateManifestScreen(cmViewModel: CMViewModel, navigationController: NavHost
     val ruta: String by cmViewModel.ruta.observeAsState("")
     val claveManifest: String by cmViewModel.clavePreManifest.observeAsState("")
     val isLoadBtnEnable: Boolean by cmViewModel.isisLoadBtnEnable.observeAsState(false)
+    val listEmployees:List<DataEI> by cmViewModel.listEmployees.observeAsState(initial = emptyList())
     val mapListGuide: Map<String, String> by cmViewModel.mapListGuide.observeAsState(
         mutableMapOf()
     )
@@ -103,7 +106,8 @@ fun CreateManifestScreen(cmViewModel: CMViewModel, navigationController: NavHost
                     claveManifest,
                     date,
                     nameEmployee,
-                    areaEmployee
+                    areaEmployee,
+                    listEmployees
                 )
                 Footer(
                     Modifier
@@ -258,7 +262,8 @@ fun Body(
     claveManifest: String,
     date: String,
     nameEmployee: String,
-    areaEmployee: String
+    areaEmployee: String,
+    listEmployees: List<DataEI>
 ) {
     Box(
         modifier = modifier
@@ -300,7 +305,8 @@ fun Body(
                 claveManifest,
                 nameEmployee,
                 areaEmployee,
-                cmViewModel
+                cmViewModel,
+                listEmployees
             )
             ListGuide(
                 Modifier
@@ -319,7 +325,8 @@ fun DataManifest(
     claveManifest: String,
     nameEmployee: String,
     areaEmployee: String,
-    cmViewModel: CMViewModel
+    cmViewModel: CMViewModel,
+    listEmployees: List<DataEI>
 ) {
     Box(
         modifier = modifier.fillMaxWidth()
@@ -340,7 +347,7 @@ fun DataManifest(
             ) {
                 ClaveManifest(ruta, claveManifest)
                 Spacer(modifier = Modifier.size(5.dp))
-                nameOperator(nameEmployee, areaEmployee, cmViewModel)
+                nameOperator(nameEmployee, areaEmployee, cmViewModel,listEmployees)
 //                Spacer(modifier = Modifier.size(5.dp))
 //                RutaAndLogo(data)
 //                Spacer(modifier = Modifier.size(5.dp))
@@ -357,14 +364,19 @@ fun DataManifest(
 }
 
 @Composable
-fun nameOperator(nameEmployee: String, areaEmployee: String, cmViewModel: CMViewModel) {
+fun nameOperator(
+    nameEmployee: String,
+    areaEmployee: String,
+    cmViewModel: CMViewModel,
+    listEmployees: List<DataEI>
+) {
     Row(modifier = Modifier.fillMaxWidth()) {
         // Spacer(modifier = Modifier.size(4.dp))
         Box(modifier = Modifier.weight(1f)) {
             if (areaEmployee.equals("Operador Logistico")) {
                 NameOPTextField(nameEmployee)
             } else {
-                SelectOPTextField(nameEmployee) { cmViewModel.onValueChangeEmployee(name = it) }
+                SelectOPTextField(nameEmployee,listEmployees) { cmViewModel.onValueChangeEmployee(name = it) }
             }
         }
 //        Spacer(modifier = Modifier.size(4.dp))
@@ -436,7 +448,8 @@ fun NameOPTextField(nameEmployee: String) {
 @Composable
 fun SelectOPTextField(
     nameEmployee: String,
-    onTextChanged: (String) -> Unit
+    listEmployees: List<DataEI>,
+    onTextChanged: (FieldDataEI) -> Unit
 ) {
     var expand by remember { mutableStateOf(false) }
     var textFiledSize by remember { mutableStateOf(Size.Zero) }
@@ -499,14 +512,15 @@ fun SelectOPTextField(
                     .width(with(LocalDensity.current) { textFiledSize.width.toDp() })
             ) {
                 Log.i("lista dedevoluciones", employees.toString())
-                employees.forEach { option ->
+                listEmployees.forEach { option ->
                     DropdownMenuItem(
                         onClick = {
                             expand = false
-                            onTextChanged(option)
+                            onTextChanged(option.fieldData!!)
                         }
                     ) {
-                        Text(text = option)
+                        val name = option.fieldData
+                        Text(text = name?.nombre + name?.aPaterno + name?.aMaterno)
                     }
                 }
             }

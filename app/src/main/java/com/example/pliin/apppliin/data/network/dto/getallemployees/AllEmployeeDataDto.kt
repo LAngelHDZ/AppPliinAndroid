@@ -5,5 +5,5 @@ import com.google.gson.annotations.SerializedName
 
 data class AllEmployeeDataDto(
     @SerializedName("query")
-    val query: List<Query>
+    val queryEDto: List<QueryEDto>
 )
