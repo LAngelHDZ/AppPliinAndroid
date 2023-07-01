@@ -88,5 +88,7 @@ interface DataGuideClient {
         @Header("Authorization") bearer: String,
         @Body query: TryingDeliveryDto
     ): Response<ResponseUpdateStatusModel>
+
+
 }
 
