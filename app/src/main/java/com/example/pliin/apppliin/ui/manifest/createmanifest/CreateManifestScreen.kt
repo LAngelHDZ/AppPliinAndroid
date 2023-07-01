@@ -661,7 +661,7 @@ fun ListGuide(
             HeadTable()
 
         }
-        items(ListGuide.toList()) {
+        items(mapListGuide.toList()) {
             Card(
                 modifier.fillMaxWidth(),
                 // border = BorderStroke(1.dp, Color(0xFF4425a7))
@@ -681,7 +681,7 @@ fun ListGuide(
                                 tint = Color(0xFF4425a7)
                             )
                             Text(
-                                text = "${it}",
+                                text = it.first,
                                 //modifier =modifier.padding(horizontal = 4.dp),
                                 fontWeight = FontWeight.Normal,
                                 fontSize = 12.sp
@@ -699,7 +699,7 @@ fun ListGuide(
                     ) {
                         IconButton(
                             onClick = {
-//                                cmViewModel.onRemoveguideList(it.first, it.second)
+                                cmViewModel.onRemoveguideList(it.first, it.second)
                             },
                             modifier = modifier
                         ) {
