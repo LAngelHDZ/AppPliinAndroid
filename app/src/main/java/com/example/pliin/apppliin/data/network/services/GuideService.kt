@@ -107,6 +107,96 @@ class GuideService @Inject constructor(
         }
     }
 
+    suspend fun queryGuideDireccion(guide: String): QueryGuidePliinModel {
+        val query = QueryGuidePliinDto(listOf(Query(guide)))
+        val bearer = daotoken.getToken().token
+        return withContext(Dispatchers.IO) {
+            try {
+                val response = guideapiclient.queryGuide("Bearer $bearer", query)
+                val data = if (response.isSuccessful) {
+                    response.body()!!
+                } else {
+                    when (response.code()) {
+                        500 -> {
+                            QueryGuidePliinModel(
+                                listOf(Message("401", "No records match the request")),
+                                response.body()?.response
+                            )
+                        }
+
+                        401 -> {
+                            QueryGuidePliinModel(
+                                listOf(Message("952", "Invalid FileMaker Data API token (*)")),
+                                response.body()?.response,
+                            )
+                        }
+
+                        else -> {
+                            QueryGuidePliinModel(
+                                listOf(Message("401", "Invalid FileMaker Data API token (*)")),
+                                response.body()?.response
+                            )
+                        }
+                    }
+                }
+                data
+            } catch (e: IOException) {
+                QueryGuidePliinModel(
+                    listOf(Message("500", "Internet Connection Error")),
+                    Response(
+                        listOf(),
+                        DataInfoModel("", 0, "", 0, "", 0)
+                    )
+                )
+            }
+        }
+    }
+
+    suspend fun queryGuideDatosPqt(guide: String): QueryGuidePliinModel {
+        val query = QueryGuidePliinDto(listOf(Query(guide)))
+        val bearer = daotoken.getToken().token
+        return withContext(Dispatchers.IO) {
+            try {
+                val response = guideapiclient.queryGuide("Bearer $bearer", query)
+                val data = if (response.isSuccessful) {
+                    response.body()!!
+                } else {
+                    when (response.code()) {
+                        500 -> {
+                            QueryGuidePliinModel(
+                                listOf(Message("401", "No records match the request")),
+                                response.body()?.response
+                            )
+                        }
+
+                        401 -> {
+                            QueryGuidePliinModel(
+                                listOf(Message("952", "Invalid FileMaker Data API token (*)")),
+                                response.body()?.response,
+                            )
+                        }
+
+                        else -> {
+                            QueryGuidePliinModel(
+                                listOf(Message("401", "Invalid FileMaker Data API token (*)")),
+                                response.body()?.response
+                            )
+                        }
+                    }
+                }
+                data
+            } catch (e: IOException) {
+                QueryGuidePliinModel(
+                    listOf(Message("500", "Internet Connection Error")),
+                    Response(
+                        listOf(),
+                        DataInfoModel("", 0, "", 0, "", 0)
+                    )
+                )
+            }
+        }
+    }
+
     suspend fun queryGuide(guide: String): QueryGuidePliinModel {
         val query = QueryGuidePliinDto(listOf(Query(guide)))
         val bearer = daotoken.getToken()?.token

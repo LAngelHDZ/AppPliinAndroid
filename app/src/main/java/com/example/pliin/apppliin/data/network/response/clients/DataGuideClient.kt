@@ -45,6 +45,20 @@ interface DataGuideClient {
         @Body query: QueryGuidePliinDto,
     ): Response<QueryGuidePliinModel>
 
+    //Endpomiont para consultar si la guia tiene registrada una direccion
+    @POST("/fmi/data/v2/databases/PLIIN/layouts/DireccionesApi/_find/")
+    suspend fun queryGuideDireccion(
+        @Header("Authorization") bearer: String,
+        @Body query: QueryGuidePliinDto,
+    ): Response<QueryGuidePliinModel>
+
+    //Endpomiont para consultar si la guia tiene datos del paquete registrados
+    @POST("/fmi/data/v2/databases/PLIIN/layouts/DatosPqtAPI/_find/")
+    suspend fun queryGuideDatosPqt(
+        @Header("Authorization") bearer: String,
+        @Body query: QueryGuidePliinDto,
+    ): Response<QueryGuidePliinModel>
+
     //ENdPoint para crera un registro de entrega o devolucion de una guia
     @POST("/fmi/data/v2/databases/PLIIN/layouts/relacionEntrega/records/")
     suspend fun createDeliveryGuide(

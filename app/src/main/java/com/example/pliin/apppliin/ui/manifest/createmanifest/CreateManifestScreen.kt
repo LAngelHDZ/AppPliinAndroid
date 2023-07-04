@@ -9,6 +9,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.*
@@ -22,6 +23,7 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -44,6 +46,25 @@ fun getdatenow(): String {
 
 @Composable
 fun CreateManifestScreen(cmViewModel: CMViewModel, navigationController: NavHostController) {
+    val nombre: String by cmViewModel.nombre.observeAsState("")
+    val telefono: String by cmViewModel.telefono.observeAsState("")
+    val dir1: String by cmViewModel.dir1.observeAsState("")
+    val dir2: String by cmViewModel.dir2.observeAsState("")
+    val dir3: String by cmViewModel.dir3.observeAsState("")
+    val cp: String by cmViewModel.cp.observeAsState("")
+    val municipio: String by cmViewModel.municipio.observeAsState("")
+
+    val alto: String by cmViewModel.alto.observeAsState("")
+    val ancho: String by cmViewModel.ancho.observeAsState("")
+    val largo: String by cmViewModel.largo.observeAsState("")
+    val pesoKg: String by cmViewModel.pesoKg.observeAsState("")
+    val pesoVol: String by cmViewModel.pesoVol.observeAsState("")
+    val typeEmbalaje: Boolean by cmViewModel.typeEmbalaje.observeAsState(false)
+    val isEnableBtnCalcular: Boolean by cmViewModel.isenableBtnCalcular.observeAsState(false)
+    val typeExcedente: String by cmViewModel.typePaq.observeAsState("")
+    val isFormDatosPqt: Boolean by cmViewModel.isFormDatosPqt.observeAsState(false)
+
+
     val progressCircular: Float by cmViewModel.progressCircularLoad.observeAsState(0f)
     val countGuide: Int by cmViewModel.countGuides.observeAsState(0)
     val selectedOptionRuta: String by cmViewModel.selectedOptionRuta.observeAsState("")
@@ -51,6 +72,8 @@ fun CreateManifestScreen(cmViewModel: CMViewModel, navigationController: NavHost
     val areaEmployee: String by cmViewModel.areaEmployye.observeAsState("")
     val selectedOptionTM: String by cmViewModel.selectedOptionTM.observeAsState("")
     val isDialogRuta: Boolean by cmViewModel.isDialogRuta.observeAsState(true)
+    val isDialogDireccion: Boolean by cmViewModel.isDireccionDialog.observeAsState(initial = false)
+    val isDialogDatosPqt: Boolean by cmViewModel.isDatosPQTnDialog.observeAsState(false)
     val isSelectbtn: Boolean by cmViewModel.isSelectbtn.observeAsState(false)
     val isSelectRutaEnabled: Boolean by cmViewModel.isSelectRutaEnabled.observeAsState(false)
     val isSesionDialog: Boolean by cmViewModel.isSesionDialog.observeAsState(false)
@@ -121,6 +144,7 @@ fun CreateManifestScreen(cmViewModel: CMViewModel, navigationController: NavHost
                 cmViewModel,
                 messageGuideValidate
             )
+
             selectRuta(
                 cmViewModel,
                 selectedOptionRuta,
@@ -131,8 +155,24 @@ fun CreateManifestScreen(cmViewModel: CMViewModel, navigationController: NavHost
                 isSelectRutaEnabled
             )
 
+            dataGuides(
+                isDialogDatosPqt,
+                isDialogDireccion,
+                cmViewModel,
+                navigationController,
+                nombre,
+                telefono,
+                dir1, dir2, dir3,
+                cp, municipio,
+                alto, ancho, largo, pesoKg, pesoVol, typeEmbalaje,
+                typeExcedente,
+                isSelectbtn,
+                isFormDatosPqt,
+                isEnableBtnCalcular
+            )
+
             AlertDialogLoadGuides(
-                show = isDialogLoadGuides,
+                isDialogLoadGuides,
                 cmViewModel,
                 messageGuideValidate,
                 navigationController
@@ -141,8 +181,585 @@ fun CreateManifestScreen(cmViewModel: CMViewModel, navigationController: NavHost
     }
 }
 
-fun tryScanner() {
+@Composable
+fun dataGuides(
+    isDialogDatosPqt: Boolean,
+    isDialogDireccion: Boolean,
+    cmViewModel: CMViewModel,
+    navigationController: NavHostController,
+    nombre: String,
+    telefono: String,
+    dir1: String,
+    dir2: String,
+    dir3: String,
+    cp: String,
+    municipio: String,
+    alto: String,
+    ancho: String,
+    largo: String,
+    pesoKg: String,
+    pesoVol: String,
+    typeEmbalaje: Boolean,
+    typeExcedente: String,
+    isSelectbtn: Boolean,
+    isFormDatosPqt: Boolean,
+    isEnableBtnCalcular: Boolean
+) {
 
+    Log.i("Valor de Is DIalog", "$isDialogDireccion")
+    if (isDialogDireccion || isDialogDatosPqt) {
+        Dialog(onDismissRequest = { }) {
+            Column(
+                Modifier
+                    .background(Color.White)
+                    .padding(24.dp)
+                    .fillMaxWidth()
+                    .fillMaxHeight()
+            ) {
+                if (isDialogDireccion) {
+                    formDireccion(
+                        nombre,
+                        telefono,
+                        dir1,
+                        dir2,
+                        dir3,
+                        cp,
+                        municipio,
+                        cmViewModel
+                    )
+                    Spacer(modifier = Modifier.size(4.dp))
+                    ButtonsForm(cmViewModel, "direccion", isSelectbtn)
+                }
+
+                if (isDialogDatosPqt) {
+                    formDatosPqt(
+                        alto,
+                        ancho,
+                        largo,
+                        pesoKg,
+                        pesoVol,
+                        typeEmbalaje,
+                        typeExcedente,
+                        cmViewModel,
+                        isFormDatosPqt,
+                        isEnableBtnCalcular
+                    )
+                    Spacer(modifier = Modifier.size(4.dp))
+                    ButtonsForm(cmViewModel, "datospqt", isSelectbtn)
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun formDireccion(
+    nombre: String,
+    telefono: String,
+    dir1: String,
+    dir2: String,
+    dir3: String,
+    cp: String,
+    municipio: String,
+    cmViewModel: CMViewModel
+) {
+    Text(
+        modifier = Modifier.fillMaxWidth(),
+        textAlign = TextAlign.Center,
+        fontWeight = FontWeight.SemiBold,
+        fontSize = 20.sp,
+        color = Color(0xFF4425a7),
+        text = "Guia"
+    )
+    Spacer(modifier = Modifier.size(6.dp))
+    textFieldNameClient(nombre) {
+        cmViewModel.onChangedFormDireccion(
+            nombre = it,
+            telefono = telefono,
+            dir1 = dir1,
+            dir2 = dir2,
+            dir3 = dir3,
+            cp = cp,
+            municipio = municipio
+        )
+    }
+    Spacer(modifier = Modifier.size(4.dp))
+    textFieldNumberPhone(telefono) {
+        cmViewModel.onChangedFormDireccion(
+            nombre = nombre,
+            telefono = it,
+            dir1 = dir1,
+            dir2 = dir2,
+            dir3 = dir3,
+            cp = cp,
+            municipio = municipio
+        )
+    }
+    Spacer(modifier = Modifier.size(4.dp))
+    textFieldDir1(dir1) {
+        cmViewModel.onChangedFormDireccion(
+            nombre = nombre,
+            telefono = telefono,
+            dir1 = it,
+            dir2 = dir2,
+            dir3 = dir3,
+            cp = cp,
+            municipio = municipio
+        )
+    }
+    Spacer(modifier = Modifier.size(4.dp))
+    textFieldDir2(dir2) {
+        cmViewModel.onChangedFormDireccion(
+            nombre = nombre,
+            telefono = telefono,
+            dir1 = dir1,
+            dir2 = it,
+            dir3 = dir3,
+            cp = cp,
+            municipio = municipio
+        )
+    }
+    Spacer(modifier = Modifier.size(4.dp))
+    textFieldDir3(dir3) {
+        cmViewModel.onChangedFormDireccion(
+            nombre = nombre,
+            telefono = telefono,
+            dir1 = dir1,
+            dir2 = dir2,
+            dir3 = it,
+            cp = cp,
+            municipio = municipio
+        )
+    }
+    Spacer(modifier = Modifier.size(4.dp))
+    textFieldCP(cp) {
+        cmViewModel.onChangedFormDireccion(
+            nombre = nombre,
+            telefono = telefono,
+            dir1 = dir1,
+            dir2 = dir2,
+            dir3 = dir3,
+            cp = it,
+            municipio = municipio
+        )
+    }
+    Spacer(modifier = Modifier.size(4.dp))
+    textFieldMunicipio(municipio) {
+        cmViewModel.onChangedFormDireccion(
+            nombre = nombre,
+            telefono = telefono,
+            dir1 = dir1,
+            dir2 = dir2,
+            dir3 = dir3,
+            cp = cp,
+            municipio = it
+        )
+    }
+}
+
+@Composable
+fun textFieldNameClient(
+    nombre: String, onChangedFormDireccion: (String) -> Unit,
+//                        onTextChanged: (String) -> Unit
+) {
+    OutlinedTextField(
+        value = nombre,
+        onValueChange = { onChangedFormDireccion(it) },
+        label = { Text(text = "Nombre") },
+        shape = RoundedCornerShape(10),
+        colors = TextFieldDefaults.outlinedTextFieldColors(
+            focusedBorderColor = Color(96, 127, 243),
+            unfocusedBorderColor = Color(76, 81, 198),
+            backgroundColor = Color.White
+        ),
+        maxLines = 1,
+        singleLine = true,
+    )
+}
+
+
+@Composable
+fun textFieldNumberPhone(
+    telefono: (String),
+    onChangedFormDireccion: (String) -> Unit
+) {
+    OutlinedTextField(
+        value = telefono,
+        onValueChange = { onChangedFormDireccion(it) },
+        label = { Text(text = "Telefono") },
+        shape = RoundedCornerShape(10),
+        colors = TextFieldDefaults.outlinedTextFieldColors(
+            focusedBorderColor = Color(96, 127, 243),
+            unfocusedBorderColor = Color(76, 81, 198),
+            backgroundColor = Color.White
+        ),
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+        maxLines = 1,
+        singleLine = true,
+    )
+}
+
+@Composable
+fun textFieldDir1(
+    dir1: (String),
+    onChangedFormDireccion: (String) -> Unit
+) {
+    OutlinedTextField(
+        value = dir1,
+        onValueChange = { onChangedFormDireccion(it) },
+        label = { Text(text = "Dirección 1") },
+        shape = RoundedCornerShape(10),
+        colors = TextFieldDefaults.outlinedTextFieldColors(
+            focusedBorderColor = Color(96, 127, 243),
+            unfocusedBorderColor = Color(76, 81, 198),
+            backgroundColor = Color.White
+        ),
+        maxLines = 1,
+        singleLine = true,
+    )
+}
+
+@Composable
+fun textFieldDir2(
+    dir2: (String),
+    onChangedFormDireccion: (String) -> Unit
+) {
+    OutlinedTextField(
+        value = dir2,
+        onValueChange = { onChangedFormDireccion(it) },
+        label = { Text(text = "Dirección 2") },
+        shape = RoundedCornerShape(10),
+        colors = TextFieldDefaults.outlinedTextFieldColors(
+            focusedBorderColor = Color(96, 127, 243),
+            unfocusedBorderColor = Color(76, 81, 198),
+            backgroundColor = Color.White
+        ),
+        maxLines = 1,
+        singleLine = true,
+    )
+}
+
+@Composable
+fun textFieldDir3(
+    dir3: (String),
+    onChangedFormDireccion: (String) -> Unit
+) {
+    OutlinedTextField(
+        value = dir3,
+        onValueChange = { onChangedFormDireccion(it) },
+        label = { Text(text = "Dirección 3") },
+        shape = RoundedCornerShape(10),
+        colors = TextFieldDefaults.outlinedTextFieldColors(
+            focusedBorderColor = Color(96, 127, 243),
+            unfocusedBorderColor = Color(76, 81, 198),
+            backgroundColor = Color.White
+        ),
+        maxLines = 1,
+        singleLine = true,
+    )
+}
+
+@Composable
+fun textFieldCP(
+    cp: (String),
+    onChangedFormDireccion: (String) -> Unit
+) {
+    OutlinedTextField(
+        value = cp,
+        onValueChange = { onChangedFormDireccion(it) },
+        label = { Text(text = "Codigo postal") },
+        shape = RoundedCornerShape(10),
+        colors = TextFieldDefaults.outlinedTextFieldColors(
+            focusedBorderColor = Color(96, 127, 243),
+            unfocusedBorderColor = Color(76, 81, 198),
+            backgroundColor = Color.White
+        ),
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+        maxLines = 1,
+        singleLine = true,
+    )
+}
+
+@Composable
+fun textFieldMunicipio(
+    municipio: (String),
+    onChangedFormDireccion: (String) -> Unit
+) {
+    OutlinedTextField(
+        value = municipio,
+        onValueChange = { onChangedFormDireccion(it) },
+        label = { Text(text = "Municipio") },
+        shape = RoundedCornerShape(10),
+        colors = TextFieldDefaults.outlinedTextFieldColors(
+            focusedBorderColor = Color(96, 127, 243),
+            unfocusedBorderColor = Color(76, 81, 198),
+            backgroundColor = Color.White
+        ),
+        maxLines = 1,
+        singleLine = true,
+    )
+}
+
+@Composable
+fun groupFormDireccion() {
+
+}
+
+@Composable
+fun formDatosPqt(
+    alto: String,
+    ancho: String,
+    largo: String,
+    pesoKg: String,
+    pesoVol: String,
+    typeEmbalaje: Boolean,
+    typeExcedente: String,
+    cmViewModel: CMViewModel,
+    isFormDatosPqt: Boolean,
+    isEnableBtnCalcular: Boolean
+) {
+    Text(
+        modifier = Modifier.fillMaxWidth(),
+        textAlign = TextAlign.Center,
+        fontWeight = FontWeight.SemiBold,
+        fontSize = 20.sp,
+        color = Color(0xFF4425a7),
+        text = "Peso"
+    )
+    Spacer(modifier = Modifier.size(6.dp))
+    typeEmbalaje(typeEmbalaje, cmViewModel)
+    Spacer(modifier = Modifier.size(4.dp))
+    textFieldAlto(alto, isFormDatosPqt) {
+        cmViewModel.onChangedFormDatos(alto = it, largo = largo, ancho = ancho, pesoKg = pesoKg)
+    }
+    Spacer(modifier = Modifier.size(4.dp))
+    textFieldLargo(largo, isFormDatosPqt) {
+        cmViewModel.onChangedFormDatos(alto = alto, largo = it, ancho = ancho, pesoKg = pesoKg)
+    }
+    Spacer(modifier = Modifier.size(4.dp))
+    textFieldAncho(ancho, isFormDatosPqt) {
+        cmViewModel.onChangedFormDatos(alto = alto, largo = largo, ancho = it, pesoKg = pesoKg)
+    }
+    Spacer(modifier = Modifier.size(4.dp))
+    textFieldPesoKg(pesoKg, isFormDatosPqt) {
+        cmViewModel.onChangedFormDatos(alto = alto, largo = largo, ancho = ancho, pesoKg = it)
+    }
+    Spacer(modifier = Modifier.size(4.dp))
+    infoPesoVolExcedente(pesoVol, isFormDatosPqt, typeExcedente, cmViewModel)
+    Spacer(modifier = Modifier.size(6.dp))
+    btnCalcularPesoV(isFormDatosPqt, cmViewModel, isEnableBtnCalcular)
+
+}
+
+@Composable
+fun btnCalcularPesoV(
+    isFormDatosPqt: Boolean,
+    cmViewModel: CMViewModel,
+    isEnableBtnCalcular: Boolean
+) {
+    Button(
+        onClick = { cmViewModel.calcularPesoVol() },
+        enabled = isEnableBtnCalcular,
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Text(text = "Calcular peso")
+    }
+}
+
+@Composable
+fun typeEmbalaje(typeEmbalaje: Boolean, cmViewModel: CMViewModel) {
+    Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+        Text(text = "Tipo de embalaje")
+    }
+    Spacer(modifier = Modifier.size(2.dp))
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Center
+    ) {
+        Box(modifier = Modifier.weight(1f), contentAlignment = Alignment.Center) {
+            Column(
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(text = "Chico")
+                RadioButton(
+                    selected = !typeEmbalaje,
+                    onClick = { cmViewModel.onRadioBtnSeleted("Chico") })
+            }
+        }
+        Box(modifier = Modifier.weight(1f), contentAlignment = Alignment.Center) {
+            Column(
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(text = "Grande")
+                RadioButton(
+                    selected = typeEmbalaje,
+                    onClick = { cmViewModel.onRadioBtnSeleted("Grande") })
+            }
+        }
+    }
+}
+
+@Composable
+fun textFieldAlto(
+    alto: String, isFormDatosPqt: Boolean,
+    onChangedFormDatos: (String) -> Unit
+) {
+    OutlinedTextField(
+        value = alto,
+        enabled = isFormDatosPqt,
+        onValueChange = { onChangedFormDatos(it) },
+        label = { Text(text = "Alto") },
+        shape = RoundedCornerShape(10),
+        colors = TextFieldDefaults.outlinedTextFieldColors(
+            focusedBorderColor = Color(96, 127, 243),
+            unfocusedBorderColor = Color(76, 81, 198),
+            backgroundColor = Color.White
+        ),
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+        maxLines = 1,
+        singleLine = true,
+    )
+}
+
+@Composable
+fun textFieldAncho(
+    ancho: String, isFormDatosPqt: Boolean,
+    onChangedFormDatos: (String) -> Unit
+) {
+    OutlinedTextField(
+        value = ancho,
+        enabled = isFormDatosPqt,
+        onValueChange = { onChangedFormDatos(it) },
+        label = { Text(text = "Ancho") },
+        shape = RoundedCornerShape(10),
+        colors = TextFieldDefaults.outlinedTextFieldColors(
+            focusedBorderColor = Color(96, 127, 243),
+            unfocusedBorderColor = Color(76, 81, 198),
+            backgroundColor = Color.White
+        ),
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+        maxLines = 1,
+        singleLine = true,
+    )
+}
+
+@Composable
+fun textFieldLargo(
+    largo: String, isFormDatosPqt: Boolean,
+    onChangedFormDatos: (String) -> Unit
+) {
+    OutlinedTextField(
+        value = largo,
+        enabled = isFormDatosPqt,
+        onValueChange = { onChangedFormDatos(it) },
+        label = { Text(text = "Largo") },
+        shape = RoundedCornerShape(10),
+        colors = TextFieldDefaults.outlinedTextFieldColors(
+            focusedBorderColor = Color(96, 127, 243),
+            unfocusedBorderColor = Color(76, 81, 198),
+            backgroundColor = Color.White
+        ),
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+        maxLines = 1,
+        singleLine = true,
+    )
+}
+
+@Composable
+fun textFieldPesoKg(
+    pesoKg: String, isFormDatosPqt: Boolean,
+    onChangedFormDatos: (String) -> Unit
+) {
+    OutlinedTextField(
+        value = pesoKg,
+        enabled = isFormDatosPqt,
+        onValueChange = { onChangedFormDatos(it) },
+        label = { Text(text = "Peso Kg") },
+        shape = RoundedCornerShape(10),
+        colors = TextFieldDefaults.outlinedTextFieldColors(
+            focusedBorderColor = Color(96, 127, 243),
+            unfocusedBorderColor = Color(76, 81, 198),
+            backgroundColor = Color.White
+        ),
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+        maxLines = 1,
+        singleLine = true,
+    )
+}
+
+@Composable
+fun infoPesoVolExcedente(
+    pesoVol: String,
+    isFormDatosPqt: Boolean,
+    typeExcedente: String,
+    cmViewModel: CMViewModel
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Center,
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Box(modifier = Modifier.weight(1f)) {
+            textFieldPesoVol(pesoVol, isFormDatosPqt) {
+                cmViewModel.enableBtnFormDatosPqt(pesoVol = it, typePqt = typeExcedente)
+            }
+        }
+        Spacer(modifier = Modifier.size(2.dp))
+        Box(modifier = Modifier.weight(1.5f)) {
+            textFieldTypeExcedente(typeExcedente, isFormDatosPqt) {
+                cmViewModel.enableBtnFormDatosPqt(pesoVol = pesoVol, typePqt = it)
+            }
+        }
+    }
+}
+
+@Composable
+fun textFieldPesoVol(
+    pesoVol: String,
+    isFormDatosPqt: Boolean,
+    enableBtnFormDatosPqt: (String) -> Unit
+) {
+    OutlinedTextField(
+        value = pesoVol,
+        enabled = isFormDatosPqt,
+        readOnly = true,
+        onValueChange = { enableBtnFormDatosPqt(it) },
+        label = { Text(text = "Peso vol", fontSize = 12.sp) },
+        shape = RoundedCornerShape(10),
+        colors = TextFieldDefaults.outlinedTextFieldColors(
+            focusedBorderColor = Color(96, 127, 243),
+            unfocusedBorderColor = Color(76, 81, 198),
+            backgroundColor = Color.White
+        ),
+        maxLines = 1,
+        singleLine = true,
+    )
+}
+
+@Composable
+fun textFieldTypeExcedente(
+    typeExcedente: String,
+    isFormDatosPqt: Boolean,
+    enableBtnFormDatosPqt: (String) -> Unit
+) {
+    OutlinedTextField(
+        value = typeExcedente,
+        enabled = isFormDatosPqt,
+        readOnly = true,
+        onValueChange = { enableBtnFormDatosPqt(it) },
+        label = { Text(text = "Excendente") },
+        shape = RoundedCornerShape(10),
+        colors = TextFieldDefaults.outlinedTextFieldColors(
+            focusedBorderColor = Color(96, 127, 243),
+            unfocusedBorderColor = Color(76, 81, 198),
+            backgroundColor = Color.White
+        ),
+        maxLines = 1,
+        singleLine = true,
+    )
 }
 
 @Composable
@@ -935,9 +1552,10 @@ fun selectRuta(
     }
 }
 
+
 @Composable
 fun selectRutaDialog(
-    dgsViewModel: CMViewModel,
+    cmViewModel: CMViewModel,
     selectedOptionRuta: String,
     selectedOptionTM: String,
     isSelectRutaEnabled: Boolean,
@@ -972,8 +1590,8 @@ fun selectRutaDialog(
     )
     Spacer(modifier = Modifier.size(16.dp))
     Text(text = "Tipo")
-    DromMenuTM(selectedOptionTM, dgsViewModel, typeManifest) {
-        dgsViewModel.onValueChangedMT(
+    DromMenuTM(selectedOptionTM, cmViewModel, typeManifest) {
+        cmViewModel.onValueChangedMT(
             selected = it
         )
     }
@@ -982,10 +1600,10 @@ fun selectRutaDialog(
     DromMenuRuta(
         selectedOptionRuta,
         selectedOptionTM,
-        dgsViewModel,
+        cmViewModel,
         items,
         isSelectRutaEnabled
-    ) { dgsViewModel.onValueChangedRuta(selected = it) }
+    ) { cmViewModel.onValueChangedRuta(selected = it) }
     Spacer(modifier = Modifier.size(14.dp))
 
     // Text(text = "")
@@ -996,7 +1614,7 @@ fun selectRutaDialog(
 @Composable
 fun DromMenuTM(
     selectedOption: String,
-    dgsViewModel: CMViewModel,
+    cmViewModel: CMViewModel,
     listRutas: List<String>,
     onTextChanged: (String) -> Unit
 ) {
@@ -1049,12 +1667,12 @@ fun DromMenuTM(
 fun DromMenuRuta(
     selectedOptionRuta: String,
     selectedOptionTM: String,
-    dgsViewModel: CMViewModel,
+    cmViewModel: CMViewModel,
     listRutas: List<String>,
     isSelectRutaEnabled: Boolean,
     onTextChanged: (String) -> Unit
 ) {
-    var listRutasistRutas: MutableList<String>
+    val listRutasistRutas: MutableList<String>
     if (selectedOptionTM == "Local") {
         listRutasistRutas = remember {
             mutableStateListOf(
@@ -1144,6 +1762,24 @@ fun ButtonsConfirmation(
 }
 
 @Composable
+fun ButtonsForm(
+    cmViewModel: CMViewModel, typeForm: String, isSelectbtn: Boolean
+) {
+    Box(
+        modifier = Modifier.fillMaxWidth(),
+        contentAlignment = Alignment.Center
+    ) {
+        TextButton(
+            onClick = { cmViewModel.onContinueForm(typeForm) },
+            enabled = isSelectbtn
+        ) {
+
+            Text(text = "Continuar")
+        }
+    }
+}
+
+@Composable
 fun AlertDialogLoadGuides(
     show: Boolean,
     cmViewModel: CMViewModel,
@@ -1151,7 +1787,8 @@ fun AlertDialogLoadGuides(
     navigationController: NavHostController
 ) {
     if (show) {
-        AlertDialog(onDismissRequest = { cmViewModel.onAlertDialog() },
+        AlertDialog(
+            onDismissRequest = { cmViewModel.onAlertDialog() },
             title = { Text(text = "Advertencia") },
             text = { Text(text = message) },
             confirmButton = {
