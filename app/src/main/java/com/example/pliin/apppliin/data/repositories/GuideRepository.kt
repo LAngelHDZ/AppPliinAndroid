@@ -32,6 +32,22 @@ class GuideRepository @Inject constructor(private val apiguide: GuideService) {
         return response.toDomain()
     }
 
+    //Valida si la guia tiene los datos de direccion
+    suspend fun direccionValidateApi(guide: String): QueryGuidePliinItem {
+        val response = apiguide.queryGuideDireccion(guide)
+        Log.i("response", "$response")
+        // tokenDao.insertToken(response.toDatabase())
+        return response.toDomain()
+    }
+
+    //Valida si la guia tiene los datos del paquete
+    suspend fun datosPqtValidateApi(guide: String): QueryGuidePliinItem {
+        val response = apiguide.queryGuideDatosPqt(guide)
+        Log.i("response", "$response")
+        // tokenDao.insertToken(response.toDatabase())
+        return response.toDomain()
+    }
+
     //Opbtiene las guias de la API
     suspend fun InsertGuidetoApi(guide: String): ResponseRUDItem {
         val response = apiguide.insertyGuide(guide)
