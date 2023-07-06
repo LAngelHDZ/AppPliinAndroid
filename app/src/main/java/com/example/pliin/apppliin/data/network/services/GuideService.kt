@@ -13,6 +13,9 @@ import com.example.pliin.apppliin.data.model.responserudmodel.ResponseRUDModel
 import com.example.pliin.apppliin.data.model.responserudmodel.ResponseSetModel
 import com.example.pliin.apppliin.data.network.dto.addguidemanifest.AddGuideToManifest
 import com.example.pliin.apppliin.data.network.dto.addguidemanifest.FieldDataAGM
+import com.example.pliin.apppliin.data.network.dto.datospqt.DatosPqtDto
+import com.example.pliin.apppliin.data.network.dto.direccionguide.DireccionGuideDto
+import com.example.pliin.apppliin.data.network.dto.direccionguide.FieldDataDG
 import com.example.pliin.apppliin.data.network.dto.insertguide.FieldData
 import com.example.pliin.apppliin.data.network.dto.insertguide.InsertGuideDto
 import com.example.pliin.apppliin.data.network.dto.queryguidescanner.QueryGuideDto
@@ -112,7 +115,7 @@ class GuideService @Inject constructor(
         val bearer = daotoken.getToken().token
         return withContext(Dispatchers.IO) {
             try {
-                val response = guideapiclient.queryGuide("Bearer $bearer", query)
+                val response = guideapiclient.queryGuideDireccion("Bearer $bearer", query)
                 val data = if (response.isSuccessful) {
                     response.body()!!
                 } else {
@@ -304,12 +307,110 @@ class GuideService @Inject constructor(
                                 listOf(Message("500", "No found Record"))
                             )
                         }
+
                         400 -> {
                             ResponseRUDModel(
                                 response.body()?.response,
                                 listOf(Message("400", "No found Record"))
                             )
                         }
+
+                        else -> {
+                            ResponseRUDModel(
+                                response.body()?.response,
+                                listOf(Message("400", "No found Record"))
+                            )
+                        }
+                    }
+                }
+                data
+            } catch (e: IOException) {
+                ResponseRUDModel(
+                    ResponseSetModel("", ""),
+                    listOf(Message("500", "No found Record"))
+                )
+            }
+        }
+    }
+
+    suspend fun addDireccionGuide(dataDir: List<String>): ResponseRUDModel {
+        val query = DireccionGuideDto(
+            FieldDataDG(
+                dataDir[0],
+                dataDir[1],
+                dataDir[2],
+                dataDir[3],
+                dataDir[4],
+                dataDir[5],
+                dataDir[6],
+                dataDir[0]
+            )
+        )
+
+        val bearer = daotoken.getToken().token
+        return withContext(Dispatchers.IO) {
+            try {
+                val response = guideapiclient.addDireccionGuide("Bearer $bearer", query)
+                val data = if (response.isSuccessful) {
+                    response.body()!!
+                } else {
+                    when (response.code()) {
+                        500 -> {
+                            ResponseRUDModel(
+                                response.body()?.response,
+                                listOf(Message("500", "No found Record"))
+                            )
+                        }
+
+                        400 -> {
+                            ResponseRUDModel(
+                                response.body()?.response,
+                                listOf(Message("400", "No found Record"))
+                            )
+                        }
+
+                        else -> {
+                            ResponseRUDModel(
+                                response.body()?.response,
+                                listOf(Message("400", "No found Record"))
+                            )
+                        }
+                    }
+                }
+                data
+            } catch (e: IOException) {
+                ResponseRUDModel(
+                    ResponseSetModel("", ""),
+                    listOf(Message("500", "No found Record"))
+                )
+            }
+        }
+    }
+
+    suspend fun addDatosPqtGuide(datosPqt: DatosPqtDto): ResponseRUDModel {
+
+        val bearer = daotoken.getToken().token
+        return withContext(Dispatchers.IO) {
+            try {
+                val response = guideapiclient.addDatosPqtGuide("Bearer $bearer", datosPqt)
+                val data = if (response.isSuccessful) {
+                    response.body()!!
+                } else {
+                    when (response.code()) {
+                        500 -> {
+                            ResponseRUDModel(
+                                response.body()?.response,
+                                listOf(Message("500", "No found Record"))
+                            )
+                        }
+
+                        400 -> {
+                            ResponseRUDModel(
+                                response.body()?.response,
+                                listOf(Message("400", "No found Record"))
+                            )
+                        }
+
                         else -> {
                             ResponseRUDModel(
                                 response.body()?.response,

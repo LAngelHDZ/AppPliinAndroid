@@ -30,6 +30,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.unit.toSize
 import androidx.compose.ui.window.Dialog
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.example.pliin.apppliin.domain.model.emproyeeitem.DataEI
 import com.example.pliin.apppliin.domain.model.emproyeeitem.FieldDataEI
@@ -45,7 +46,11 @@ fun getdatenow(): String {
 }
 
 @Composable
-fun CreateManifestScreen(cmViewModel: CMViewModel, navigationController: NavHostController) {
+fun CreateManifestScreen(
+    navigationController: NavHostController,
+    area: String,
+    cmViewModel: CMViewModel = hiltViewModel()
+) {
     val nombre: String by cmViewModel.nombre.observeAsState("")
     val telefono: String by cmViewModel.telefono.observeAsState("")
     val dir1: String by cmViewModel.dir1.observeAsState("")
@@ -152,7 +157,8 @@ fun CreateManifestScreen(cmViewModel: CMViewModel, navigationController: NavHost
                 navigationController,
                 isDialogRuta,
                 isSelectbtn,
-                isSelectRutaEnabled
+                isSelectRutaEnabled,
+                area
             )
 
             dataGuides(
@@ -1132,7 +1138,7 @@ fun SelectOPTextField(
                     .height(200.dp)
                     .width(with(LocalDensity.current) { textFiledSize.width.toDp() })
             ) {
-                Log.i("lista dedevoluciones", employees.toString())
+                Log.i("lista de empleados", employees.toString())
                 listEmployees.forEach { option ->
                     DropdownMenuItem(
                         onClick = {
@@ -1141,7 +1147,7 @@ fun SelectOPTextField(
                         }
                     ) {
                         val name = option.fieldData
-                        Text(text = name?.nombre + name?.aPaterno + name?.aMaterno)
+                        Text(text = "${name?.nombre} ${name?.aPaterno} ${name?.aMaterno}")
                     }
                 }
             }
@@ -1527,7 +1533,8 @@ fun selectRuta(
     navigationController: NavHostController,
     isDialogRuta: Boolean,
     isSelectbtn: Boolean,
-    isSelectRutaEnabled: Boolean
+    isSelectRutaEnabled: Boolean,
+    area: String
 ) {
     if (isDialogRuta) {
         Dialog(onDismissRequest = { }) {
@@ -1543,10 +1550,11 @@ fun selectRuta(
                     cmViewModel,
                     selectedOptionRuta,
                     selectedOptionTM,
-                    isSelectRutaEnabled
+                    isSelectRutaEnabled,
+                    area
                 )
                 Spacer(modifier = Modifier.size(4.dp))
-                ButtonsConfirmation(cmViewModel, navigationController, isSelectbtn)
+                ButtonsConfirmation(cmViewModel, navigationController, isSelectbtn, area)
             }
         }
     }
@@ -1559,6 +1567,7 @@ fun selectRutaDialog(
     selectedOptionRuta: String,
     selectedOptionTM: String,
     isSelectRutaEnabled: Boolean,
+    area: String,
 ) {
 
     val typeManifest = remember {
@@ -1588,13 +1597,18 @@ fun selectRutaDialog(
         color = Color(0xFF4425a7),
         text = "MANIFIESTO"
     )
-    Spacer(modifier = Modifier.size(16.dp))
-    Text(text = "Tipo")
-    DromMenuTM(selectedOptionTM, cmViewModel, typeManifest) {
-        cmViewModel.onValueChangedMT(
-            selected = it
-        )
+
+
+    if (area.equals("AuxiliarAdministrativo")) {
+        Spacer(modifier = Modifier.size(16.dp))
+        Text(text = "Tipo")
+        DromMenuTM(selectedOptionTM, cmViewModel, typeManifest) {
+            cmViewModel.onValueChangedMT(
+                selected = it
+            )
+        }
     }
+
     Spacer(modifier = Modifier.size(16.dp))
     Text(text = "Ruta")
     DromMenuRuta(
@@ -1602,7 +1616,8 @@ fun selectRutaDialog(
         selectedOptionTM,
         cmViewModel,
         items,
-        isSelectRutaEnabled
+        isSelectRutaEnabled,
+        area
     ) { cmViewModel.onValueChangedRuta(selected = it) }
     Spacer(modifier = Modifier.size(14.dp))
 
@@ -1668,30 +1683,35 @@ fun DromMenuRuta(
     selectedOptionRuta: String,
     selectedOptionTM: String,
     cmViewModel: CMViewModel,
-    listRutas: List<String>,
+    listRutas: MutableList<String>,
     isSelectRutaEnabled: Boolean,
+    area: String,
     onTextChanged: (String) -> Unit
 ) {
     val listRutasistRutas: MutableList<String>
-    if (selectedOptionTM == "Local") {
-        listRutasistRutas = remember {
-            mutableStateListOf(
-                "Corta",
-                "Local",
-                "Costa Chica",
-            )
-        }
+    if (area == "OperadorLogistico") {
+        listRutasistRutas = listRutas
+
     } else {
-        listRutasistRutas = remember {
-            mutableStateListOf(
-                "Zihuatanejo",
-                "Ixtapa",
-                "Petatlan",
-                "La unión"
-            )
+        if (selectedOptionTM == "Local") {
+            listRutasistRutas = remember {
+                mutableStateListOf(
+                    "Corta",
+                    "Local",
+                    "Costa Chica",
+                )
+            }
+        } else {
+            listRutasistRutas = remember {
+                mutableStateListOf(
+                    "Zihuatanejo",
+                    "Ixtapa",
+                    "Petatlan",
+                    "La unión"
+                )
+            }
         }
     }
-
 
     var expand by remember { mutableStateOf(false) }
     var textFiledSize by remember { mutableStateOf(Size.Zero) }
@@ -1718,7 +1738,7 @@ fun DromMenuRuta(
         singleLine = true,
     )
     Box() {
-        if (isSelectRutaEnabled) {
+        if (isSelectRutaEnabled || area == "OperadorLogistico") {
             DropdownMenu(
                 expanded = expand,
                 onDismissRequest = { expand = false },
@@ -1747,13 +1767,14 @@ fun ButtonsConfirmation(
     cmViewModel: CMViewModel,
     navigationController: NavHostController,
     isSelectbtn: Boolean,
+    area: String,
 ) {
     Row() {
         TextButton(onClick = { cmViewModel.backScreen(navigationController) }) {
             Text(text = "Cancelar")
         }
         TextButton(
-            onClick = { cmViewModel.continueSetGuides() },
+            onClick = { cmViewModel.continueSetGuides(area) },
             enabled = isSelectbtn
         ) {
             Text(text = "Continuar")
@@ -1773,7 +1794,6 @@ fun ButtonsForm(
             onClick = { cmViewModel.onContinueForm(typeForm) },
             enabled = isSelectbtn
         ) {
-
             Text(text = "Continuar")
         }
     }

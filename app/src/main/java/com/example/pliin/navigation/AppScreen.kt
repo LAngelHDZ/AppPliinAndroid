@@ -13,9 +13,20 @@ sealed class AppScreen(val route:String){
         ) = "ReceptionGuideScreen/$function"
     }
 
+    /*  object ManifiestoMainScreen : AppScreen("ManifiestoMainScreen"){
+          fun createRoute(
+              area: String
+          )="ManifiestoMainScreen/$area"
+      }*/
+
     object ManifiestoMainScreen : AppScreen("ManifiestoMainScreen")
     object MenuGuideScreen : AppScreen("MenuGuideScreen")
-    object CreateManifestScreen : AppScreen("CreateManifestScreen")
+    object CreateManifestScreen : AppScreen("CreateManifestScreen/{area}") {
+        fun createRoute(
+            area: String
+        ) = "CreateManifestScreen/$area"
+    }
+
     object RegisterDeliveryScreen : AppScreen("RegisterDeliveryScreen")
     object LoadingDeliveryScreen : AppScreen("LoadingDeliveryScreen")
     object DataGuideScannerScreen :

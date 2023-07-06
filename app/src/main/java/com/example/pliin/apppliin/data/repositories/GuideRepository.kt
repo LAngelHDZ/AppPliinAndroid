@@ -3,6 +3,7 @@ package com.example.pliin.apppliin.data.repositories
 import android.util.Log
 import com.example.pliin.apppliin.data.model.deliverymodel.GetDataGuideDRModel
 import com.example.pliin.apppliin.data.model.responseregisterdelivery.ResponseRegisterDeliveryModel
+import com.example.pliin.apppliin.data.network.dto.datospqt.DatosPqtDto
 import com.example.pliin.apppliin.data.network.services.GuideService
 import com.example.pliin.apppliin.domain.model.deliveryItem.GetDataGuideRDItem
 import com.example.pliin.apppliin.domain.model.deliveryItem.toDomain
@@ -35,6 +36,22 @@ class GuideRepository @Inject constructor(private val apiguide: GuideService) {
     //Valida si la guia tiene los datos de direccion
     suspend fun direccionValidateApi(guide: String): QueryGuidePliinItem {
         val response = apiguide.queryGuideDireccion(guide)
+        Log.i("response", "$response")
+        // tokenDao.insertToken(response.toDatabase())
+        return response.toDomain()
+    }
+
+    //Registra la direccion de la guia
+    suspend fun createDireccion(direecion: List<String>): ResponseRUDItem {
+        val response = apiguide.addDireccionGuide(direecion)
+        Log.i("response", "$response")
+        // tokenDao.insertToken(response.toDatabase())
+        return response.toDomain()
+    }
+
+    //Registra los datos del paquete de la guia, Peso y medias
+    suspend fun createDataPqt(datosPqt: DatosPqtDto): ResponseRUDItem {
+        val response = apiguide.addDatosPqtGuide(datosPqt)
         Log.i("response", "$response")
         // tokenDao.insertToken(response.toDatabase())
         return response.toDomain()

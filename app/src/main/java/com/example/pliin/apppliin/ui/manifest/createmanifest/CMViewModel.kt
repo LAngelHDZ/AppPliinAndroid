@@ -8,6 +8,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
+import com.example.pliin.apppliin.data.network.dto.datospqt.DatosPqtDto
+import com.example.pliin.apppliin.data.network.dto.datospqt.FieldDataDP
 import com.example.pliin.apppliin.domain.model.direccionesguideitem.DatosGuideItem
 import com.example.pliin.apppliin.domain.model.direccionesguideitem.DireccionesGuideItem
 import com.example.pliin.apppliin.domain.model.emproyeeitem.DataEI
@@ -18,6 +20,8 @@ import com.example.pliin.apppliin.domain.usecase.GetAllEmployeesUseCase
 import com.example.pliin.apppliin.domain.usecase.GetConsecManUseCase
 import com.example.pliin.apppliin.domain.usecase.GetGuideUseCase
 import com.example.pliin.apppliin.domain.usecase.LoadEmployeeUseCase
+import com.example.pliin.apppliin.domain.usecase.RegisterDatosPqtUseCase
+import com.example.pliin.apppliin.domain.usecase.RegisterDireccionUseCase
 import com.example.pliin.apppliin.domain.usecase.ValidateExistsAddressUseCase
 import com.example.pliin.apppliin.domain.usecase.ValidateExistsDataPqtUseCase
 import com.example.pliin.apppliin.domain.usecase.ValidateGuideSystemUseCase
@@ -46,7 +50,9 @@ class CMViewModel @Inject constructor(
     private val getGuideUseCase: GetGuideUseCase,
     private val validateGuideSystemUseCase: ValidateGuideSystemUseCase,
     private val validateExistsAddressUseCase: ValidateExistsAddressUseCase,
-    private val validateExistsDataPqtUseCase: ValidateExistsDataPqtUseCase
+    private val validateExistsDataPqtUseCase: ValidateExistsDataPqtUseCase,
+    private val registerDatosPqtUseCase: RegisterDatosPqtUseCase,
+    private val registerDireccionUseCase: RegisterDireccionUseCase
 
 ) : ViewModel() {
 
@@ -171,6 +177,9 @@ class CMViewModel @Inject constructor(
     private val _clavePreManifest = MutableLiveData<String>()
     var clavePreManifest: LiveData<String> = _clavePreManifest
 
+    private val _typePreManifest = MutableLiveData<String>()
+    var typePreManifest: LiveData<String> = _typePreManifest
+
     private val _titleAlertDialog = MutableLiveData<String>()
     var titleAlertDialog: LiveData<String> = _titleAlertDialog
 
@@ -236,9 +245,7 @@ class CMViewModel @Inject constructor(
         _dir3.value = dir3
         _cp.value = cp
         _municipio.value = municipio
-
         _isSelectbtn.value = enableBtnFormDir(nombre, telefono, dir1, dir2, dir3, cp, municipio)
-
     }
 
     fun calcularPesoVol() {
@@ -254,12 +261,10 @@ class CMViewModel @Inject constructor(
         }
         _pesoVol.value = pesoVol.toString()
         _isSelectbtn.value = enableBtnFormDatosPqt(pesoVol.toString(), _typePaq.value.toString())
-
     }
 
     fun enableBtnFormDatosPqt(pesoVol: String, typePqt: String) =
         pesoVol.length > 1 && typePqt.length > 1
-
 
     fun enableBtnFormDir(
         nombre: String,
@@ -272,12 +277,9 @@ class CMViewModel @Inject constructor(
     ) =
         ((nombre.length > 5 && telefono.length >= 7 && cp.length > 4 && municipio.length > 4) && (dir1.length > 7 || dir2.length > 7 || dir3.length > 7))
 
-
     fun onRadioBtnSeleted(value: String) {
         if (value != "Chico") {
             _typeEmbalaje.value = true
-
-
             if (ancho.value.isNullOrEmpty() && alto.value.isNullOrEmpty() && largo.value.isNullOrEmpty() && pesoKg.value.isNullOrEmpty()) {
                 _isenableBtnCalcular.value = false
             } else {
@@ -296,9 +298,7 @@ class CMViewModel @Inject constructor(
             _isSelectbtn.value = true
             _isenableBtnCalcular.value = false
         }
-
         _isFormDatosPqt.value = value == "Grande"
-
     }
 
     fun onChangedFormDatos(alto: String, largo: String, ancho: String, pesoKg: String) {
@@ -306,13 +306,11 @@ class CMViewModel @Inject constructor(
         _ancho.value = ancho
         _largo.value = largo
         _pesoKg.value = pesoKg
-
         _isenableBtnCalcular.value = enabledCaluclarenbaled(alto, ancho, largo, pesoKg)
     }
 
     fun enabledCaluclarenbaled(alto: String, ancho: String, largo: String, pesoKg: String) =
         alto.isNotEmpty() && largo.isNotEmpty() && ancho.isNotEmpty() && pesoKg.isNotEmpty()
-
 
     fun onValueChangedMT(selected: String) {
         if (!selectedOptionTM.value.equals(selected)) {
@@ -323,7 +321,7 @@ class CMViewModel @Inject constructor(
     }
 
     fun onValueChangeEmployee(name: FieldDataEI) {
-        _nameEmployye.value = name.nombre + name.aPaterno + name.aMaterno
+        _nameEmployye.value = "${name.nombre} ${name.aPaterno} ${name.aMaterno}"
     }
 
     fun onValueChangedRuta(selected: String) {
@@ -392,13 +390,13 @@ class CMViewModel @Inject constructor(
         _messageGuideValidate.value = "Desea registrar las guias al sistema?"
     }
 
-    fun continueSetGuides() {
+    fun continueSetGuides(area: String) {
         _isDialogRuta.value = false
         _ruta.value = selectedOptionRuta.value
         _isSelectbtn.value = false
 
         getDataEmployee()
-        clavePreGenerate()
+        clavePreGenerate(area)
     }
 
     fun getDataEmployee() {
@@ -415,7 +413,13 @@ class CMViewModel @Inject constructor(
 
     @SuppressLint("SuspiciousIndentation")
     fun onContinueForm(form: String) {
-        if (form.equals("datospqt")) {
+        if (form == "datospqt") {
+            val typeEmbalaje = _typeEmbalaje.value.toString()
+            Log.i("Valor type Embalaje", typeEmbalaje)
+            if (typeEmbalaje == "null") {
+                _typeEmbalaje.value = false
+            }
+            Log.i("Valor type Embalaje livedata", "${_typeEmbalaje.value}")
             _isDatosPQTnDialog.value = false
             setDaatosGuia(_contentQR.value!!)
             Log.i("contenido de Qr", "${contentQR.value}")
@@ -424,6 +428,10 @@ class CMViewModel @Inject constructor(
         } else {
             _isDireccionDialog.value = false
             _isDatosPQTnDialog.value = true
+
+            /* if(){
+
+             }*/
         }
         //_isSelectbtn.value = false
     }
@@ -433,24 +441,48 @@ class CMViewModel @Inject constructor(
         val datosPqtMap = _mapListDatosPqt.value?.toMutableMap() ?: mutableMapOf()
         direccionmap[guia] = DireccionesGuideItem(
             guia,
-            _telefono.value,
-            _nombre.value,
-            _dir1.value,
-            _dir2.value,
-            _dir3.value,
-            _cp.value,
-            _municipio.value,
-            "${_dir1.value} ${_dir2.value} ${_dir3.value}"
+            telefono.value,
+            nombre.value,
+            dir1.value,
+            dir2.value,
+            dir3.value,
+            cp.value,
+            municipio.value,
+            "${dir1.value} ${dir2.value} ${dir3.value}"
         )
-        datosPqtMap[guia] = DatosGuideItem(
-            guia,
-            _alto.value?.toFloat(),
-            _ancho.value?.toFloat(),
-            _largo.value?.toFloat(),
-            _pesoVol.value?.toFloat(),
-            _pesoKg.value?.toFloat(),
-            _typePaq.value
-        )
+
+        if (typeEmbalaje.value == true) {
+            datosPqtMap[guia] = DatosGuideItem(
+                guia,
+                _alto.value?.toFloat(),
+                _ancho.value?.toFloat(),
+                _largo.value?.toFloat(),
+                _pesoVol.value?.toFloat(),
+                _pesoKg.value?.toFloat(),
+                _typePaq.value
+            )
+        } else {
+            datosPqtMap[guia] = DatosGuideItem(
+                guia,
+                1f,
+                1f,
+                1f,
+                1f,
+                1f,
+                "No excedente"
+            )
+        }
+        /*  datosPqtMap[guia] = DatosGuideItem(
+              guia,
+              _alto.value?.toFloat(),
+              _ancho.value?.toFloat(),
+              _largo.value?.toFloat(),
+              _pesoVol.value?.toFloat(),
+              _pesoKg.value?.toFloat(),
+              _typePaq.value
+          )*/
+        _mapListDatosPqt.value = datosPqtMap
+        _mapListDireccion.value = direccionmap
     }
 
     fun getContentQR(guia: String, navigationController: NavHostController) {
@@ -458,7 +490,7 @@ class CMViewModel @Inject constructor(
         val currentmap = _mapListGuide.value?.toMutableMap() ?: mutableMapOf()
         val direccionmap = _mapListDireccion.value?.toMutableMap() ?: mutableMapOf()
         val datosPqtMap = _mapListDatosPqt.value?.toMutableMap() ?: mutableMapOf()
-        val datosRepetidos = datosPqtMap[guia]?.guia
+        val datosRepetidos = datosPqtMap[guia]
         val direccionRepetida = direccionmap[guia]?.guia
         val guiaRepetida = currentmap.get(guia)
         viewModelScope.launch {
@@ -479,8 +511,8 @@ class CMViewModel @Inject constructor(
                             var accessIfDataPqt = false
                             if (direccionRepetida.isNullOrEmpty()) {
                                 Log.d("Dentro de if 1", "$")
-                                val existeDireccion = validateExistsAddressUseCase(guia)
-                                if (existeDireccion) {
+                                val existeDireccion = validateExistsAddressUseCase.invoke(guia)
+                                if (!existeDireccion) {
                                     Log.d("Dentro de if 2", "$")
                                     _isDireccionDialog.value = true
                                 } else {
@@ -488,7 +520,7 @@ class CMViewModel @Inject constructor(
                                 }
                             }
                             if (accessIfDataPqt) {
-                                if (datosRepetidos.isNullOrEmpty()) {
+                                if (datosRepetidos?.guia.isNullOrEmpty()) {
                                     val existeDatosPqt = validateExistsDataPqtUseCase(guia)
                                     if (!existeDatosPqt) {
                                         _isDatosPQTnDialog.value = true
@@ -555,12 +587,30 @@ class CMViewModel @Inject constructor(
         _isLoadBtnEnable.value = enableLoadBtn(currentmap.size)
     }
 
-    fun clavePreGenerate() {
-        val typeManifest = if (selectedOptionTM.value.equals("Local")) {
-            "LCA"
-        } else {
-            "TRF"
+    fun clavePreGenerate(area: String) {
+
+        var typeManifest = ""
+        when (selectedOptionTM.value) {
+            "Local" -> {
+                typeManifest = "LCA"
+
+            }
+
+            "Traslado" -> {
+                typeManifest = "TRF"
+            }
+
+            else -> {
+                typeManifest = "LCA"
+            }
+
         }
+        /* val typeManifest = if (selectedOptionTM.value.equals("Local")) {
+             "LCA"
+         } else {
+             "TRF"
+         }*/
+        _typePreManifest.value = typeManifest
         _clavePreManifest.value = typeManifest + getdatenow() + "UPS"
         val clave = clavePreManifest.value
         Log.i("", "$clave")
@@ -604,15 +654,26 @@ class CMViewModel @Inject constructor(
         }
     }
 
+    fun selectEmployye(employee: FieldDataEI): String? {
+        val nameEmployee = if (areaEmployye.value.equals("Operador Logistico")) {
+            "${employee.nombre} ${employee.aPaterno} ${employee.aMaterno}"
+        } else {
+            nameEmployye.value
+        }
+
+        return nameEmployee
+    }
+
     fun createManifest(consecutivo: Int) {
         viewModelScope.launch {
             val employee = loadEmployeeUseCase.invoke()
+
             val claveManifest = clavePreManifest.value
             val nodo = "UPS"
             val totalPqt = countGuides.value.toString()
             val consecutivoMan = consecutiveMan.value.toString()
-            val nameEmployee = "${employee.nombre} ${employee.aPaterno} ${employee.aMaterno}"
-            val typeManifest = "LCA"
+            val nameEmployee = selectEmployye(employee)
+            val typeManifest = typePreManifest.value
             val ruta = generalMethodsGuide.toUpperLetter(ruta.value!!)
 
             val dataDto: List<String?> = listOf(
@@ -637,6 +698,8 @@ class CMViewModel @Inject constructor(
         _progressCircularLoad.value = 0f
         _isLoadingDataGuide.value = true
         val currentmap = _mapListGuide.value?.toMutableMap() ?: mutableMapOf()
+        val direccionmap = _mapListDireccion.value?.toMutableMap() ?: mutableMapOf()
+        val datosPqtMap = _mapListDatosPqt.value?.toMutableMap() ?: mutableMapOf()
         val totalguides = countGuides.value
         val loading: Float = 100 / totalguides!!.toFloat()
         Log.i("Load", "$loading")
@@ -650,20 +713,47 @@ class CMViewModel @Inject constructor(
                 val observacion = "Asignado"
 
                 for ((key, value) in currentmap) {
-                    var dataDto = listOf(
-                        idPreM,
-                        value,
-                        numPaquetes,
-                        observacion
-                    )
-                    var datalist = emptyList<String>()
+                    val direccion = direccionmap[value]
+                    val datosPqt = datosPqtMap[value]
+                    var dataGuiaDto = listOf(idPreM, value, numPaquetes, observacion)
                     Log.i(key, value)
                     var progress = progressCircularLoad.value
                     Log.i("Agregado", "$progress")
-                    val deferred = async { addGuideManifestUseCase.invoke(dataDto) }
+                    val deferredGuide = async { addGuideManifestUseCase.invoke(dataGuiaDto) }
+                    var dataDir: List<String?> = emptyList()
+                    if (!direccion?.guia.isNullOrEmpty()) {
+                        dataDir = listOf(
+                            generalMethodsGuide.toUpperLetter(direccion?.guia!!),
+                            generalMethodsGuide.toUpperLetter(direccion.telefono!!),
+                            generalMethodsGuide.toUpperLetter(direccion.nombre!!),
+                            generalMethodsGuide.toUpperLetter(direccion.dir1!!),
+                            generalMethodsGuide.toUpperLetter(direccion.dir2!!),
+                            generalMethodsGuide.toUpperLetter(direccion.dir3!!),
+                            generalMethodsGuide.toUpperLetter(direccion.cp!!),
+                            generalMethodsGuide.toUpperLetter(direccion.municipio!!)
+                        )
+                        val deferredDireccion =
+                            async { registerDireccionUseCase.invoke((dataDir as List<String>)) }
+                        deferredDireccion.await()
+                    }
 
+                    if (!datosPqt?.guia.isNullOrEmpty()) {
+                        var dataPqt = DatosPqtDto(
+                            FieldDataDP(
+                                datosPqt!!.guia,
+                                datosPqt.alto!!,
+                                datosPqt.ancho!!,
+                                datosPqt.largo!!,
+                                datosPqt.pesoVol!!,
+                                datosPqt.pesoKg!!,
+                                generalMethodsGuide.toUpperLetter(datosPqt.typePaq!!)
+                            )
+                        )
+                        val deferredDatosPqt = async { registerDatosPqtUseCase.invoke(dataPqt) }
+                        deferredDatosPqt.await()
+                    }
                     Log.i("Agregado", "listo")
-                    deferred.await()
+                    deferredGuide.await()
                     Thread.sleep(1000)
                     launch(Dispatchers.Main) {
                         progres += 1
@@ -673,7 +763,8 @@ class CMViewModel @Inject constructor(
                         progress = _progressCircularLoad.value
                         updateValue(progressCircularLoad.value!!)
                     }
-                    dataDto = emptyList()
+                    dataGuiaDto = emptyList()
+                    dataDir = emptyList()
                 }
             }
         }
