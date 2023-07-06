@@ -22,6 +22,18 @@ class GeneralMethodsGuide @Inject constructor() {
         return StringConvert
     }
 
+    fun reemplazaCaracter(cadena: String, caracter: Char): String {
+        var arreglo = cadena.toCharArray()
+        for (i in arreglo.indices) {
+            if (arreglo[i] == caracter) {
+                arreglo[i] = ' '
+            }
+        }
+        var StringConvert = arreglo.joinToString(separator = "")
+        Log.i("String ", StringConvert)
+        return StringConvert.replace("\\s+".toRegex(), "")
+    }
+
 
     fun quitarsimbolos(text: String): String {
         var arreglo = text.toCharArray()

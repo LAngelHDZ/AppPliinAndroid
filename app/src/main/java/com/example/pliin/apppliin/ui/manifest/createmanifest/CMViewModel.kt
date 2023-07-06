@@ -1,6 +1,6 @@
 package com.example.pliin.apppliin.ui.manifest.createmanifest
 
-import android.content.Context
+import android.annotation.SuppressLint
 import android.util.Log
 import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.lifecycle.LiveData
@@ -8,6 +8,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
+import com.example.pliin.apppliin.data.network.dto.datospqt.DatosPqtDto
+import com.example.pliin.apppliin.data.network.dto.datospqt.FieldDataDP
 import com.example.pliin.apppliin.domain.model.direccionesguideitem.DatosGuideItem
 import com.example.pliin.apppliin.domain.model.direccionesguideitem.DireccionesGuideItem
 import com.example.pliin.apppliin.domain.model.emproyeeitem.DataEI
@@ -18,6 +20,10 @@ import com.example.pliin.apppliin.domain.usecase.GetAllEmployeesUseCase
 import com.example.pliin.apppliin.domain.usecase.GetConsecManUseCase
 import com.example.pliin.apppliin.domain.usecase.GetGuideUseCase
 import com.example.pliin.apppliin.domain.usecase.LoadEmployeeUseCase
+import com.example.pliin.apppliin.domain.usecase.RegisterDatosPqtUseCase
+import com.example.pliin.apppliin.domain.usecase.RegisterDireccionUseCase
+import com.example.pliin.apppliin.domain.usecase.ValidateExistsAddressUseCase
+import com.example.pliin.apppliin.domain.usecase.ValidateExistsDataPqtUseCase
 import com.example.pliin.apppliin.domain.usecase.ValidateGuideSystemUseCase
 import com.example.pliin.apppliin.generals.GeneralMethodsGuide
 import com.journeyapps.barcodescanner.ScanIntentResult
@@ -42,7 +48,11 @@ class CMViewModel @Inject constructor(
     private val addGuideManifestUseCase: AddGuideManifestUseCase,
     private val getAllEmployeesUseCase: GetAllEmployeesUseCase,
     private val getGuideUseCase: GetGuideUseCase,
-    private val validateGuideSystemUseCase: ValidateGuideSystemUseCase
+    private val validateGuideSystemUseCase: ValidateGuideSystemUseCase,
+    private val validateExistsAddressUseCase: ValidateExistsAddressUseCase,
+    private val validateExistsDataPqtUseCase: ValidateExistsDataPqtUseCase,
+    private val registerDatosPqtUseCase: RegisterDatosPqtUseCase,
+    private val registerDireccionUseCase: RegisterDireccionUseCase
 
 ) : ViewModel() {
 
@@ -103,6 +113,9 @@ class CMViewModel @Inject constructor(
     private val _mapListDireccion = MutableLiveData<Map<String, DireccionesGuideItem>>()
     var mapListDireccion: LiveData<Map<String, DireccionesGuideItem>> = _mapListDireccion
 
+    private val _isFormDireccionBtn = MutableLiveData<Boolean>()
+    var isFormDireccionBtn: LiveData<Boolean> = _isFormDireccionBtn
+
     private val _telefono = MutableLiveData<String>()
     var telefono: LiveData<String> = _telefono
 
@@ -124,30 +137,35 @@ class CMViewModel @Inject constructor(
     private val _municipio = MutableLiveData<String>()
     var municipio: LiveData<String> = _municipio
 //=======================================================
-
     //Variables para agregar las medidas del paquete y el peso si es necesario
 
     /*Variable que alamcena las guias que se escanean*/
     private val _mapListDatosPqt = MutableLiveData<Map<String, DatosGuideItem>>()
     var mapListDatosPqt: LiveData<Map<String, DatosGuideItem>> = _mapListDatosPqt
 
+    private val _isFormDatosPqt = MutableLiveData<Boolean>()
+    var isFormDatosPqt: LiveData<Boolean> = _isFormDatosPqt
+
+    private val _isenableBtnCalcular = MutableLiveData<Boolean>()
+    var isenableBtnCalcular: LiveData<Boolean> = _isenableBtnCalcular
+
     private val _typeEmbalaje = MutableLiveData<Boolean>()
     var typeEmbalaje: LiveData<Boolean> = _typeEmbalaje
 
-    private val _alto = MutableLiveData<Float>()
-    var alto: LiveData<Float> = _alto
+    private val _alto = MutableLiveData<String>()
+    var alto: LiveData<String> = _alto
 
-    private val _ancho = MutableLiveData<Float>()
-    var ancho: LiveData<Float> = _ancho
+    private val _ancho = MutableLiveData<String>()
+    var ancho: LiveData<String> = _ancho
 
-    private val _largo = MutableLiveData<Float>()
-    var largo: LiveData<Float> = _largo
+    private val _largo = MutableLiveData<String>()
+    var largo: LiveData<String> = _largo
 
-    private val _pesoVol = MutableLiveData<Float>()
-    var pesoVol: LiveData<Float> = _pesoVol
+    private val _pesoVol = MutableLiveData<String>()
+    var pesoVol: LiveData<String> = _pesoVol
 
-    private val _pesoKg = MutableLiveData<Float>()
-    var pesoKg: LiveData<Float> = _pesoKg
+    private val _pesoKg = MutableLiveData<String>()
+    var pesoKg: LiveData<String> = _pesoKg
 
     private val _typePaq = MutableLiveData<String>()
     var typePaq: LiveData<String> = _typePaq
@@ -158,6 +176,9 @@ class CMViewModel @Inject constructor(
 
     private val _clavePreManifest = MutableLiveData<String>()
     var clavePreManifest: LiveData<String> = _clavePreManifest
+
+    private val _typePreManifest = MutableLiveData<String>()
+    var typePreManifest: LiveData<String> = _typePreManifest
 
     private val _titleAlertDialog = MutableLiveData<String>()
     var titleAlertDialog: LiveData<String> = _titleAlertDialog
@@ -170,8 +191,8 @@ class CMViewModel @Inject constructor(
 
 
     /*Variable que captura lo que captura el scanner en este caos las guias que escanee*/
-    private val _conteQR = MutableLiveData<String>()
-    val contentQR: LiveData<String> = _conteQR
+    private val _contentQR = MutableLiveData<String>()
+    val contentQR: LiveData<String> = _contentQR
 
     /*Variable que recupera  la lista de los operadores logisticos activos*/
     private val _listEmployees = MutableLiveData<List<DataEI>>()
@@ -208,6 +229,88 @@ class CMViewModel @Inject constructor(
 
     fun enableLoadBtn(CountGuide: Int) = CountGuide >= 1
 
+    fun onChangedFormDireccion(
+        nombre: String,
+        telefono: String,
+        dir1: String,
+        dir2: String,
+        dir3: String,
+        cp: String,
+        municipio: String
+    ) {
+        _nombre.value = nombre
+        _telefono.value = telefono
+        _dir1.value = dir1
+        _dir2.value = dir2
+        _dir3.value = dir3
+        _cp.value = cp
+        _municipio.value = municipio
+        _isSelectbtn.value = enableBtnFormDir(nombre, telefono, dir1, dir2, dir3, cp, municipio)
+    }
+
+    fun calcularPesoVol() {
+        val alto = _alto.value?.toFloat()
+        val largo = largo.value?.toFloat()
+        val ancho = ancho.value?.toFloat()
+        val pesoVol = (ancho!! * alto!! * largo!! / 5000)
+
+        if (pesoVol > 30) {
+            _typePaq.value = "Excedente"
+        } else {
+            _typePaq.value = "No excedente"
+        }
+        _pesoVol.value = pesoVol.toString()
+        _isSelectbtn.value = enableBtnFormDatosPqt(pesoVol.toString(), _typePaq.value.toString())
+    }
+
+    fun enableBtnFormDatosPqt(pesoVol: String, typePqt: String) =
+        pesoVol.length > 1 && typePqt.length > 1
+
+    fun enableBtnFormDir(
+        nombre: String,
+        telefono: String,
+        dir1: String,
+        dir2: String,
+        dir3: String,
+        cp: String,
+        municipio: String
+    ) =
+        ((nombre.length > 5 && telefono.length >= 7 && cp.length > 4 && municipio.length > 4) && (dir1.length > 7 || dir2.length > 7 || dir3.length > 7))
+
+    fun onRadioBtnSeleted(value: String) {
+        if (value != "Chico") {
+            _typeEmbalaje.value = true
+            if (ancho.value.isNullOrEmpty() && alto.value.isNullOrEmpty() && largo.value.isNullOrEmpty() && pesoKg.value.isNullOrEmpty()) {
+                _isenableBtnCalcular.value = false
+            } else {
+                _isenableBtnCalcular.value = enabledCaluclarenbaled(
+                    alto.value!!,
+                    ancho.value!!, largo.value!!, pesoKg.value!!
+                )
+            }
+            if (pesoVol.value.isNullOrEmpty() && typePaq.value.isNullOrEmpty()) {
+                _isSelectbtn.value = false
+            } else {
+                _isSelectbtn.value = enableBtnFormDatosPqt(pesoVol.value!!, typePaq.value!!)
+            }
+        } else {
+            _typeEmbalaje.value = false
+            _isSelectbtn.value = true
+            _isenableBtnCalcular.value = false
+        }
+        _isFormDatosPqt.value = value == "Grande"
+    }
+
+    fun onChangedFormDatos(alto: String, largo: String, ancho: String, pesoKg: String) {
+        _alto.value = alto
+        _ancho.value = ancho
+        _largo.value = largo
+        _pesoKg.value = pesoKg
+        _isenableBtnCalcular.value = enabledCaluclarenbaled(alto, ancho, largo, pesoKg)
+    }
+
+    fun enabledCaluclarenbaled(alto: String, ancho: String, largo: String, pesoKg: String) =
+        alto.isNotEmpty() && largo.isNotEmpty() && ancho.isNotEmpty() && pesoKg.isNotEmpty()
 
     fun onValueChangedMT(selected: String) {
         if (!selectedOptionTM.value.equals(selected)) {
@@ -218,7 +321,7 @@ class CMViewModel @Inject constructor(
     }
 
     fun onValueChangeEmployee(name: FieldDataEI) {
-        _nameEmployye.value = name.nombre + name.aPaterno + name.aMaterno
+        _nameEmployye.value = "${name.nombre} ${name.aPaterno} ${name.aMaterno}"
     }
 
     fun onValueChangedRuta(selected: String) {
@@ -238,7 +341,7 @@ class CMViewModel @Inject constructor(
         _countGuides.value = 0
         _countRegisterGuide.value = 0
         _mapListGuide.value = emptyMap()
-        _conteQR.value = ""
+        _contentQR.value = ""
         reset()
     }
 
@@ -287,12 +390,13 @@ class CMViewModel @Inject constructor(
         _messageGuideValidate.value = "Desea registrar las guias al sistema?"
     }
 
-    fun continueSetGuides() {
+    fun continueSetGuides(area: String) {
         _isDialogRuta.value = false
         _ruta.value = selectedOptionRuta.value
+        _isSelectbtn.value = false
 
         getDataEmployee()
-        clavePreGenerate()
+        clavePreGenerate(area)
     }
 
     fun getDataEmployee() {
@@ -307,11 +411,87 @@ class CMViewModel @Inject constructor(
         }
     }
 
+    @SuppressLint("SuspiciousIndentation")
+    fun onContinueForm(form: String) {
+        if (form == "datospqt") {
+            val typeEmbalaje = _typeEmbalaje.value.toString()
+            Log.i("Valor type Embalaje", typeEmbalaje)
+            if (typeEmbalaje == "null") {
+                _typeEmbalaje.value = false
+            }
+            Log.i("Valor type Embalaje livedata", "${_typeEmbalaje.value}")
+            _isDatosPQTnDialog.value = false
+            setDaatosGuia(_contentQR.value!!)
+            Log.i("contenido de Qr", "${contentQR.value}")
+            Log.i("Datos guardados Direcion", "${mapListDireccion.value!![contentQR.value]}")
+            Log.i("Datos guardados peso", "${mapListDatosPqt.value}")
+        } else {
+            _isDireccionDialog.value = false
+            _isDatosPQTnDialog.value = true
+
+            /* if(){
+
+             }*/
+        }
+        //_isSelectbtn.value = false
+    }
+
+    fun setDaatosGuia(guia: String) {
+        val direccionmap = _mapListDireccion.value?.toMutableMap() ?: mutableMapOf()
+        val datosPqtMap = _mapListDatosPqt.value?.toMutableMap() ?: mutableMapOf()
+        direccionmap[guia] = DireccionesGuideItem(
+            guia,
+            telefono.value,
+            nombre.value,
+            dir1.value,
+            dir2.value,
+            dir3.value,
+            cp.value,
+            municipio.value,
+            "${dir1.value} ${dir2.value} ${dir3.value}"
+        )
+
+        if (typeEmbalaje.value == true) {
+            datosPqtMap[guia] = DatosGuideItem(
+                guia,
+                _alto.value?.toFloat(),
+                _ancho.value?.toFloat(),
+                _largo.value?.toFloat(),
+                _pesoVol.value?.toFloat(),
+                _pesoKg.value?.toFloat(),
+                _typePaq.value
+            )
+        } else {
+            datosPqtMap[guia] = DatosGuideItem(
+                guia,
+                1f,
+                1f,
+                1f,
+                1f,
+                1f,
+                "No excedente"
+            )
+        }
+        /*  datosPqtMap[guia] = DatosGuideItem(
+              guia,
+              _alto.value?.toFloat(),
+              _ancho.value?.toFloat(),
+              _largo.value?.toFloat(),
+              _pesoVol.value?.toFloat(),
+              _pesoKg.value?.toFloat(),
+              _typePaq.value
+          )*/
+        _mapListDatosPqt.value = datosPqtMap
+        _mapListDireccion.value = direccionmap
+    }
+
     fun getContentQR(guia: String, navigationController: NavHostController) {
         val formateValidate = generalMethodsGuide.validateFormatGuia(guia)
         val currentmap = _mapListGuide.value?.toMutableMap() ?: mutableMapOf()
         val direccionmap = _mapListDireccion.value?.toMutableMap() ?: mutableMapOf()
         val datosPqtMap = _mapListDatosPqt.value?.toMutableMap() ?: mutableMapOf()
+        val datosRepetidos = datosPqtMap[guia]
+        val direccionRepetida = direccionmap[guia]?.guia
         val guiaRepetida = currentmap.get(guia)
         viewModelScope.launch {
             if (formateValidate) {
@@ -325,33 +505,35 @@ class CMViewModel @Inject constructor(
                     if (codeValidate) {
 //                        val guideAtManifest = guideOtherManifest(guia)
                         val guideOtherManifest = getGuideUseCase.invoke(guia)
-                        val code = guideOtherManifest.component1().isNullOrEmpty()
-                        Log.d("mesage en validación", "$code")
-                        if (code) {
+                        val code400 = guideOtherManifest.component1().isNullOrEmpty()
+                        Log.d("mesage en validación", "$code400")
+                        if (code400) {
+                            var accessIfDataPqt = false
+                            if (direccionRepetida.isNullOrEmpty()) {
+                                Log.d("Dentro de if 1", "$")
+                                val existeDireccion = validateExistsAddressUseCase.invoke(guia)
+                                if (!existeDireccion) {
+                                    Log.d("Dentro de if 2", "$")
+                                    _isDireccionDialog.value = true
+                                } else {
+                                    accessIfDataPqt = true
+                                }
+                            }
+                            if (accessIfDataPqt) {
+                                if (datosRepetidos?.guia.isNullOrEmpty()) {
+                                    val existeDatosPqt = validateExistsDataPqtUseCase(guia)
+                                    if (!existeDatosPqt) {
+                                        _isDatosPQTnDialog.value = true
+                                    }
+                                }
+                            }
+
+                            Log.d("valos de isdialog direccion", "${isDireccionDialog.value}")
+
                             var key = currentmap.size + keyGuide
                             currentmap[guia] = guia
-                            direccionmap[guia] = DireccionesGuideItem(
-                                guia,
-                                telefono.value,
-                                nombre.value,
-                                dir1.value,
-                                dir2.value,
-                                dir3.value,
-                                cp.value,
-                                municipio.value,
-                                "${dir1.value} ${dir2.value} ${dir3.value}"
-                            )
-                            datosPqtMap[guia] = DatosGuideItem(
-                                guia,
-                                alto.value,
-                                ancho.value,
-                                largo.value,
-                                pesoVol.value,
-                                pesoKg.value,
-                                typePaq.value
-                            )
                             _mapListGuide.value = currentmap
-                            _conteQR.value = guia
+                            _contentQR.value = guia
                             _countGuides.value = _mapListGuide.value?.size
                             //setData(guia)
                             _isLoadBtnEnable.value = enableLoadBtn(currentmap.size)
@@ -405,12 +587,30 @@ class CMViewModel @Inject constructor(
         _isLoadBtnEnable.value = enableLoadBtn(currentmap.size)
     }
 
-    fun clavePreGenerate() {
-        val typeManifest = if (selectedOptionTM.value.equals("Local")) {
-            "LCA"
-        } else {
-            "TRF"
+    fun clavePreGenerate(area: String) {
+
+        var typeManifest = ""
+        when (selectedOptionTM.value) {
+            "Local" -> {
+                typeManifest = "LCA"
+
+            }
+
+            "Traslado" -> {
+                typeManifest = "TRF"
+            }
+
+            else -> {
+                typeManifest = "LCA"
+            }
+
         }
+        /* val typeManifest = if (selectedOptionTM.value.equals("Local")) {
+             "LCA"
+         } else {
+             "TRF"
+         }*/
+        _typePreManifest.value = typeManifest
         _clavePreManifest.value = typeManifest + getdatenow() + "UPS"
         val clave = clavePreManifest.value
         Log.i("", "$clave")
@@ -454,15 +654,26 @@ class CMViewModel @Inject constructor(
         }
     }
 
+    fun selectEmployye(employee: FieldDataEI): String? {
+        val nameEmployee = if (areaEmployye.value.equals("Operador Logistico")) {
+            "${employee.nombre} ${employee.aPaterno} ${employee.aMaterno}"
+        } else {
+            nameEmployye.value
+        }
+
+        return nameEmployee
+    }
+
     fun createManifest(consecutivo: Int) {
         viewModelScope.launch {
             val employee = loadEmployeeUseCase.invoke()
+
             val claveManifest = clavePreManifest.value
             val nodo = "UPS"
             val totalPqt = countGuides.value.toString()
             val consecutivoMan = consecutiveMan.value.toString()
-            val nameEmployee = "${employee.nombre} ${employee.aPaterno} ${employee.aMaterno}"
-            val typeManifest = "LCA"
+            val nameEmployee = selectEmployye(employee)
+            val typeManifest = typePreManifest.value
             val ruta = generalMethodsGuide.toUpperLetter(ruta.value!!)
 
             val dataDto: List<String?> = listOf(
@@ -487,6 +698,8 @@ class CMViewModel @Inject constructor(
         _progressCircularLoad.value = 0f
         _isLoadingDataGuide.value = true
         val currentmap = _mapListGuide.value?.toMutableMap() ?: mutableMapOf()
+        val direccionmap = _mapListDireccion.value?.toMutableMap() ?: mutableMapOf()
+        val datosPqtMap = _mapListDatosPqt.value?.toMutableMap() ?: mutableMapOf()
         val totalguides = countGuides.value
         val loading: Float = 100 / totalguides!!.toFloat()
         Log.i("Load", "$loading")
@@ -500,20 +713,47 @@ class CMViewModel @Inject constructor(
                 val observacion = "Asignado"
 
                 for ((key, value) in currentmap) {
-                    var dataDto = listOf(
-                        idPreM,
-                        value,
-                        numPaquetes,
-                        observacion
-                    )
-                    var datalist = emptyList<String>()
+                    val direccion = direccionmap[value]
+                    val datosPqt = datosPqtMap[value]
+                    var dataGuiaDto = listOf(idPreM, value, numPaquetes, observacion)
                     Log.i(key, value)
                     var progress = progressCircularLoad.value
                     Log.i("Agregado", "$progress")
-                    val deferred = async { addGuideManifestUseCase.invoke(dataDto) }
+                    val deferredGuide = async { addGuideManifestUseCase.invoke(dataGuiaDto) }
+                    var dataDir: List<String?> = emptyList()
+                    if (!direccion?.guia.isNullOrEmpty()) {
+                        dataDir = listOf(
+                            generalMethodsGuide.toUpperLetter(direccion?.guia!!),
+                            generalMethodsGuide.toUpperLetter(direccion.telefono!!),
+                            generalMethodsGuide.toUpperLetter(direccion.nombre!!),
+                            generalMethodsGuide.toUpperLetter(direccion.dir1!!),
+                            generalMethodsGuide.toUpperLetter(direccion.dir2!!),
+                            generalMethodsGuide.toUpperLetter(direccion.dir3!!),
+                            generalMethodsGuide.toUpperLetter(direccion.cp!!),
+                            generalMethodsGuide.toUpperLetter(direccion.municipio!!)
+                        )
+                        val deferredDireccion =
+                            async { registerDireccionUseCase.invoke((dataDir as List<String>)) }
+                        deferredDireccion.await()
+                    }
 
+                    if (!datosPqt?.guia.isNullOrEmpty()) {
+                        var dataPqt = DatosPqtDto(
+                            FieldDataDP(
+                                datosPqt!!.guia,
+                                datosPqt.alto!!,
+                                datosPqt.ancho!!,
+                                datosPqt.largo!!,
+                                datosPqt.pesoVol!!,
+                                datosPqt.pesoKg!!,
+                                generalMethodsGuide.toUpperLetter(datosPqt.typePaq!!)
+                            )
+                        )
+                        val deferredDatosPqt = async { registerDatosPqtUseCase.invoke(dataPqt) }
+                        deferredDatosPqt.await()
+                    }
                     Log.i("Agregado", "listo")
-                    deferred.await()
+                    deferredGuide.await()
                     Thread.sleep(1000)
                     launch(Dispatchers.Main) {
                         progres += 1
@@ -523,7 +763,8 @@ class CMViewModel @Inject constructor(
                         progress = _progressCircularLoad.value
                         updateValue(progressCircularLoad.value!!)
                     }
-                    dataDto = emptyList()
+                    dataGuiaDto = emptyList()
+                    dataDir = emptyList()
                 }
             }
         }
