@@ -7,6 +7,8 @@ import com.example.pliin.apppliin.data.model.responseregisterdelivery.ResponseRe
 import com.example.pliin.apppliin.data.model.responserudmodel.ResponseRUDModel
 import com.example.pliin.apppliin.data.model.responseupdatestatus.ResponseUpdateStatusModel
 import com.example.pliin.apppliin.data.network.dto.addguidemanifest.AddGuideToManifest
+import com.example.pliin.apppliin.data.network.dto.datospqt.DatosPqtDto
+import com.example.pliin.apppliin.data.network.dto.direccionguide.DireccionGuideDto
 import com.example.pliin.apppliin.data.network.dto.queryguidescanner.createstatus.CreateStatusGuideDto
 import com.example.pliin.apppliin.data.network.dto.insertguide.InsertGuideDto
 import com.example.pliin.apppliin.data.network.dto.intentoentrega.TryingDeliveryDto
@@ -78,6 +80,20 @@ interface DataGuideClient {
     suspend fun addGuideManifest(
         @Header("Authorization") bearer: String,
         @Body Guide: AddGuideToManifest
+    ): Response<ResponseRUDModel>
+
+    //Enpoint para agregar la direecion de una guia
+    @POST("/fmi/data/v2/databases/PLIIN/layouts/direcciones/records/")
+    suspend fun addDireccionGuide(
+        @Header("Authorization") bearer: String,
+        @Body Guide: DireccionGuideDto
+    ): Response<ResponseRUDModel>
+
+    //Enpoint para agregar lso datos del paquete medidas y peso
+    @POST("/fmi/data/v2/databases/PLIIN/layouts/DatosPaquetes/records/")
+    suspend fun addDatosPqtGuide(
+        @Header("Authorization") bearer: String,
+        @Body Guide: DatosPqtDto
     ): Response<ResponseRUDModel>
 
 

@@ -100,7 +100,9 @@ class MainActivity : ComponentActivity() {
                 LoadingDeliveryScreen(navigationController)
             }
             //Ruta de Screeen de Menu principal de manifiestos
-            composable(route = AppScreen.ManifiestoMainScreen.route) {
+            composable(
+                route = AppScreen.ManifiestoMainScreen.route,
+            ) {
                 ManifiestoMainScreen(navigationController)
             }
             //Ruta de Screen de meenu principal de guias
@@ -112,8 +114,14 @@ class MainActivity : ComponentActivity() {
                 ValidationArrastreScreen(vaViewModel, navigationController)
             }
             //Ruta de Screen para crear un manifiesto
-            composable(route = AppScreen.CreateManifestScreen.route) {
-                CreateManifestScreen(cmViewModel, navigationController)
+            composable(
+                route = AppScreen.CreateManifestScreen.route,
+                arguments = listOf(navArgument("area") { type = NavType.StringType })
+            ) { backStackEntry ->
+                CreateManifestScreen(
+                    navigationController,
+                    backStackEntry.arguments?.getString("area") ?: ""
+                )
             }
 
             //Ruta de Screen para registrar guias al sistema Pliin que llegan de UPS a Salter
