@@ -351,6 +351,25 @@ class CMViewModel @Inject constructor(
     }
 
     fun reset() {
+        _nombre.value = ""
+        _telefono.value = ""
+        _dir1.value = ""
+        _dir2.value = ""
+        _dir3.value = ""
+        _cp.value = ""
+        _municipio.value = ""
+
+        _alto.value = ""
+        _ancho.value = ""
+        _largo.value = ""
+        _pesoVol.value = ""
+        _pesoKg.value = ""
+        _typeEmbalaje.value = false
+        _typePaq.value = ""
+        _typePreManifest.value = ""
+
+        _mapListDireccion.value = emptyMap()
+        _mapListDatosPqt.value = emptyMap()
         _selectedOptionRuta.value = ""
         _selectedOptionTM.value = ""
         _ruta.value = ""
