@@ -52,7 +52,7 @@ class EmployeeService @Inject constructor(
     }
 
     suspend fun getAllEmployee(): EmployeeModel {
-        val bearer = daotoken.getToken().token
+        val bearer = daotoken.getToken()?.token
         val query = AllEmployeeDataDto(listOf(QueryEDto()))
 
         return withContext(Dispatchers.IO) {

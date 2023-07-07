@@ -112,7 +112,7 @@ class GuideService @Inject constructor(
 
     suspend fun queryGuideDireccion(guide: String): QueryGuidePliinModel {
         val query = QueryGuidePliinDto(listOf(Query(guide)))
-        val bearer = daotoken.getToken().token
+        val bearer = daotoken.getToken()?.token
         return withContext(Dispatchers.IO) {
             try {
                 val response = guideapiclient.queryGuideDireccion("Bearer $bearer", query)
@@ -157,7 +157,7 @@ class GuideService @Inject constructor(
 
     suspend fun queryGuideDatosPqt(guide: String): QueryGuidePliinModel {
         val query = QueryGuidePliinDto(listOf(Query(guide)))
-        val bearer = daotoken.getToken().token
+        val bearer = daotoken.getToken()?.token
         return withContext(Dispatchers.IO) {
             try {
                 val response = guideapiclient.queryGuide("Bearer $bearer", query)
@@ -347,7 +347,7 @@ class GuideService @Inject constructor(
             )
         )
 
-        val bearer = daotoken.getToken().token
+        val bearer = daotoken.getToken()?.token
         return withContext(Dispatchers.IO) {
             try {
                 val response = guideapiclient.addDireccionGuide("Bearer $bearer", query)
@@ -389,7 +389,7 @@ class GuideService @Inject constructor(
 
     suspend fun addDatosPqtGuide(datosPqt: DatosPqtDto): ResponseRUDModel {
 
-        val bearer = daotoken.getToken().token
+        val bearer = daotoken.getToken()?.token
         return withContext(Dispatchers.IO) {
             try {
                 val response = guideapiclient.addDatosPqtGuide("Bearer $bearer", datosPqt)
