@@ -38,31 +38,41 @@ class GuideService @Inject constructor(
         val bearer = daotoken.getToken()?.token
         return withContext(Dispatchers.IO) {
             val response = guideapiclient.getDataguide("Bearer $bearer", query)
-            val data = if (response.isSuccessful) {
-                response.body()!!
-            } else {
-                when (response.code()) {
-                    500 -> {
-                        GetDataGuideDRModel(
-                            response.body()?.response,
-                            listOf(MessageModel("401", "No records match the request"))
-                        )
-                    }
-                    401 -> {
-                        GetDataGuideDRModel(
-                            response.body()?.response,
-                            listOf(MessageModel("952", "Invalid FileMaker Data API token (*)"))
-                        )
-                    }
-                    else -> {
-                        GetDataGuideDRModel(
-                            response.body()?.response,
-                            listOf(MessageModel("401", "Invalid FileMaker Data API token (*)"))
-                        )
+            try {
+                val data = if (response.isSuccessful) {
+                    response.body()!!
+                } else {
+                    when (response.code()) {
+                        500 -> {
+                            GetDataGuideDRModel(
+                                response.body()?.response,
+                                listOf(MessageModel("401", "No records match the request"))
+                            )
+                        }
+
+                        401 -> {
+                            GetDataGuideDRModel(
+                                response.body()?.response,
+                                listOf(MessageModel("952", "Invalid FileMaker Data API token (*)"))
+                            )
+                        }
+
+                        else -> {
+                            GetDataGuideDRModel(
+                                response.body()?.response,
+                                listOf(MessageModel("401", "Invalid FileMaker Data API token (*)"))
+                            )
+                        }
                     }
                 }
+                data
+            } catch (e: IOException) {
+                GetDataGuideDRModel(
+                    response.body()?.response,
+                    listOf(MessageModel("500", "Error no network"))
+                )
+
             }
-            data
         }
     }
 

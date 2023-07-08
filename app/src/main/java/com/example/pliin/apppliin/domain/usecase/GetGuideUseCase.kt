@@ -36,6 +36,8 @@ class GetGuideUseCase @Inject constructor(
 
         return if (codeStatus.equals("0") && message.equals("OK")) {
             GetData(guides)
+        } else if (codeStatus.equals("500")) {
+            listOf("500", "", "", "", "", "", "", "", "", "", "", "")
         } else {
             listOf("", "", "", "", "", "", "", "", "", "", "", "")
         }
