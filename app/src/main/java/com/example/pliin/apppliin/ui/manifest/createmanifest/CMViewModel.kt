@@ -76,6 +76,9 @@ class CMViewModel @Inject constructor(
     private val _isAlertDialogConfirmation = MutableLiveData<Boolean>()
     var isAlertDialogConfirmation: LiveData<Boolean> = _isAlertDialogConfirmation
 
+    private val _isSearchEnable = MutableLiveData<Boolean>()
+    var isSearchEnable: LiveData<Boolean> = _isSearchEnable
+
     private val _isDialogRuta = MutableLiveData<Boolean>()
     var isDialogRuta: LiveData<Boolean> = _isDialogRuta
 
@@ -90,6 +93,10 @@ class CMViewModel @Inject constructor(
 
     private val _areaEmployye = MutableLiveData<String>()
     var areaEmployye: LiveData<String> = _areaEmployye
+
+    //Guarda la guia que se escribe en el input texfield
+    private val _guia = MutableLiveData<String>()
+    var guia: LiveData<String> = _guia
 
     private val _selectedOptionRuta = MutableLiveData<String>()
     var selectedOptionRuta: LiveData<String> = _selectedOptionRuta
@@ -226,6 +233,13 @@ class CMViewModel @Inject constructor(
     var codeMessage: Boolean = false
 
     val keyGuide: Int = 1
+
+    fun onSearchChanged(guia: String) {
+        _guia.value = guia
+        _isSearchEnable.value = enableSearch(guia)
+    }
+
+    fun enableSearch(guia: String) = guia.length > 9
 
     fun enableLoadBtn(CountGuide: Int) = CountGuide >= 1
 
