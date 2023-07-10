@@ -1,6 +1,8 @@
 package com.example.pliin.apppliin.generals
 
 import android.util.Log
+import java.io.BufferedReader
+import java.io.InputStreamReader
 import javax.inject.Inject
 
 class GeneralMethodsGuide @Inject constructor() {
@@ -22,6 +24,18 @@ class GeneralMethodsGuide @Inject constructor() {
         return StringConvert
     }
 
+    fun reemplazaCaracter(cadena: String, caracter: Char): String {
+        var arreglo = cadena.toCharArray()
+        for (i in arreglo.indices) {
+            if (arreglo[i] == caracter) {
+                arreglo[i] = ' '
+            }
+        }
+        var StringConvert = arreglo.joinToString(separator = "")
+        Log.i("String ", StringConvert)
+        return StringConvert.replace("\\s+".toRegex(), "")
+    }
+
 
     fun quitarsimbolos(text: String): String {
         var arreglo = text.toCharArray()
@@ -30,6 +44,7 @@ class GeneralMethodsGuide @Inject constructor() {
                 'á' -> {
                     arreglo[i] = 'a'
                 }
+
                 'é' -> {
                     arreglo[i] = 'e'
                 }
@@ -54,5 +69,41 @@ class GeneralMethodsGuide @Inject constructor() {
 
     fun toUpperLetter(text: String): String {
         return text.uppercase()
+    }
+
+    fun toLowerLetter(text: String): String {
+        return text.lowercase()
+    }
+
+    fun checkInternetConnection(): Boolean {
+        return ping("www.google.com")
+    }
+
+    fun ping(host: String): Boolean {
+        val command = "ping -c 4 $host" // El número 4 indica el número de paquetes de ping a enviar
+
+        try {
+            val process = Runtime.getRuntime().exec(command)
+            val reader = BufferedReader(InputStreamReader(process.inputStream))
+            var line: String?
+            val output = StringBuilder()
+
+            while (reader.readLine().also { line = it } != null) {
+                output.append(line + "\n")
+            }
+
+            val exitCode = process.waitFor()
+            if (exitCode == 0) {
+                println("Ping exitoso. Conexión a Internet activa.")
+                println(output.toString())
+                return true
+            } else {
+                println("No se pudo hacer ping. Verifica tu conexión a Internet.")
+                return false
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            return false
+        }
     }
 }

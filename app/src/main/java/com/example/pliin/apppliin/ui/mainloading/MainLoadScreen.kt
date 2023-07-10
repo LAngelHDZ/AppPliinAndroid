@@ -1,5 +1,6 @@
 package com.example.pliin.apppliin.ui.mainloading
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -16,8 +17,10 @@ import androidx.navigation.NavHostController
 import com.example.pliin.R
 import com.example.pliin.navigation.AppScreen
 import kotlinx.coroutines.delay
+import java.io.BufferedReader
+import java.io.InputStreamReader
 
-private var status: Boolean = false
+private var status: Boolean = true
 
 @Composable
 fun MainLoadScreen(
@@ -25,16 +28,25 @@ fun MainLoadScreen(
     NetworkConectivity: Boolean,
     mlViewModel: MLViewModel
 ) {
+    Log.i("Check Internet", "$NetworkConectivity")
     status = NetworkConectivity
-    Loading(navigationController, mlViewModel)
+    Loading(navigationController, mlViewModel, NetworkConectivity)
 }
 
 @Composable
-fun Loading(navigationController: NavHostController, mlViewModel: MLViewModel) {
+fun Loading(
+    navigationController: NavHostController,
+    mlViewModel: MLViewModel,
+    NetworkConectivity: Boolean
+) {
+
+    Log.d("Check Internet", "$NetworkConectivity")
     Screen()
     LaunchedEffect(key1 = true) {
-        delay(2000)
-        if (true) {
+        delay(5000)
+        val checknetwork = ping("www.google.com")
+
+        if (checknetwork) {
             mlViewModel.noToken(navigationController)
         } else {
             navigationController.popBackStack()
@@ -43,17 +55,61 @@ fun Loading(navigationController: NavHostController, mlViewModel: MLViewModel) {
     }
 }
 
+fun ping(host: String): Boolean {
+    val command = "ping -c 4 $host" // El número 4 indica el número de paquetes de ping a enviar
+
+    try {
+        val process = Runtime.getRuntime().exec(command)
+        val reader = BufferedReader(InputStreamReader(process.inputStream))
+        var line: String?
+        val output = StringBuilder()
+
+        while (reader.readLine().also { line = it } != null) {
+            output.append(line + "\n")
+        }
+
+        val exitCode = process.waitFor()
+        if (exitCode == 0) {
+            println("Ping exitoso. Conexión a Internet activa.")
+            println(output.toString())
+            return true
+        } else {
+            println("No se pudo hacer ping. Verifica tu conexión a Internet.")
+            return false
+        }
+    } catch (e: Exception) {
+        e.printStackTrace()
+        return false
+    }
+}
+
+/*Puedes llamar a la función ping() pasando la dirección IP o el nombre de host que deseas hacer ping. Por ejemplo, para hacer ping a Google:
+kotlin
+Copy code*/
+val host = "www.google.com"
+/*
+ping(host)
+Recuerda que esta función realizará un ping síncrono, lo que significa que bloqueará la ejecución del hilo principal hasta que se complete el ping. Para evitar bloquear la interfaz de usuario, es recomendable ejecutar el ping en un hilo secundario o utilizar técnicas de programación asincrónica, como corrutinas (coroutines) o AsyncTask, según tus necesidades específicas.
+*/
+
+
+
+
+
+
+
 @Preview(showSystemUi = true)
 @Composable
-fun Screen(){
-    Box(modifier = Modifier
-        .fillMaxSize()
-        .background(Color(0xFF4c51c6))
-        ,contentAlignment = Alignment.Center
-    ){
+fun Screen() {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color(0xFF4c51c6)), contentAlignment = Alignment.Center
+    ) {
         Column(
             modifier = Modifier.fillMaxWidth(),
-            horizontalAlignment = Alignment.CenterHorizontally) {
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
             Image(
                 painter = painterResource(id = R.drawable.pliin_logo_blanco),
                 contentDescription = "PLIIN",

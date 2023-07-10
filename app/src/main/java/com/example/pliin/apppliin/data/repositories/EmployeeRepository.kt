@@ -31,6 +31,12 @@ class EmployeeRepository @Inject constructor(
         return response.toDomain()
     }
 
+    //Solicita la informaciòn de todos los empleados que son operadores Logisticos empleado a la API
+    suspend fun getAllEmployeeApi(): EmployeeItem {
+        val response = employeeService.getAllEmployee()
+        return response.toDomain()
+    }
+
     //Solicita la informaciòn del empleado a la DB
     suspend fun getEmployeeDB(user: String): FieldDataEI {
         val response = employeeDao.getDataEmployee(user)

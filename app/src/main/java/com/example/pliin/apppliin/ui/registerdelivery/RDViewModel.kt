@@ -56,54 +56,80 @@ class RDViewModel @Inject() constructor(
     fun getContentQR(guia: String, navigationController: NavHostController) {
 
         val formatGuide = generalMethodsGuide.validateFormatGuia(guia)
+
         if (formatGuide) {
             _conteQR.value = guia
             _isLoadingDataGuide.value = true
             viewModelScope.launch {
-                delay(1500)
-                val result = getGuideUseCase.invoke(guia)
-                Log.i("Status intento", result[12].toString())
-                Log.i("Status Guia", result[6].toString())
-                //  Log.i("System guide","$guia")
-                val guia = result[0]
+                if (generalMethodsGuide.checkInternetConnection()) {
+                    //  delay(1500)
+                    val result = getGuideUseCase.invoke(guia)
+//                Log.i("Status intento", result[12].toString())
+//                Log.i("Status Guia", result[6].toString())
+                    //  Log.i("System guide","$guia")
+                    val guide = result[0]
+                    if (!guide.equals("500")) {
+                        if (guide.isNullOrEmpty()) {
+                            messageGuideValidate("La guia $guia no se ha encontrado en un manifiesto")
+                        } else {
+                            when (result[6]) {
+                                "ENTREGADO" -> {
+                                    Log.i("Status Guia", result[6].toString())
+                                    messageGuideValidate("La guia No. $guia ha sido registrada como ENTREGADO")
+                                }
 
+                                "DEVUELTO A SALTER" -> {
+                                    messageGuideValidate("La guia No. $guia ha sido registrada como DEVUELTO A SALTER")
+                                }
 
-                if (guia.isNullOrEmpty()) {
-                    messageGuideValidate("La guia $guia no se ha encontrado en un manifiesto")
-                } else {
-                    when (result[6]) {
-                        "ENTREGADO" -> {
-                            Log.i("Status Guia", result[6].toString())
-                            messageGuideValidate("La guia No. $guia ha sido registrada como ENTREGADO")
+                                "EN RUTA A SALTER" -> {
+                                    messageGuideValidate("La guia No. $guia se encuentra en RUTA A SALTER")
+                                }
+
+                                "ENTREGA FALLIDA" -> {
+                                    messageGuideValidate("La guia No. $guia esta en ENTREGA FALLIDA")
+                                }
+
+                                "ARRASTRE" -> {
+                                    messageGuideValidate("La guia No. $guia se encuentra en ARRASTRE")
+                                }
+
+                                "EN ALMACEN " -> {
+                                    messageGuideValidate("La guia No. $guia se encuentra en ALMACEN")
+                                }
+
+                                "RETORNO" -> {
+                                    messageGuideValidate("La guia No. $guia se encuentra en RETORNO A UPS")
+                                }
+
+                                else -> {
+                                    navigationController.navigate(
+                                        AppScreen.DataGuideScannerScreen.createRoute(
+                                            result[0]!!,
+                                            result[1]!!,
+                                            generalMethodsGuide.reemplazaCaracter(result[2]!!),
+                                            generalMethodsGuide.reemplazaCaracter(result[3]!!),
+                                            result[4]!!,
+                                            result[5]!!,
+                                            result[6]!!,
+                                            result[7]!!,
+                                            result[8]!!,
+                                            result[9]!!,
+                                            result[10]!!,
+                                            result[11]!!,
+                                            result[12]!!
+                                        )
+                                    )
+                                    _isLoadingDataGuide.value = false
+                                    _guia.value = ""
+                                }
+                            }
                         }
-                        "DEVUELTO A SALTER" -> {
-                            messageGuideValidate("La guia No. $guia ha sido registrada como DEVUELTO A SALTER")
-                        }
-                        "ARRASTRE" -> {
-                            messageGuideValidate("La guia No. $guia se encuentra en ARRASTRE")
-                        }
-                        else -> {
-                            navigationController.navigate(
-                                AppScreen.DataGuideScannerScreen.createRoute(
-                                    result[0]!!,
-                                    result[1]!!,
-                                    generalMethodsGuide.reemplazaCaracter(result[2]!!),
-                                    generalMethodsGuide.reemplazaCaracter(result[3]!!),
-                                    result[4]!!,
-                                    result[5]!!,
-                                    result[6]!!,
-                                    result[7]!!,
-                                    result[8]!!,
-                                    result[9]!!,
-                                    result[10]!!,
-                                    result[11]!!,
-                                    result[12]!!
-                                )
-                            )
-                            _isLoadingDataGuide.value = false
-                            _guia.value = ""
-                        }
+                    } else {
+                        messageGuideValidate("Hubo un error al consultar la información")
                     }
+                } else {
+                    messageGuideValidate("Hubo un error de comunicación, favor de revizar su conexión a internet")
                 }
             }
         } else {
@@ -117,7 +143,6 @@ class RDViewModel @Inject() constructor(
         _isSesionDialog.value = true
     }
 
-
     //inicaliza el scanner
     fun initScanner(scanLauncher: ManagedActivityResultLauncher<ScanOptions, ScanIntentResult>) {
 
@@ -126,6 +151,7 @@ class RDViewModel @Inject() constructor(
         scanOptions.setOrientationLocked(true)
         scanOptions.setPrompt("Scannear QR/Barcode")
         scanOptions.setBeepEnabled(false)
+        scanOptions.setTorchEnabled(true)
         scanLauncher.launch(scanOptions)
     }
 

@@ -246,8 +246,8 @@ class VAViewModel @Inject constructor(
         scanOptions.setDesiredBarcodeFormats(ScanOptions.ALL_CODE_TYPES)
         scanOptions.setOrientationLocked(true)
         scanOptions.setPrompt("Scanner QR/Barcode")
-        //   scanOptions.setBarcodeImageEnabled(true)
-        scanOptions.setBeepEnabled(false)
+        scanOptions.setTorchEnabled(true)
+        scanOptions.setBeepEnabled(true)
         scanLauncher.launch(scanOptions)
     }
 

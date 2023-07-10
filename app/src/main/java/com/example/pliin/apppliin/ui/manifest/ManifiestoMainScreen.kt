@@ -17,12 +17,16 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.example.pliin.R
-import com.example.pliin.navigation.AppScreen
+
 
 @Composable
-fun ManifiestoMainScreen(navigationController: NavHostController) {
+fun ManifiestoMainScreen(
+    navigationController: NavHostController,
+    mmViewModel: MMViewModel = hiltViewModel()
+) {
     Box(modifier = Modifier.fillMaxSize()) {
         Header(
             Modifier
@@ -31,7 +35,7 @@ fun ManifiestoMainScreen(navigationController: NavHostController) {
         )
         Body(
             Modifier.align(Alignment.Center),
-            navigationController
+            navigationController, mmViewModel
         )
         Footer(
             Modifier.align(Alignment.BottomCenter),
@@ -59,7 +63,7 @@ fun HeadText(modifier: Modifier) {
 }
 
 @Composable
-fun Body(modifier: Modifier, navigationController: NavHostController) {
+fun Body(modifier: Modifier, navigationController: NavHostController, mmViewModel: MMViewModel) {
     val styleButton = (Modifier
         .padding(horizontal = 50.dp)
         .height(60.dp)
@@ -70,7 +74,7 @@ fun Body(modifier: Modifier, navigationController: NavHostController) {
     ) {
         BodyLogo()
         Spacer(modifier = Modifier.size(16.dp))
-        GroupButton(styleButton, navigationController)
+        GroupButton(styleButton, navigationController, mmViewModel)
     }
 }
 
@@ -84,9 +88,13 @@ fun BodyLogo() {
 }
 
 @Composable
-fun GroupButton(modifier: Modifier, navigationController: NavHostController) {
+fun GroupButton(
+    modifier: Modifier,
+    navigationController: NavHostController,
+    mmViewModel: MMViewModel
+) {
     val spaces = (Modifier.size(20.dp))
-    ButtonCreateManifest(modifier, navigationController)
+    ButtonCreateManifest(modifier, navigationController, mmViewModel)
     Spacer(modifier = spaces)
     ButtonRegisterDelivery(modifier, navigationController)
     // Spacer(modifier = spaces)
@@ -97,9 +105,13 @@ fun GroupButton(modifier: Modifier, navigationController: NavHostController) {
 }
 
 @Composable
-fun ButtonCreateManifest(modifier: Modifier, navigationController: NavHostController) {
+fun ButtonCreateManifest(
+    modifier: Modifier,
+    navigationController: NavHostController,
+    mmViewModel: MMViewModel
+) {
     Button(
-        onClick = { navigationController.navigate(AppScreen.CreateManifestScreen.route) },
+        onClick = { mmViewModel.navigationCreateManifest(navigationController) },
         modifier = modifier,
         colors = ButtonDefaults.buttonColors(
             backgroundColor = Color.White,
