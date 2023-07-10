@@ -21,9 +21,9 @@ class RegisterGuideUseCase @Inject constructor(
         val messageInsertGuide = if (code.component1() == "401") {
             insertGuideUseCase(guide)
         } else {
-            updateStatusUseCase("EN RUTA SALTER", code.component2())
+            updateStatusUseCase("EN ALMACEN", code.component2())
         }
-        val messageCreateStatus = createStatusUSeCase(guide, "EN RUTA SALTER")
+        val messageCreateStatus = createStatusUSeCase(guide, "EN ALMACEN")
 
         return ((messageCreateStatus == "0") and (messageInsertGuide == "0"))
     }
