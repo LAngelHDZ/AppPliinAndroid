@@ -48,7 +48,7 @@ class GetGuideUseCase @Inject constructor(
     }
 
     private fun fiedDatanull(): FieldDataItem {
-        return FieldDataItem("", "", "", "", "", "", "", 0, "", 0.0, "", "", 0.0, "")
+        return FieldDataItem("", "", "", "", "", "", "", "", 0.0, "", "", 0.0, "")
     }
 
     private fun GetData(guides: GetDataGuideRDItem): List<String?> {

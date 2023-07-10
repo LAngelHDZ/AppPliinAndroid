@@ -8,8 +8,6 @@ data class FieldDataModel(
     val idPreM: String?,
     @SerializedName("IdGuia")
     val idGuia: String?,
-    @SerializedName("NumPaquetes")
-    val numPaquetes: Int?,
     @SerializedName("Observacion")
     val observacion: String?,
     @SerializedName("Pesokg")
