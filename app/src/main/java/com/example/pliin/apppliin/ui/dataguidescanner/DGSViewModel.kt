@@ -277,6 +277,7 @@ class DGSViewModel @Inject() constructor(
     fun setDelivery(guide: String, recordId: String, navigationController: NavHostController) {
         var responseOK: Boolean
         _isDeliveryConfirmation.value = true
+        
         viewModelScope.launch() {
             delay(1700)
             Log.i("Guide", guide)
@@ -315,7 +316,6 @@ class DGSViewModel @Inject() constructor(
             if (responseOK) {
                 navigationController.navigate(AppScreen.LoadingDeliveryScreen.route)
                 reset()
-
             }
         }
     }
