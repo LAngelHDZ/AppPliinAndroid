@@ -119,7 +119,7 @@ fun Logo() {
     Image(
         painter = painterResource(id = R.drawable.pliin_logo_morado),
         contentDescription = "PLIIN",
-        modifier = Modifier.size(150.dp)
+        modifier = Modifier.size(160.dp)
     )
 }
 
@@ -255,7 +255,7 @@ fun Footer(modifier: Modifier) {
     Text(
         text = "Copyright C-Pliin x Coco Estudio 2023",
         modifier = modifier,
-        fontSize = 15.sp,
+        fontSize = 13.sp,
         fontWeight = FontWeight.SemiBold,
         color = Color(76, 81, 198)
     )
