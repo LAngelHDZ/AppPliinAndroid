@@ -705,9 +705,13 @@ class CMViewModel @Inject constructor(
             val nodo = "UPS"
             val totalPqt = countGuides.value.toString()
             val consecutivoMan = consecutiveMan.value.toString()
-            val nameEmployee = selectEmployye(employee)
+            var nameEmployee = selectEmployye(employee)
             val typeManifest = typePreManifest.value
             val ruta = generalMethodsGuide.toUpperLetter(ruta.value!!)
+
+            if (nameEmployee.isNullOrEmpty()) {
+                nameEmployee = ""
+            }
 
             val dataDto: List<String?> = listOf(
                 claveManifest,
