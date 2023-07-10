@@ -70,7 +70,9 @@ fun CreateManifestScreen(
     val isFormDatosPqt: Boolean by cmViewModel.isFormDatosPqt.observeAsState(false)
 
 
+    val isSearchEnable: Boolean by cmViewModel.isSearchEnable.observeAsState(false)
     val progressCircular: Float by cmViewModel.progressCircularLoad.observeAsState(0f)
+    val guia: String by cmViewModel.guia.observeAsState("")
     val countGuide: Int by cmViewModel.countGuides.observeAsState(0)
     val selectedOptionRuta: String by cmViewModel.selectedOptionRuta.observeAsState("")
     val nameEmployee: String by cmViewModel.nameEmployye.observeAsState("")
@@ -141,7 +143,12 @@ fun CreateManifestScreen(
                     Modifier
                         .weight(0.6f)
                         .padding(horizontal = 8.dp, vertical = 8.dp),
-                    navigationController, scanLauncher, cmViewModel, isLoadBtnEnable
+                    navigationController,
+                    scanLauncher,
+                    cmViewModel,
+                    isLoadBtnEnable,
+                    guia,
+                    isSearchEnable
                 )
             }
             AlertDialogGuide(
@@ -1424,7 +1431,9 @@ fun Footer(
     navigationController: NavHostController,
     scanLauncher: ManagedActivityResultLauncher<ScanOptions, ScanIntentResult>,
     cmViewModel: CMViewModel,
-    isLoadBtnEnable: Boolean
+    isLoadBtnEnable: Boolean,
+    guia: String,
+    isSearchEnable: Boolean
 ) {
     Box(
         modifier = modifier.fillMaxWidth(),
@@ -1433,8 +1442,16 @@ fun Footer(
         Column() {
             val StyleBox = (Modifier
                 // .weight(1f)
-                .height(50.dp))
-            ButtonScanner(StyleBox, cmViewModel, navigationController, scanLauncher)
+                .height(55.dp))
+            groupBtnInsertGuide(
+                cmViewModel,
+                navigationController,
+                scanLauncher,
+                StyleBox,
+                guia,
+                isSearchEnable
+            )
+            //ButtonScanner(StyleBox, cmViewModel, navigationController, scanLauncher)
             Spacer(modifier = Modifier.size(8.dp))
             ButtonLoadServer(
                 StyleBox,
@@ -1448,14 +1465,109 @@ fun Footer(
 }
 
 @Composable
-fun ButtonScanner(
+fun groupBtnInsertGuide(
+    cmViewModel: CMViewModel,
+    navigationController: NavHostController,
+    scanLauncher: ManagedActivityResultLauncher<ScanOptions, ScanIntentResult>,
+    StyleBox: Modifier,
+    guia: String,
+    isSearchEnable: Boolean
+) {
+    Row(
+        horizontalArrangement = Arrangement.Center,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Box(
+            modifier = Modifier
+                .weight(1f),
+            // .background(Color.Green),
+            contentAlignment = Alignment.Center
+        ) {
+            TextFieldGuia(
+                guia,
+                isSearchEnable,
+                cmViewModel,
+                navigationController,
+                StyleBox, scanLauncher
+            ) {
+                cmViewModel.onSearchChanged(guia = it)
+            }
+        }
+    }
+}
+
+@Composable
+fun TextFieldGuia(
+    guia: String,
+    isSearchEnable: Boolean,
+    cmViewModel: CMViewModel,
+    navigationController: NavHostController,
     modifier: Modifier,
+    scanLauncher: ManagedActivityResultLauncher<ScanOptions, ScanIntentResult>,
+    onTextChanged: (String) -> Unit
+) {
+    OutlinedTextField(
+        modifier = Modifier
+            .height(63.dp)
+            .fillMaxWidth(),
+        value = guia,
+        onValueChange = { onTextChanged(it) },
+        label = {
+            Text(
+                text = "No. de guia",
+                fontSize = 12.sp
+            )
+        },
+        shape = RoundedCornerShape(10),
+        colors = TextFieldDefaults.outlinedTextFieldColors(
+            focusedBorderColor = Color(96, 127, 243),
+            unfocusedBorderColor = Color(76, 81, 198),
+            backgroundColor = Color.White
+        ),
+        maxLines = 1,
+        singleLine = true,
+        trailingIcon = {
+
+            Row() {
+                Button(
+                    enabled = isSearchEnable,
+                    onClick = { cmViewModel.getContentQR(guia, navigationController) },
+                    colors = ButtonDefaults.buttonColors(
+                        backgroundColor = Color(96, 127, 243),
+                        contentColor = Color.White,
+                        disabledBackgroundColor = Color.White,
+                        disabledContentColor = Color(0xFF91a6f3)
+                    )
+                ) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        //Text(text = "Agregar")
+                        Icon(
+                            imageVector = Icons.Rounded.AddCircle,
+                            contentDescription = null,
+                            modifier = Modifier
+                                .size(35.dp),
+                            // tint = Color(0xFF4425a7)
+                        )
+                    }
+
+                }
+
+                ButtonScanner(cmViewModel, navigationController, scanLauncher)
+            }
+
+        },
+    )
+}
+
+@Composable
+fun ButtonScanner(
+    //modifier: Modifier,
     cmViewModel: CMViewModel,
     navigationController: NavHostController,
     scanLauncher: ManagedActivityResultLauncher<ScanOptions, ScanIntentResult>
 ) {
     Button(
-        modifier = modifier.fillMaxWidth(),
+        //modifier = modifier.fillMaxWidth(),
         onClick = { cmViewModel.initScanner(scanLauncher = scanLauncher) },
         shape = RoundedCornerShape(10),
         colors = ButtonDefaults.buttonColors(
@@ -1470,15 +1582,15 @@ fun ButtonScanner(
                 imageVector = Icons.Rounded.QrCodeScanner,
                 contentDescription = null,
                 modifier = Modifier
-                    .weight(1f)
-                    .size(40.dp),
-                tint = Color.White
+                    // .weight(1f)
+                    .size(35.dp),
+                //tint = Color.White
             )
-            Text(
-                text = "Abrir Scanner",
-                fontSize = 14.sp,
-                modifier = Modifier.weight(2f)
-            )
+            //  Text(
+            //    text = "Abrir Scanner",
+            //   fontSize = 14.sp,
+            // modifier = Modifier.weight(2f)
+            // )
         }
     }
 }
