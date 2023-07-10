@@ -417,7 +417,7 @@ class CMViewModel @Inject constructor(
         viewModelScope.launch {
             val data = loadEmployeeUseCase.invoke()
             if (data.area.equals("Operador Logistico")) {
-                _nameEmployye.value = "${data.nombre} ${data.aPaterno}"
+                _nameEmployye.value = "${data.nombre} ${data.aPaterno} ${data.aMaterno}"
             } else {
                 _listEmployees.value = getAllEmployeesUseCase.invoke() as List<DataEI>?
             }
@@ -669,7 +669,7 @@ class CMViewModel @Inject constructor(
     }
 
     fun selectEmployye(employee: FieldDataEI): String? {
-        val nameEmployee = if (areaEmployye.value.equals("Operador Logistico")) {
+        val nameEmployee: String? = if (areaEmployye.value.equals("Operador Logistico")) {
             "${employee.nombre} ${employee.aPaterno} ${employee.aMaterno}"
         } else {
             nameEmployye.value
