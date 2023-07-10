@@ -32,6 +32,7 @@ fun LoginScreen(loginViewModel: LoginViewModel, navigationController: NavHostCon
     val isLoginLoading: Boolean by loginViewModel.isLoginLoading.observeAsState(false)
     val isSesionDialog: Boolean by loginViewModel.isSesionDialog.observeAsState(false)
     val user: String by loginViewModel.user.observeAsState("")
+    val messageDialog: String by loginViewModel.messageDialog.observeAsState("")
     val password: String by loginViewModel.password.observeAsState("")
     val isLoginEnable: Boolean by loginViewModel.isLoginEnable.observeAsState(false)
 
@@ -63,7 +64,7 @@ fun LoginScreen(loginViewModel: LoginViewModel, navigationController: NavHostCon
                 Modifier.align(Alignment.BottomCenter)
             )
 
-            SesionDialog(show = isSesionDialog, loginViewModel)
+            SesionDialog(show = isSesionDialog, loginViewModel, messageDialog)
         }
 
 
@@ -90,15 +91,15 @@ fun ScreenConfirmation(
 }
 
 @Composable
-fun SesionDialog(show: Boolean, loginViewModel: LoginViewModel) {
+fun SesionDialog(show: Boolean, loginViewModel: LoginViewModel, messageDialog: String) {
     if (show) {
         AlertDialog(
             onDismissRequest = { loginViewModel.onSesionDialog() },
             title = { Text(text = "Advertencia") },
-            text = { Text(text = "El usuario o contraseña son incorrectos") },
+            text = { Text(text = messageDialog) },
             confirmButton = {
                 TextButton(onClick = { loginViewModel.onSesionDialog() }) {
-                    Text(text = "Intentar nuevamente")
+                    Text(text = "Cerrar")
                 }
             }
         )
@@ -118,7 +119,7 @@ fun Logo() {
     Image(
         painter = painterResource(id = R.drawable.pliin_logo_morado),
         contentDescription = "PLIIN",
-        modifier = Modifier.size(200.dp)
+        modifier = Modifier.size(150.dp)
     )
 }
 
@@ -126,7 +127,7 @@ fun Logo() {
 fun TextBienvenida() {
     Text(
         text = "¡Hola!",
-        fontSize = 30.sp,
+        fontSize = 18.sp,
         fontWeight = FontWeight.SemiBold,
         color = Color(76, 81, 198)
     )
@@ -164,7 +165,7 @@ fun Body(
 fun TextSesion() {
     Text(
         text = "Iniciar sesiòn",
-        fontSize = 20.sp,
+        fontSize = 14.sp,
         fontWeight = FontWeight.SemiBold,
         color = Color(76, 81, 198)
     )

@@ -9,6 +9,7 @@ import androidx.navigation.NavHostController
 import com.example.pliin.apppliin.domain.usecase.GetGuideUseCase
 import com.example.pliin.apppliin.domain.usecase.GetUserUseCase
 import com.example.pliin.apppliin.domain.usecase.LoginUseCase
+import com.example.pliin.apppliin.generals.GeneralMethodsGuide
 import com.example.pliin.navigation.AppScreen
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
@@ -19,7 +20,8 @@ import javax.inject.Inject
 class LoginViewModel @Inject constructor(
     private val loginUseCase: LoginUseCase,
     private val getUserUseCase: GetUserUseCase,
-    private val getGuideUseCase: GetGuideUseCase
+    private val getGuideUseCase: GetGuideUseCase,
+    private val generalMethodsGuide: GeneralMethodsGuide
 ) :
     ViewModel() {
 
@@ -34,6 +36,9 @@ class LoginViewModel @Inject constructor(
 
     private val _password = MutableLiveData<String>()
     val password: LiveData<String> = _password
+
+    private val _messageDialog = MutableLiveData<String>()
+    val messageDialog: LiveData<String> = _messageDialog
 
     private val _isLoginEnable = MutableLiveData<Boolean>()
     val isLoginEnable: LiveData<Boolean> = _isLoginEnable
@@ -60,27 +65,37 @@ class LoginViewModel @Inject constructor(
         }
     }
 
-    fun onSesionDialog(){
+    fun onSesionDialog() {
         _isSesionDialog.value = false
+    }
+
+    fun messageDialog(message: String) {
+        _messageDialog.value = message
+        _isLoginLoading.value = false
+        _isSesionDialog.value = true
     }
 
     fun onLoginSelected(navigationController: NavHostController) {
         _isLoginLoading.value = true
-        viewModelScope.launch {
-            delay(1000)
-            val tokenEmpty = loginUseCase(user.value!!, password.value!!)
-            if (tokenEmpty) {
-                _isLoginLoading.value = false
-                _isSesionDialog.value = true
-                Log.i("System", "Invalid User")
-            } else {
-                Log.i("System", "result OK")
-                _user.value = ""
-                _password.value = ""
-                _isLoginEnable.value = false
-                navigationController.navigate(AppScreen.AppMainScreen.route)
-                _isLoginLoading.value = false
+        if (generalMethodsGuide.checkInternetConnection()) {
+            viewModelScope.launch {
+                delay(1000)
+                val tokenEmpty = loginUseCase(user.value!!, password.value!!)
+                if (tokenEmpty) {
+                    _isLoginLoading.value = false
+                    messageDialog("El usuario o la contraseña son incorrectos")
+                    Log.i("System", "Invalid User")
+                } else {
+                    Log.i("System", "result OK")
+                    _user.value = ""
+                    _password.value = ""
+                    _isLoginEnable.value = false
+                    navigationController.navigate(AppScreen.AppMainScreen.route)
+                    _isLoginLoading.value = false
+                }
             }
+        } else {
+            messageDialog("Error de comunicación, favor de verificar la conexión a internet")
         }
     }
 }
