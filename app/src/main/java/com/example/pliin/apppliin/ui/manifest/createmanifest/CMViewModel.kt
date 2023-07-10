@@ -364,6 +364,25 @@ class CMViewModel @Inject constructor(
         navigationController.popBackStack()
     }
 
+    fun clearForm() {
+        _nombre.value = ""
+        _telefono.value = ""
+        _dir1.value = ""
+        _dir2.value = ""
+        _dir3.value = ""
+        _cp.value = ""
+        _municipio.value = ""
+
+        _alto.value = ""
+        _ancho.value = ""
+        _largo.value = ""
+        _pesoVol.value = ""
+        _pesoKg.value = ""
+        _typeEmbalaje.value = false
+        _typePaq.value = ""
+        _typePreManifest.value = ""
+    }
+
     fun reset() {
         _nombre.value = ""
         _telefono.value = ""
@@ -516,6 +535,7 @@ class CMViewModel @Inject constructor(
           )*/
         _mapListDatosPqt.value = datosPqtMap
         _mapListDireccion.value = direccionmap
+        clearForm()
     }
 
     fun getContentQR(guia: String, navigationController: NavHostController) {
