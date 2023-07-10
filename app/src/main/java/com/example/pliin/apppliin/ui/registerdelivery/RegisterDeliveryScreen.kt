@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.ArrowBack
 import androidx.compose.material.icons.rounded.LocalShipping
 import androidx.compose.material.icons.rounded.QrCodeScanner
 import androidx.compose.material.icons.rounded.Search
@@ -126,7 +127,7 @@ fun HeadText(modifier: Modifier) {
     Text(
         modifier = modifier.padding(vertical = 16.dp),
         text = "Registrar entrega",
-        fontSize = 30.sp,
+        fontSize = 18.sp,
         fontWeight = FontWeight.SemiBold,
         color = Color.White
     )
@@ -140,7 +141,7 @@ fun HeadButton(
 ) {
     IconButton(onClick = { rdViewModel.navigation(navigationController) }, modifier = modifier) {
         Icon(
-            imageVector = Icons.Rounded.TurnLeft,
+            imageVector = Icons.Rounded.ArrowBack,
             contentDescription = null,
             modifier = modifier.size(50.dp),
             tint = Color.White
@@ -252,7 +253,7 @@ fun ButtonSearch(
             )
             Text(
                 text = "Buscar",
-                fontSize = 20.sp,
+                fontSize = 14.sp,
                 modifier = Modifier.weight(1f),
             )
         }
@@ -296,7 +297,7 @@ fun ButtonScanner(
             )
             Text(
                 text = "Escanear",
-                fontSize = 20.sp,
+                fontSize = 14.sp,
                 modifier = Modifier.weight(1f)
             )
         }

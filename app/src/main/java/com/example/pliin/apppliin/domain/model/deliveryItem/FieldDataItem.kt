@@ -19,8 +19,6 @@ data class FieldDataItem(
     val idPreM: String?,
     @SerializedName("manifiestoPaquetes::estatus")
     val manifiestoPaquetesEstatus: String?,
-    @SerializedName("NumPaquetes")
-    val numPaquetes: Int?,
     @SerializedName("Observacion")
     val observacion: String?,
     @SerializedName("Pesokg")
@@ -45,7 +43,6 @@ fun FieldDataModel.toDomain() =
         idGuia,
         idPreM,
         manifiestoPaquetesEstatus,
-        numPaquetes,
         observacion,
         pesokg,
         preManifiestosEmpresa,
