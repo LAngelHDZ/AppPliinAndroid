@@ -2,18 +2,13 @@ package com.example.pliin.apppliin.core.di
 
 import com.example.pliin.apppliin.core.di.interceptors.BasicAuthInterceptor
 import com.example.pliin.apppliin.core.di.interceptors.BodyInterceptor
-import com.example.pliin.apppliin.core.di.interceptors.RetryConectionInterceptor
 import com.example.pliin.apppliin.data.network.response.clients.*
-import com.google.gson.FieldNamingPolicy
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
-
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-//import kotlinx.serialization.json.Json
-import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -53,7 +48,6 @@ class NetworkModule {
 
     private fun getUnsafeOkHttpClient(): OkHttpClient? {
         return try {
-
             // Create a trust manager that does not validate certificate chains
             val trustAllCerts = arrayOf<TrustManager>(
                 object : X509TrustManager {
@@ -63,20 +57,17 @@ class NetworkModule {
                         authType: String?
                     ) {
                     }
-
                     @Throws(CertificateException::class)
                     override fun checkServerTrusted(
                         chain: Array<X509Certificate?>?,
                         authType: String?
                     ) {
                     }
-
                     override fun getAcceptedIssuers(): Array<X509Certificate?>? {
                         return arrayOf()
                     }
                 }
             )
-
             // Install the all-trusting trust manager
             val sslContext = SSLContext.getInstance("SSL")
             sslContext.init(null, trustAllCerts, SecureRandom())
@@ -110,7 +101,6 @@ class NetworkModule {
             throw RuntimeException(e)
         }
     }
-
     @Singleton
     @Provides
     fun provideLoginClient(retrofit: Retrofit): LoginClient {

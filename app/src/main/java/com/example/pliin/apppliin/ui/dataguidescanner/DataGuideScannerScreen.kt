@@ -2,6 +2,7 @@ package com.example.pliin.apppliin.ui.dataguidescanner
 
 import android.annotation.SuppressLint
 import android.util.Log
+import androidx.camera.view.PreviewView
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -9,8 +10,10 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material.icons.rounded.Camera
 import androidx.compose.material.icons.rounded.Cancel
 import androidx.compose.material.icons.rounded.LocalShipping
+import androidx.compose.material.icons.rounded.PhotoCamera
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
@@ -29,6 +32,11 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.unit.toSize
 import androidx.compose.ui.window.Dialog
 import androidx.navigation.NavHostController
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.compose.ui.viewinterop.AndroidView
 import com.example.pliin.R
 import java.time.LocalDate
 import java.time.LocalTime
@@ -49,7 +57,7 @@ fun getdatenow(): String {
     return LocalDate.now().toString()
 }
 
-@SuppressLint("SuspiciousIndentation")
+@SuppressLint("SuspiciousIndentation", "UnrememberedMutableState")
 @Composable
 fun DataGuideScannerScreen(
     dgsViewModel: DGSViewModel,
@@ -68,6 +76,31 @@ fun DataGuideScannerScreen(
     recordId: String,
     statusIntento: String
 ) {
+
+    /* lateinit var outputDirectory: File
+      lateinit var cameraExecutor: ExecutorService
+
+       var shouldShowCamera: MutableState<Boolean> = mutableStateOf(false)
+
+       lateinit var photoUri: Uri
+      var shouldShowPhoto: MutableState<Boolean> = mutableStateOf(false)
+
+       val requestPermissionLauncher = registerForActivityResult(
+          ActivityResultContracts.RequestPermission()
+      ) { isGranted ->
+          if (isGranted) {
+              Log.i("kilo", "Permission granted")
+              shouldShowCamera.value = true
+          } else {
+              Log.i("kilo", "Permission denied")
+          }
+      }*/
+
+
+
+
+
+
     Log.i("recordid ene view", "$recordId")
     Log.i("status entrega ene view", "$statusIntento")
     val hora = obtenerHoraActual()
@@ -90,6 +123,7 @@ fun DataGuideScannerScreen(
         statusIntento
     )
     val isAlertDialogExit: Boolean by dgsViewModel.isAlertDialogexit.observeAsState(false)
+    val isShowCameraX: Boolean by dgsViewModel.isShowCameraX.observeAsState(false)
     val isAlertDialogConfirmation: Boolean by dgsViewModel.isAlertDialogConfirmation.observeAsState(
         false
     )
@@ -105,42 +139,46 @@ fun DataGuideScannerScreen(
     dgsViewModel.getNameCLient(nombre)
 
     Box(modifier = Modifier.fillMaxSize()) {
-        if (isDeliveryConfirmation) {
-            ScreenConfirmation(Modifier.align(Alignment.Center))
+        if (isShowCameraX) {
+            CameraXview(dgsViewModel, Modifier)
         } else {
-            Header(
-                Modifier
-                    .align(Alignment.TopCenter)
-                    .background(Color(0xFF4425a7)),
-                navigationController, dgsViewModel
-            )
-            Body(
-                Modifier
-                    .align(Alignment.Center)
-                    .padding(horizontal = 8.dp, vertical = 16.dp),
-                data
-            )
-            Footer(
-                Modifier
-                    .align(Alignment.BottomCenter)
-                    .padding(horizontal = 8.dp, vertical = 16.dp), data, dgsViewModel
-            )
-            AlertDialogexitScreen(show = isAlertDialogExit, dgsViewModel, navigationController)
-            AlertDialogConfirmation(
-                show = isAlertDialogConfirmation,
-                dgsViewModel,
-                navigationController,
-                data[0],
-                data[11],
-                data[14],
-                text,
-                status,
-                nameparents,
-                selectedOption,
-                anotherParents,
-                isAnotherParent,
-                listStatusIntentos
-            )
+            if (isDeliveryConfirmation) {
+                ScreenConfirmation(Modifier.align(Alignment.Center))
+            } else {
+                Header(
+                    Modifier
+                        .align(Alignment.TopCenter)
+                        .background(Color(0xFF4425a7)),
+                    navigationController, dgsViewModel
+                )
+                Body(
+                    Modifier
+                        .align(Alignment.Center)
+                        .padding(horizontal = 8.dp, vertical = 16.dp),
+                    data
+                )
+                Footer(
+                    Modifier
+                        .align(Alignment.BottomCenter)
+                        .padding(horizontal = 8.dp, vertical = 16.dp), data, dgsViewModel
+                )
+                AlertDialogexitScreen(show = isAlertDialogExit, dgsViewModel, navigationController)
+                AlertDialogConfirmation(
+                    show = isAlertDialogConfirmation,
+                    dgsViewModel,
+                    navigationController,
+                    data[0],
+                    data[11],
+                    data[14],
+                    text,
+                    status,
+                    nameparents,
+                    selectedOption,
+                    anotherParents,
+                    isAnotherParent,
+                    listStatusIntentos
+                )
+            }
         }
     }
 }
@@ -907,7 +945,7 @@ fun AlertDialogConfirmation(
                     .background(Color.White)
                     .padding(24.dp)
                     .fillMaxWidth()
-                    .height(350.dp)
+                    .height(450.dp)
             ) {
 
                 if (status.equals("ENTREGADO")) {
@@ -940,28 +978,6 @@ fun AlertDialogConfirmation(
                 ButtonsConfirmation(dgsViewModel, idGuia, recordId, navigationController)
             }
         }
-
-        /* AlertDialog(
-             onDismissRequest = {
-                 dgsViewModel.reset()
-             },
-             title = { Text(text = title) },
-             text = { Text(text = text) },
-             confirmButton = {
-                 TextButton(onClick = {
-                     dgsViewModel.setDelivery(idGuia, recordId,navigationController)
-                 }) {
-                     Text(text = "Continuar")
-                 }
-             },
-             dismissButton = {
-                 TextButton(onClick = {
-                     dgsViewModel.reset()
-                 }) {
-                     Text(text = "No")
-                 }
-             }
-         )*/
     }
 }
 
@@ -1021,8 +1037,83 @@ fun ConfirmarEntregaDialog(
         AnotherParent(anotherParents) { dgsViewModel.onValueChangedParents(otherparent = it) }
     }
     Text(text = "Quien recibe")
-    Recibe(parents) { dgsViewModel.onValueChangedRecibe(nameparent = it) }
+    RecibeOrComment(parents) { dgsViewModel.onValueChangedRecibe(nameparent = it) }
+    Spacer(modifier = Modifier.size(14.dp))
+    btnSHowCameraX(dgsViewModel)
+}
 
+@Composable
+fun btnSHowCameraX(dgsViewModel: DGSViewModel) {
+    Button(
+        onClick = { dgsViewModel.onShowCameraX() },
+        modifier = Modifier.fillMaxWidth()
+
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center
+        ) {
+            Icon(
+                imageVector = Icons.Rounded.PhotoCamera,
+                contentDescription = null,
+                modifier = Modifier.size(45.dp),
+                tint = Color.White
+            )
+            Text(text = "Take Photo")
+        }
+    }
+}
+
+@Composable
+fun CameraXview(dgsViewModel: DGSViewModel, modifier: Modifier) {
+    val context = LocalContext.current
+    val lifecycleOwner = LocalLifecycleOwner.current
+    val configuration = LocalConfiguration.current
+    val screenHeight = configuration.screenHeightDp.dp
+    val screenWidth = configuration.screenWidthDp.dp
+    var previewView: PreviewView
+
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center,
+        modifier = Modifier
+        // .fillMaxWidth()
+    ) {
+        Box(
+            modifier = Modifier
+                //.height(screenHeight*0.85f)
+                .fillMaxWidth()
+            //.background(Color.Gray)
+        ) {
+            AndroidView(
+                factory = {
+                    previewView = PreviewView(it)
+                    dgsViewModel.showCameraPreview(previewView, lifecycleOwner)
+                    previewView
+                },
+                modifier = Modifier
+                    .height(screenHeight * 0.85f)
+            )
+        }
+        Box(
+            modifier = Modifier
+                .height(screenHeight * 0.15f)
+                .background(Color.Black)
+                .fillMaxWidth(),
+            contentAlignment = Alignment.Center
+        ) {
+            IconButton(onClick = {
+                dgsViewModel.captureAndSave(context)
+            }) {
+                Icon(
+                    imageVector = Icons.Rounded.Camera,
+                    contentDescription = null,
+                    modifier = Modifier.size(45.dp),
+                    tint = Color.White
+                )
+            }
+        }
+    }
 }
 
 @Composable
@@ -1030,6 +1121,7 @@ fun AnotherParent(anotherParents: String, onTextChanged: (String) -> Unit) {
     OutlinedTextField(
         value = anotherParents,
         onValueChange = { onTextChanged(it) },
+        placeholder = { Text(text = "Selected") },
         shape = RoundedCornerShape(10),
         colors = TextFieldDefaults.outlinedTextFieldColors(
             focusedBorderColor = Color(96, 127, 243),
@@ -1043,7 +1135,7 @@ fun AnotherParent(anotherParents: String, onTextChanged: (String) -> Unit) {
 }
 
 @Composable
-fun Recibe(parents: String, onTextChanged: (String) -> Unit) {
+fun RecibeOrComment(parents: String, onTextChanged: (String) -> Unit) {
     OutlinedTextField(
         value = parents,
         onValueChange = { onTextChanged(it) },
@@ -1184,7 +1276,8 @@ fun ConfirmarDevueltoDialog(
         )
     }
     Spacer(modifier = Modifier.size(14.dp))
-
+    Text(text = "Comentario")
+    RecibeOrComment(parents) { dgsViewModel.onValueChangedRecibe(nameparent = it) }
     // Text(text = "Quien recibe")
     // Recibe(parents){dgsViewModel.onValueChangedRecibe(nameparent = it)}
 }

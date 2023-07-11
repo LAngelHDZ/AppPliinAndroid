@@ -28,7 +28,7 @@ class ManifestService @Inject constructor(
     private val daoToken: TokenDao
 ) {
     suspend fun consecutivoMan(date: String): ConsecutivoManModel {
-        val bearer = daoToken.getToken().token!!
+        val bearer = daoToken.getToken()?.token!!
 
         val query = GetConsecutivoManifestDto(
             listOf(Query("<=$date")),
@@ -135,7 +135,7 @@ class ManifestService @Inject constructor(
 
     @SuppressLint("SuspiciousIndentation")
     suspend fun createManifest(data: List<String>): ResponseRUDModel {
-        val bearer = daoToken.getToken().token!!
+        val bearer = daoToken.getToken()?.token!!
 
         val query = CreateManifestDto(
             FieldData(

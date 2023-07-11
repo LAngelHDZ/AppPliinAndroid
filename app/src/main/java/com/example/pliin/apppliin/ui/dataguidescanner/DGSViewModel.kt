@@ -266,10 +266,8 @@ class DGSViewModel @Inject() constructor(
             }*/
             else {
                 responseOK = setTryDeliveryUseCse.invoke(
-                    guide,
-                    recordId,
-                    generalMethodsGuide.toUpperLetter(status.value!!),
-                    textfieldvacio(parentOrFailDelivery.value)
+                    guide, recordId,
+                    textfieldvacio(status.value), textfieldvacio(parentOrFailDelivery.value)
                 )
             }
 

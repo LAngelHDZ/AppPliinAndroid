@@ -1,14 +1,19 @@
 package com.example.pliin
 
+import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -29,6 +34,7 @@ import com.example.pliin.apppliin.ui.guides.validationarrastre.VAViewModel
 import com.example.pliin.apppliin.ui.guides.validationarrastre.ValidationArrastreScreen
 import com.example.pliin.apppliin.ui.login.LoginScreen
 import com.example.pliin.apppliin.ui.login.LoginViewModel
+import com.example.pliin.apppliin.ui.mainloading.MLViewModel
 import com.example.pliin.apppliin.ui.mainloading.MainLoadScreen
 import com.example.pliin.apppliin.ui.manifest.ManifiestoMainScreen
 import com.example.pliin.apppliin.ui.manifest.createmanifest.CMViewModel
@@ -41,11 +47,14 @@ import com.example.pliin.navigation.AppScreen
 import com.example.pliin.ui.theme.PliinTheme
 
 import dagger.hilt.android.AndroidEntryPoint
+import java.io.File
+import java.util.concurrent.ExecutorService
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     private val loginViewModel: LoginViewModel by viewModels()
     private val mainAppViewModel: MainAppViewModel by viewModels()
+    private val mlViewModel: MLViewModel by viewModels()
     private val rdViewModel: RDViewModel by viewModels()
     private val dgsViewModel: DGSViewModel by viewModels()
     private val rgsViewModel: RGViewModel by viewModels()
@@ -53,6 +62,28 @@ class MainActivity : ComponentActivity() {
     private val cmViewModel: CMViewModel by viewModels()
     private val mfViewModel: MFViewModel by viewModels()
     private lateinit var connectionLiveData: NetworkConectivity
+
+
+    private lateinit var outputDirectory: File
+    private lateinit var cameraExecutor: ExecutorService
+
+    private var shouldShowCamera: MutableState<Boolean> = mutableStateOf(false)
+
+    private lateinit var photoUri: Uri
+    private var shouldShowPhoto: MutableState<Boolean> = mutableStateOf(false)
+
+    private val requestPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        if (isGranted) {
+            Log.i("kilo", "Permission granted")
+            shouldShowCamera.value = true
+        } else {
+            Log.i("kilo", "Permission denied")
+        }
+    }
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         connectionLiveData = NetworkConectivity(this)
@@ -65,6 +96,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colors.background
                 ) {
+
                     AppNavigation(isNetworkAvailable)
                 }
             }
@@ -80,7 +112,7 @@ class MainActivity : ComponentActivity() {
         ) {
             //Ruta de Screen principal de carga de la app
             composable(route = AppScreen.MainLoadScreen.route) {
-                MainLoadScreen(navigationController, isNetworkAvailable)
+                MainLoadScreen(navigationController, isNetworkAvailable, mlViewModel)
             }
             //Ruta de Screen de error de conexion  a internet
             composable(route = AppScreen.FailLoadScreen.route) {
