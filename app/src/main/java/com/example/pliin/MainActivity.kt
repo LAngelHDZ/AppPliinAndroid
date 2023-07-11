@@ -120,8 +120,16 @@ class MainActivity : ComponentActivity() {
                 LoginScreen(loginViewModel = loginViewModel, navigationController)
             }
             //Ruta de Screen de menu principal de la app
-            composable(route = AppScreen.AppMainScreen.route) {
-                MainAppScreen(navigationController, mainAppViewModel)
+            composable(route = AppScreen.AppMainScreen.route,
+            arguments = listOf(
+                navArgument("nameEmployee") { type = NavType.StringType },
+                navArgument("area") { type = NavType.StringType },
+            )
+            ) {backStackEntry ->
+                MainAppScreen(navigationController,
+                    backStackEntry.arguments?.getString("nameEmployee") ?: "",
+                    backStackEntry.arguments?.getString("area") ?: "",
+                )
             }
             //Ruta de Screen de Registrar entregas o intentos de entrega de paquetes
             composable(route = AppScreen.RegisterDeliveryScreen.route) {

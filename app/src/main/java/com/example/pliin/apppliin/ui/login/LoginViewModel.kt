@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
 import com.example.pliin.apppliin.domain.usecase.GetGuideUseCase
 import com.example.pliin.apppliin.domain.usecase.GetUserUseCase
+import com.example.pliin.apppliin.domain.usecase.LoadEmployeeUseCase
 import com.example.pliin.apppliin.domain.usecase.LoginUseCase
 import com.example.pliin.apppliin.generals.GeneralMethodsGuide
 import com.example.pliin.navigation.AppScreen
@@ -21,7 +22,8 @@ class LoginViewModel @Inject constructor(
     private val loginUseCase: LoginUseCase,
     private val getUserUseCase: GetUserUseCase,
     private val getGuideUseCase: GetGuideUseCase,
-    private val generalMethodsGuide: GeneralMethodsGuide
+    private val generalMethodsGuide: GeneralMethodsGuide,
+    private val loadEmployeeUseCase: LoadEmployeeUseCase
 ) :
     ViewModel() {
 
@@ -77,20 +79,26 @@ class LoginViewModel @Inject constructor(
 
     fun onLoginSelected(navigationController: NavHostController) {
         _isLoginLoading.value = true
-        if (generalMethodsGuide.checkInternetConnection()) {
+        if (generalMethodsGuide.checkInternetConnection()){
             viewModelScope.launch {
                 delay(1000)
                 val tokenEmpty = loginUseCase(user.value!!, password.value!!)
-                if (tokenEmpty) {
+                if (tokenEmpty){
                     _isLoginLoading.value = false
                     messageDialog("El usuario o la contraseña son incorrectos")
                     Log.i("System", "Invalid User")
-                } else {
+                }else{
+                    val data = loadEmployeeUseCase.invoke()
                     Log.i("System", "result OK")
                     _user.value = ""
                     _password.value = ""
                     _isLoginEnable.value = false
-                    navigationController.navigate(AppScreen.AppMainScreen.route)
+
+                    //Remplaza los espacios por un punto para poder pasarlo por parametro en la URL a la vista nueva, de l¡no hacerlo manda un error de ruta ya que cada parametro debe ser separado por un "/"
+                    val name=  generalMethodsGuide.reemplazaCaracter("${data.nombre} ${data.aPaterno}",' ',' ')
+                    val area=  generalMethodsGuide.reemplazaCaracter("${data.area}",' ',' ')
+
+                    navigationController.navigate(AppScreen.AppMainScreen.createRoute(name,area))
                     _isLoginLoading.value = false
                 }
             }

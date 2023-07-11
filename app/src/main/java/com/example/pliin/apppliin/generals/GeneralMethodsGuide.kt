@@ -36,6 +36,18 @@ class GeneralMethodsGuide @Inject constructor() {
         return StringConvert.replace("\\s+".toRegex(), "")
     }
 
+    fun reemplazaCaracter(cadena: String, caracter: Char,remplazo:Char): String {
+        var arreglo = cadena.toCharArray()
+        for (i in arreglo.indices) {
+            if (arreglo[i] == caracter) {
+                arreglo[i] = remplazo
+            }
+        }
+        var stringConvert = arreglo.joinToString(separator = "")
+        Log.i("String ", stringConvert)
+        return stringConvert
+    }
+
 
     fun quitarsimbolos(text: String): String {
         var arreglo = text.toCharArray()
@@ -61,7 +73,7 @@ class GeneralMethodsGuide @Inject constructor() {
             }
             Log.i("Cambiado", arreglo[i].toString())
         }
-        var stringConvert = arreglo.joinToString(separator = "")
+        var stringConvert = arreglo.joinToString()
         Log.i("String ", stringConvert)
         return stringConvert
     }

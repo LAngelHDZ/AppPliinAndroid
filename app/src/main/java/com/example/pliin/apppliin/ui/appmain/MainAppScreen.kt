@@ -1,6 +1,7 @@
 package com.example.pliin.apppliin.ui.appmain
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -20,6 +21,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.*
 import androidx.compose.ui.unit.*
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import com.example.pliin.R
@@ -27,14 +29,14 @@ import com.example.pliin.navigation.AppScreen
 
 
 @Composable
-fun MainAppScreen(navigationController: NavHostController, mainAppViewModel: MainAppViewModel) {
+fun MainAppScreen(navigationController: NavHostController,Employee: String,area:String,mainAppViewModel: MainAppViewModel = hiltViewModel()) {
 
     val isLogout: Boolean by mainAppViewModel.isLogout.observeAsState(false)
     val isLoged: Boolean by mainAppViewModel.isLoged.observeAsState(true)
     val nameEmployee: String by mainAppViewModel.nameEmployee.observeAsState("")
     val areaEmployee: String by mainAppViewModel.areaEmployee.observeAsState("")
 
-    if (isLoged) {
+    if (isLoged){
         mainAppViewModel.getDataEmployee()
     }
 
@@ -49,7 +51,7 @@ fun MainAppScreen(navigationController: NavHostController, mainAppViewModel: Mai
             Header(
                 Modifier
                     .align(Alignment.TopStart)
-                    .background(Color(0xFF4425a7)), nameEmployee, areaEmployee
+                    .background(Color(0xFF4425a7)),Employee, area
             )
             Body(Modifier.align(Alignment.Center), navigationController)
             Footer(Modifier.align(Alignment.BottomCenter), navigationController, mainAppViewModel)

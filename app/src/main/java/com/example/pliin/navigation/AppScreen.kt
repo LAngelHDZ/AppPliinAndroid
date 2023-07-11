@@ -5,7 +5,12 @@ sealed class AppScreen(val route:String){
     object MainLoadScreen : AppScreen("MainLoadScreen")
     object FailLoadScreen : AppScreen("FailLoadScreen")
     object LoginScreen : AppScreen("LoginScreen")
-    object AppMainScreen : AppScreen("MainAppScreen")
+    object AppMainScreen : AppScreen("MainAppScreen/{nameEmployee}/{area}"){
+        fun createRoute(
+            nameEmployee:String,
+            area:String
+        )= "MainAppScreen/$nameEmployee/$area"
+    }
     object ValidationArrastreScreen : AppScreen("ValidationArrastreScreen")
     object ReceptionGuideScreen : AppScreen("ReceptionGuideScreen/{function}") {
         fun createRoute(
