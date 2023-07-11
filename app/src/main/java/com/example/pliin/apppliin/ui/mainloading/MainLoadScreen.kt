@@ -46,7 +46,7 @@ fun Loading(
         delay(5000)
         val checknetwork = ping("www.google.com")
 
-        if (checknetwork || status) {
+        if (checknetwork) {
             mlViewModel.noToken(navigationController)
         } else {
             navigationController.popBackStack()
