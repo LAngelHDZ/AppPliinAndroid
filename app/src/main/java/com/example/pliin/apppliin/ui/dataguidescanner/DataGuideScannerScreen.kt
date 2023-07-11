@@ -296,7 +296,7 @@ fun StationTextField(guia: String) {
             onValueChange = {
             },
             textStyle = TextStyle(
-                fontSize = 18.sp,
+                fontSize = 14.sp,
                 fontWeight = FontWeight.SemiBold,
                 color = Color.DarkGray
             ),
@@ -945,7 +945,7 @@ fun AlertDialogConfirmation(
                     .background(Color.White)
                     .padding(24.dp)
                     .fillMaxWidth()
-                    .height(450.dp)
+                    .height(470.dp)
             ) {
 
                 if (status.equals("ENTREGADO")) {
