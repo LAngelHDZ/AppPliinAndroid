@@ -86,7 +86,7 @@ class GeneralMethodsGuide @Inject constructor() {
         return text.lowercase()
     }
 
-    fun checkInternetConnection(): Boolean {
+     fun checkInternetConnection(): Boolean {
         return ping("www.google.com")
     }
 

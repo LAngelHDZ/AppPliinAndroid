@@ -13,6 +13,7 @@ import com.example.pliin.apppliin.domain.usecase.LoginUseCase
 import com.example.pliin.apppliin.generals.GeneralMethodsGuide
 import com.example.pliin.navigation.AppScreen
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -77,33 +78,40 @@ class LoginViewModel @Inject constructor(
         _isSesionDialog.value = true
     }
 
+    fun reset(){
+        _user.value = ""
+        _password.value = ""
+        _isLoginEnable.value = false
+    }
+
     fun onLoginSelected(navigationController: NavHostController) {
         _isLoginLoading.value = true
-        if (generalMethodsGuide.checkInternetConnection()){
-            viewModelScope.launch {
+        viewModelScope.launch() {
+            if (generalMethodsGuide.checkInternetConnection()) {
                 delay(1000)
                 val tokenEmpty = loginUseCase(user.value!!, password.value!!)
-                if (tokenEmpty){
+                if (tokenEmpty) {
                     _isLoginLoading.value = false
                     messageDialog("El usuario o la contraseña son incorrectos")
                     Log.i("System", "Invalid User")
-                }else{
+                } else {
                     val data = loadEmployeeUseCase.invoke()
                     Log.i("System", "result OK")
-                    _user.value = ""
-                    _password.value = ""
-                    _isLoginEnable.value = false
-
                     //Remplaza los espacios por un punto para poder pasarlo por parametro en la URL a la vista nueva, de l¡no hacerlo manda un error de ruta ya que cada parametro debe ser separado por un "/"
-                    val name=  generalMethodsGuide.reemplazaCaracter("${data.nombre} ${data.aPaterno}",' ',' ')
-                    val area=  generalMethodsGuide.reemplazaCaracter("${data.area}",' ',' ')
+                    val name = generalMethodsGuide.reemplazaCaracter(
+                        "${data.nombre} ${data.aPaterno}",
+                        ' ',
+                        ' '
+                    )
+                    val area = generalMethodsGuide.reemplazaCaracter("${data.area}", ' ', ' ')
 
-                    navigationController.navigate(AppScreen.AppMainScreen.createRoute(name,area))
-                    _isLoginLoading.value = false
+                    navigationController.navigate(AppScreen.AppMainScreen.createRoute(name, area))
+                    reset()
                 }
+
+            } else {
+                messageDialog("Error de comunicación, favor de verificar la conexión a internet")
             }
-        } else {
-            messageDialog("Error de comunicación, favor de verificar la conexión a internet")
         }
     }
 }
