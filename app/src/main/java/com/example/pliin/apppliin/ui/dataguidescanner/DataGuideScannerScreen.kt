@@ -328,9 +328,9 @@ fun Cods(data: List<String>) {
     Row(modifier = Modifier.fillMaxWidth())
     {
         // Spacer(modifier = Modifier.size(4.dp))
-        Box(modifier = Modifier.weight(0.3f)) {
-            Cod(Modifier, data[5])
-        }
+        //    Box(modifier = Modifier.weight(0.3f)) {
+        //      Cod(Modifier, data[5])
+        // }
         Spacer(modifier = Modifier.size(4.dp))
         Box(modifier = Modifier.weight(1f)) {
             ValueCod(Modifier, data[10])
@@ -355,7 +355,7 @@ fun Cod(Modifier: Modifier.Companion, cod: String) {
             value = cod, onValueChange = {},
             readOnly = true,
             textStyle = TextStyle(
-                fontSize = 18.sp,
+                fontSize = 12.sp,
                 fontWeight = FontWeight.Medium,
                 color = Color.DarkGray
             ),
