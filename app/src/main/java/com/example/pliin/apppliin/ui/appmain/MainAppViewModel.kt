@@ -33,7 +33,7 @@ class MainAppViewModel @Inject constructor(
     var areaEmployee: LiveData<String> = _areaEmployye
 
     fun logut(navigationController: NavHostController) {
-        _isLoged.value = false
+
         _isLogout.value = true
         viewModelScope.launch {
             delay(1500)
@@ -41,16 +41,16 @@ class MainAppViewModel @Inject constructor(
                 deleteUserUSeCase.invoke()
                 navigate(navigationController)
                 _isLogout.value = false
+                _isLoged.value = true
             }
         }
     }
 
-    fun getDataEmployee() {
-        viewModelScope.launch {
-            val data = loadEmployeeUseCase.invoke()
-            _nameEmployye.value = "${data.nombre} ${data.aPaterno}"
-            _areaEmployye.value = data.area
-        }
+    fun gsaveDataEmployee(name:String,area:String) {
+
+            _nameEmployye.value = name
+            _areaEmployye.value = area
+        _isLoged.value=false
     }
 
     private fun navigate(navController: NavHostController) {
