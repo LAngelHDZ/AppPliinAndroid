@@ -54,7 +54,7 @@ fun HeadText(modifier: Modifier) {
     Box(modifier = modifier.fillMaxWidth()) {
         Text(
             modifier = modifier.padding(vertical = 16.dp),
-            text = "Menu principal",
+            text = "Manifiesto",
             fontSize = 30.sp,
             fontWeight = FontWeight.SemiBold,
             color = Color.White
@@ -96,7 +96,7 @@ fun GroupButton(
     val spaces = (Modifier.size(20.dp))
     ButtonCreateManifest(modifier, navigationController, mmViewModel)
     Spacer(modifier = spaces)
-    ButtonRegisterDelivery(modifier, navigationController)
+   // ButtonRegisterDelivery(modifier, navigationController)
     // Spacer(modifier = spaces)
     // ButtonConsult(modifier)
     //  Spacer(modifier = spaces)
@@ -111,13 +111,13 @@ fun ButtonCreateManifest(
     mmViewModel: MMViewModel
 ) {
     Button(
-        onClick = { mmViewModel.navigationCreateManifest(navigationController) },
+        onClick = { mmViewModel.navigationCreateManifest(navigationController)},
         modifier = modifier,
         colors = ButtonDefaults.buttonColors(
             backgroundColor = Color.White,
             contentColor = Color.Black
         )
-    ) {
+    ){
         Icon(
             imageVector = Icons.Rounded.PostAdd,
             contentDescription = null,
@@ -125,7 +125,7 @@ fun ButtonCreateManifest(
             tint = Color(76, 81, 198)
         )
         Text(
-            text = "Crear manifiesto",
+            text = "Crear",
             fontSize = 18.sp,
         )
     }
@@ -134,13 +134,13 @@ fun ButtonCreateManifest(
 @Composable
 fun ButtonRegisterDelivery(modifier: Modifier, navigationController: NavHostController) {
     Button(
-        onClick = { },
+        onClick = {},
         modifier = modifier,
         colors = ButtonDefaults.buttonColors(
             backgroundColor = Color.White,
             contentColor = Color.Black
         )
-    ) {
+    ){
         Icon(
             imageVector = Icons.Rounded.Checklist,
             contentDescription = null,
@@ -148,7 +148,7 @@ fun ButtonRegisterDelivery(modifier: Modifier, navigationController: NavHostCont
             tint = Color(0xFF4c51c6)
         )
         Text(
-            text = "Mis Manifiestos",
+            text = "Listar",
             fontSize = 18.sp,
             modifier = Modifier.padding(end = 28.dp)
         )
@@ -221,13 +221,13 @@ fun Footer(modifier: Modifier, navigationController: NavHostController) {
         )
     ) {
         Icon(
-            imageVector = Icons.Rounded.Home,
+            imageVector = Icons.Rounded.ArrowBack,
             contentDescription = null,
             modifier = Modifier.size(70.dp),
             tint = Color(76, 81, 198)
         )
         Text(
-            text = "Menu principal",
+            text = "Regresar",
             fontSize = 18.sp,
         )
     }
