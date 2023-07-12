@@ -17,6 +17,12 @@ class ManifestRepository @Inject constructor(private val manifestService: Manife
         return response.toDomain()
     }
 
+    suspend fun getManifest(data: List<String>): ConsecutivoManItem {
+        val response = manifestService.getManifest(data)
+        Log.d("En retrofit objeto M", "$response")
+        return response.toDomain()
+    }
+
     suspend fun createManifest(data: List<String?>): ResponseRUDItem {
         val response = manifestService.createManifest(data as List<String>)
         Log.d("En retrofit objeto M", "$response")

@@ -25,6 +25,7 @@ sealed class AppScreen(val route:String){
       }*/
 
     object ManifiestoMainScreen : AppScreen("ManifiestoMainScreen")
+    object ManifestScreen : AppScreen("ManifestScreen")
     object MenuGuideScreen : AppScreen("MenuGuideScreen")
     object CreateManifestScreen : AppScreen("CreateManifestScreen/{area}") {
         fun createRoute(

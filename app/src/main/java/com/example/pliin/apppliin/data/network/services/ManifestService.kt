@@ -14,6 +14,9 @@ import com.example.pliin.apppliin.data.network.dto.createmanifest.FieldData
 import com.example.pliin.apppliin.data.network.dto.getconsecutivomanifiesto.GetConsecutivoManifestDto
 import com.example.pliin.apppliin.data.network.dto.getconsecutivomanifiesto.Query
 import com.example.pliin.apppliin.data.network.dto.getconsecutivomanifiesto.Sort
+import com.example.pliin.apppliin.data.network.dto.getmanifest.GetManifestDto
+import com.example.pliin.apppliin.data.network.dto.getmanifest.Querym
+import com.example.pliin.apppliin.data.network.dto.getmanifest.Sortm
 import com.example.pliin.apppliin.data.network.response.clients.DataManifestClient
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -72,6 +75,64 @@ class ManifestService @Inject constructor(
             }
         }
     }
+
+    suspend fun getManifest(data: List<String>): ConsecutivoManModel {
+        val bearer = daoToken.getToken().token!!
+
+
+        val query = GetManifestDto(
+            listOf(Querym(data.component1(), data.component2())),
+            listOf(Sortm("Fecha"), Sortm("hora")),
+            data.component3()
+        )
+//        val query = GetConsecutivoManifestDto(
+//            listOf(Query("<=$date")),
+//            listOf(Sort("Fecha"), Sort("hora"))
+//        )
+        return withContext(Dispatchers.IO) {
+
+            try {
+                val response = dataManifestClient.getManifest("Bearer $bearer", query)
+                val data = if (response.isSuccessful) {
+                    Log.d("En retrofit objeto M", "${response.body()}")
+                    response.body()!!
+                } else {
+                    when (response.code()) {
+                        500 -> {
+                            ConsecutivoManModel(
+                                response.body()?.response,
+                                listOf(Message("500", "No found Record"))
+                            )
+                        }
+
+                        400 -> {
+                            ConsecutivoManModel(
+                                response.body()?.response,
+                                listOf(Message("400", "No found Record"))
+                            )
+                        }
+
+                        else -> {
+                            ConsecutivoManModel(
+                                response.body()?.response,
+                                listOf(Message("400", "No found Record"))
+                            )
+                        }
+                    }
+                }
+                data
+            } catch (e: IOException) {
+                ConsecutivoManModel(
+                    ResponseConsecutive(
+                        DataInfoModel("", 0, "", 0, "", 0),
+                        emptyList()
+                    ),
+                    listOf(Message("500", "No found Record"))
+                )
+            }
+        }
+    }
+
     @SuppressLint("SuspiciousIndentation")
     suspend fun createManifest(data: List<String>): ResponseRUDModel {
         val bearer = daoToken.getToken()?.token!!
