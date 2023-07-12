@@ -15,11 +15,22 @@ class GetManifestUseCase @Inject constructor(
     suspend operator fun invoke(date: String): List<Data?>? {
         reloginUseCase
         val employee = loadEmployeeUseCase.invoke()
-        val nameEmployee = "${employee.nombre} ${employee.aPaterno} ${employee.aMaterno}"
-        val data: List<String> = listOf(date, nameEmployee, "3")
-        val response = manifestRepository.getManifest(data)
 
-        return response.response?.data
+
+        val nameEmployee = if(employee.area.equals("Operador Logistico")){
+            "${employee.nombre} ${employee.aPaterno} ${employee.aMaterno}"
+        }else{
+            ""
+        }
+
+        val  limit = if(employee.area.equals("Operador Logistico")){
+            "5"
+        }else{
+            "20"
+        }
+        val data: List<String> = listOf(date, nameEmployee, limit)
+        val response = manifestRepository.getManifest(data)
         Log.d("Manifest", "$response")
+        return response.response?.data
     }
 }

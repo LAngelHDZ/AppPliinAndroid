@@ -20,6 +20,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.example.pliin.R
+import com.example.pliin.navigation.AppScreen
 
 
 @Composable
@@ -96,7 +97,7 @@ fun GroupButton(
     val spaces = (Modifier.size(20.dp))
     ButtonCreateManifest(modifier, navigationController, mmViewModel)
     Spacer(modifier = spaces)
-   // ButtonRegisterDelivery(modifier, navigationController)
+    ButtonViewManifest(modifier, navigationController)
     // Spacer(modifier = spaces)
     // ButtonConsult(modifier)
     //  Spacer(modifier = spaces)
@@ -132,9 +133,9 @@ fun ButtonCreateManifest(
 }
 
 @Composable
-fun ButtonRegisterDelivery(modifier: Modifier, navigationController: NavHostController) {
+fun ButtonViewManifest(modifier: Modifier, navigationController: NavHostController) {
     Button(
-        onClick = {},
+        onClick = {navigationController.navigate(AppScreen.ManifestScreen.route)},
         modifier = modifier,
         colors = ButtonDefaults.buttonColors(
             backgroundColor = Color.White,

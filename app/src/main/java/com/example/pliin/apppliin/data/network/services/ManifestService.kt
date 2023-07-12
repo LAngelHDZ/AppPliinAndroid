@@ -77,7 +77,7 @@ class ManifestService @Inject constructor(
     }
 
     suspend fun getManifest(data: List<String>): ConsecutivoManModel {
-        val bearer = daoToken.getToken().token!!
+        val bearer = daoToken.getToken()?.token
 
 
         val query = GetManifestDto(

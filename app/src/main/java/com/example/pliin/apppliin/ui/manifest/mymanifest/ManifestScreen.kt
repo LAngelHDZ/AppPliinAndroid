@@ -15,7 +15,6 @@ import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ArrowRight
-import androidx.compose.material.icons.rounded.Assignment
 import androidx.compose.material.icons.rounded.Cancel
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -26,6 +25,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 import androidx.navigation.NavHostController
 import com.example.pliin.apppliin.domain.model.consecutivomanifestitem.Data
 import com.example.pliin.apppliin.domain.model.consecutivomanifestitem.FieldData
@@ -37,6 +37,7 @@ fun ManifestScreen(navigationController: NavHostController, mfViewModel: MFViewM
 
     val listManifest: List<Data> by mfViewModel.listManifest.observeAsState(listOf())
     val enableLoadManifest: Boolean by mfViewModel.enableLoadManifest.observeAsState(true)
+    val optionsDialog: Boolean by mfViewModel.optionsDialog.observeAsState(false)
 
     if (enableLoadManifest) {
         mfViewModel.loadManifest()
@@ -47,7 +48,8 @@ fun ManifestScreen(navigationController: NavHostController, mfViewModel: MFViewM
             Header(
                 Modifier
                     .weight(0.2f)
-                    .background(Color(0xFF4425a7)), navigationController
+                    .background(Color(0xFF4425a7)), navigationController,
+                mfViewModel
             )
             Body(
                 Modifier
@@ -62,17 +64,19 @@ fun ManifestScreen(navigationController: NavHostController, mfViewModel: MFViewM
         }
     }
 
+    dialogOptions(optionsDialog)
+
 }
 
 @Composable
-fun Header(modifier: Modifier, navigationController: NavHostController) {
+fun Header(modifier: Modifier, navigationController: NavHostController, mfViewModel: MFViewModel) {
     TopAppBar(modifier = modifier.fillMaxWidth(),
         title = { Text(text = "Manifiestos") },
         backgroundColor = Color(0xFF4425a7),
         contentColor = Color.White,
         elevation = 4.dp,
         navigationIcon = {
-            IconButton(onClick = { navigationController.popBackStack() }) {
+            IconButton(onClick = { mfViewModel.navigate(navigationController) }) {
                 Icon(
                     imageVector = Icons.Rounded.Cancel,
                     contentDescription = null,
@@ -228,6 +232,15 @@ fun HeadTable() {
                     text = "Guias", fontWeight = FontWeight.SemiBold
                 )
             }
+        }
+    }
+}
+
+@Composable
+fun dialogOptions(optionsDialog: Boolean) {
+    if (optionsDialog){
+        Dialog(onDismissRequest = { }) {
+            
         }
     }
 }
