@@ -110,7 +110,7 @@ fun ButtonRegisterGuide(modifier: Modifier, navigationController: NavHostControl
             tint = Color(76, 81, 198)
         )
         Text(
-            text = "Registrar Guias",
+            text = "Registrar",
             fontSize = 18.sp,
         )
     }
@@ -160,7 +160,7 @@ fun ButtonValidateArrastre(modifier: Modifier, navigationController: NavHostCont
         )
         //  Spacer(Modifier.size(5.dp))
         Text(
-            text = "Recepción",
+            text = "Validar",
             fontSize = 18.sp,
             modifier = Modifier.padding(end = 53.dp)
         )

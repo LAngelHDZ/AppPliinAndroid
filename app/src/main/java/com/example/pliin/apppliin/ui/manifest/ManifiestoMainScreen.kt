@@ -54,7 +54,7 @@ fun HeadText(modifier: Modifier) {
     Box(modifier = modifier.fillMaxWidth()) {
         Text(
             modifier = modifier.padding(vertical = 16.dp),
-            text = "Manifiesto",
+            text = "Guias",
             fontSize = 30.sp,
             fontWeight = FontWeight.SemiBold,
             color = Color.White
