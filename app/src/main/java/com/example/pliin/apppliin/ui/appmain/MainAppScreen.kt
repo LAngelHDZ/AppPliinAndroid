@@ -37,7 +37,7 @@ fun MainAppScreen(navigationController: NavHostController,Employee: String,area:
     val areaEmployee: String by mainAppViewModel.areaEmployee.observeAsState("")
 
     if (isLoged){
-        mainAppViewModel.getDataEmployee()
+        mainAppViewModel.gsaveDataEmployee(Employee,area)
     }
 
     Box(modifier = Modifier.fillMaxSize()) {
@@ -51,7 +51,7 @@ fun MainAppScreen(navigationController: NavHostController,Employee: String,area:
             Header(
                 Modifier
                     .align(Alignment.TopStart)
-                    .background(Color(0xFF4425a7)),Employee, area
+                    .background(Color(0xFF4425a7)),nameEmployee, areaEmployee
             )
             Body(Modifier.align(Alignment.Center), navigationController)
             Footer(Modifier.align(Alignment.BottomCenter), navigationController, mainAppViewModel)
