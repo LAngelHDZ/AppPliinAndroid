@@ -160,7 +160,7 @@ class RDViewModel @Inject() constructor(
         if (previousScreenName.equals("MainAppScreen")) {
             navigationController.popBackStack()
         } else {
-            navigationController.navigate(AppScreen.LoginScreen.route)
+            navigationController.navigate(AppScreen.AppMainScreen.route)
         }
     }
 
