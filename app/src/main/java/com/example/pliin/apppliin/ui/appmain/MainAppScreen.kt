@@ -1,7 +1,6 @@
 package com.example.pliin.apppliin.ui.appmain
 
 import android.annotation.SuppressLint
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -53,7 +52,7 @@ fun MainAppScreen(navigationController: NavHostController,Employee: String,area:
                     .align(Alignment.TopStart)
                     .background(Color(0xFF4425a7)),Employee, area
             )
-            Body(Modifier.align(Alignment.Center), navigationController)
+            Body(Modifier.align(Alignment.Center), navigationController,area)
             Footer(Modifier.align(Alignment.BottomCenter), navigationController, mainAppViewModel)
         }
     }
@@ -156,7 +155,7 @@ fun UserData(modifier: Modifier, nameEmployee: String, areaEmployee: String) {
 }
 
 @Composable
-fun Body(modifier: Modifier, navigationController: NavHostController) {
+fun Body(modifier: Modifier, navigationController: NavHostController, area: String) {
     val styleButton = (Modifier
         .padding(horizontal = 50.dp)
         .height(60.dp)
@@ -164,7 +163,7 @@ fun Body(modifier: Modifier, navigationController: NavHostController) {
     Column(modifier = modifier.padding(bottom = 80.dp), horizontalAlignment = Alignment.CenterHorizontally) {
         BodyLogo()
         Spacer(modifier = Modifier.size(16.dp))
-        GroupButton(styleButton,navigationController)
+        GroupButton(styleButton,navigationController,area)
     }
 }
 
@@ -179,12 +178,14 @@ fun BodyLogo() {
 
 @SuppressLint("SuspiciousIndentation")
 @Composable
-fun GroupButton(modifier: Modifier, navigationController: NavHostController) {
+fun GroupButton(modifier: Modifier, navigationController: NavHostController, area: String) {
     val spaces = (Modifier.size(20.dp))
     ButtonCreateManifest(modifier, navigationController)
     Spacer(modifier = spaces)
-    ButtonRegisterDelivery(modifier, navigationController)
-    Spacer(modifier = spaces)
+    if (area.equals("Operador Logistico")){
+        ButtonRegisterDelivery(modifier, navigationController)
+        Spacer(modifier = spaces)
+    }
     //boton registra las guias al sistema
     ButtonGuides(modifier, navigationController)
     Spacer(modifier = spaces)
@@ -232,7 +233,7 @@ fun ButtonRegisterDelivery(modifier: Modifier, navigationController: NavHostCont
             tint = Color(0xFF4c51c6)
         )
         Text(
-            text = "Registrar entrega",
+            text = "Entregas",
             fontSize = 18.sp,
             modifier = Modifier.padding(end = 28.dp)
         )
@@ -283,7 +284,7 @@ fun ButtonConsultDelivery(modifier: Modifier) {
         )
         Spacer(Modifier.size(5.dp))
         Text(
-            text = "Consultar entregas",
+            text = "Consultas",
             fontSize = 18.sp,
             modifier = Modifier.padding(0.dp, 0.dp, 13.dp, 0.dp)
         )

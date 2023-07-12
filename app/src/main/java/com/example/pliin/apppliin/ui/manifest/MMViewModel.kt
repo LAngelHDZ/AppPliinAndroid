@@ -24,9 +24,7 @@ class MMViewModel @Inject constructor(
             } else {
                 "AuxiliarAdministrativo"
             }
-
             navigationController.navigate(AppScreen.CreateManifestScreen.createRoute(area))
-
         }
     }
 }
