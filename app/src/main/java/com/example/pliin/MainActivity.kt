@@ -129,6 +129,7 @@ class MainActivity : ComponentActivity() {
                 MainAppScreen(navigationController,
                     backStackEntry.arguments?.getString("nameEmployee") ?: "",
                     backStackEntry.arguments?.getString("area") ?: "",
+                    mainAppViewModel
                 )
             }
             //Ruta de Screen de Registrar entregas o intentos de entrega de paquetes

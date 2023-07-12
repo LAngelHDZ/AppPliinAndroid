@@ -47,10 +47,9 @@ class MainAppViewModel @Inject constructor(
     }
 
     fun gsaveDataEmployee(name:String,area:String) {
-
             _nameEmployye.value = name
             _areaEmployye.value = area
-        _isLoged.value=false
+            _isLoged.value=false
     }
 
     private fun navigate(navController: NavHostController) {

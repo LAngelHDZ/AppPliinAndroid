@@ -28,14 +28,14 @@ import com.example.pliin.navigation.AppScreen
 
 
 @Composable
-fun MainAppScreen(navigationController: NavHostController,Employee: String,area:String,mainAppViewModel: MainAppViewModel = hiltViewModel()) {
+fun MainAppScreen(navigationController: NavHostController,Employee: String,area:String,mainAppViewModel: MainAppViewModel) {
 
     val isLogout: Boolean by mainAppViewModel.isLogout.observeAsState(false)
     val isLoged: Boolean by mainAppViewModel.isLoged.observeAsState(true)
     val nameEmployee: String by mainAppViewModel.nameEmployee.observeAsState("")
     val areaEmployee: String by mainAppViewModel.areaEmployee.observeAsState("")
 
-    if (isLoged){
+    if (area.equals("Operador Logistico") || area.equals("Auxiliar Administrativo") ){
         mainAppViewModel.gsaveDataEmployee(Employee,area)
     }
 
@@ -52,7 +52,7 @@ fun MainAppScreen(navigationController: NavHostController,Employee: String,area:
                     .align(Alignment.TopStart)
                     .background(Color(0xFF4425a7)),nameEmployee, areaEmployee
             )
-            Body(Modifier.align(Alignment.Center), navigationController,area)
+            Body(Modifier.align(Alignment.Center), navigationController,areaEmployee)
             Footer(Modifier.align(Alignment.BottomCenter), navigationController, mainAppViewModel)
         }
     }

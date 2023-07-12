@@ -157,9 +157,12 @@ class RDViewModel @Inject() constructor(
 
     fun navigation(navigationController: NavHostController) {
         val previousScreenName = navigationController.previousBackStackEntry?.destination?.route
-        if (previousScreenName.equals("MainAppScreen")) {
+
+        if (previousScreenName.equals("MainAppScreen/{nameEmployee}/{area}")) {
+
             navigationController.popBackStack()
         } else {
+
             navigationController.navigate(AppScreen.AppMainScreen.route)
         }
     }
