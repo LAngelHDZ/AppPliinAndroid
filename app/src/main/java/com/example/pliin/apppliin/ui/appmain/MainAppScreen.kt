@@ -317,7 +317,7 @@ fun Footer(
             tint = Color(76, 81, 198)
         )
         Text(
-            text = "Cerrar Sesion",
+            text = "Salir",
             fontSize = 18.sp,
         )
     }

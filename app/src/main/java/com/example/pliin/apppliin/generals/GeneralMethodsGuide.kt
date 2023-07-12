@@ -73,7 +73,7 @@ class GeneralMethodsGuide @Inject constructor() {
             }
             Log.i("Cambiado", arreglo[i].toString())
         }
-        var stringConvert = arreglo.joinToString()
+        var stringConvert = arreglo.joinToString(separator = "")
         Log.i("String ", stringConvert)
         return stringConvert
     }

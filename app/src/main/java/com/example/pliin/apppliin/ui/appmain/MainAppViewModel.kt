@@ -33,15 +33,14 @@ class MainAppViewModel @Inject constructor(
     var areaEmployee: LiveData<String> = _areaEmployye
 
     fun logut(navigationController: NavHostController) {
-
+        _isLoged.value = false
         _isLogout.value = true
         viewModelScope.launch {
             delay(1500)
             if (logoutUseCase.invoke()) {
                 deleteUserUSeCase.invoke()
                 navigate(navigationController)
-                _isLogout.value = false
-                _isLoged.value = true
+
             }
         }
     }
@@ -55,9 +54,12 @@ class MainAppViewModel @Inject constructor(
     private fun navigate(navController: NavHostController) {
         val previousScreenName = navController.previousBackStackEntry?.destination?.route
         if (previousScreenName.equals("LoginScreen")) {
+
             navController.popBackStack()
+            _isLogout.value = false
         } else {
             navController.navigate(AppScreen.LoginScreen.route)
+            _isLogout.value = false
         }
     }
 }

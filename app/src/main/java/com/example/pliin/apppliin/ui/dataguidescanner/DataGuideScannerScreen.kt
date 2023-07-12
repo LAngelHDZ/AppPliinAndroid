@@ -1039,7 +1039,7 @@ fun ConfirmarEntregaDialog(
     Text(text = "Quien recibe")
     RecibeOrComment(parents) { dgsViewModel.onValueChangedRecibe(nameparent = it) }
     Spacer(modifier = Modifier.size(14.dp))
-    btnSHowCameraX(dgsViewModel)
+   // btnSHowCameraX(dgsViewModel)
 }
 
 @Composable
