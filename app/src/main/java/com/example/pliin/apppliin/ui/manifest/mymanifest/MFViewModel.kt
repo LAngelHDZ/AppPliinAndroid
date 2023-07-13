@@ -48,6 +48,10 @@ class MFViewModel @Inject constructor(
         }
     }
 
+    fun onOptionDialog(){
+        _optionsDialog.value=false
+    }
+
     fun clickManifest(claveManifest:String){
         viewModelScope.launch {
             val employe = loadEmployeeUseCase()

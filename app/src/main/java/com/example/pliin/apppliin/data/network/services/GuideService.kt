@@ -353,7 +353,7 @@ class GuideService @Inject constructor(
                 dataDir[4],
                 dataDir[5],
                 dataDir[6],
-                dataDir[0]
+                dataDir[7]
             )
         )
 

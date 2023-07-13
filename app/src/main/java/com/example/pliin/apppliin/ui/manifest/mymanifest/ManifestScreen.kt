@@ -8,10 +8,13 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.Button
 import androidx.compose.material.Card
+import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.Text
+import androidx.compose.material.TextButton
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ArrowRight
@@ -36,6 +39,7 @@ fun ManifestScreen(navigationController: NavHostController, mfViewModel: MFViewM
 
 
     val listManifest: List<Data> by mfViewModel.listManifest.observeAsState(listOf())
+    val claveManifest:String by mfViewModel.claveManifest.observeAsState("")
     val enableLoadManifest: Boolean by mfViewModel.enableLoadManifest.observeAsState(true)
     val optionsDialog: Boolean by mfViewModel.optionsDialog.observeAsState(false)
 
@@ -54,7 +58,7 @@ fun ManifestScreen(navigationController: NavHostController, mfViewModel: MFViewM
             Body(
                 Modifier
                     .weight(2.2f)
-                    .padding(horizontal = 2.dp), listManifest
+                    .padding(horizontal = 2.dp), listManifest,mfViewModel
             )
             Footer(
                 Modifier
@@ -64,7 +68,7 @@ fun ManifestScreen(navigationController: NavHostController, mfViewModel: MFViewM
         }
     }
 
-    dialogOptions(optionsDialog)
+    dialogOptions(optionsDialog,mfViewModel,claveManifest)
 
 }
 
@@ -87,10 +91,10 @@ fun Header(modifier: Modifier, navigationController: NavHostController, mfViewMo
 }
 
 @Composable
-fun Body(modifier: Modifier, listManifest: List<Data>) {
+fun Body(modifier: Modifier, listManifest: List<Data>, mfViewModel: MFViewModel) {
     Box(modifier = modifier.fillMaxWidth()) {
         Column() {
-            manifestList(modifier.weight(3f), listManifest)
+            manifestList(modifier.weight(3f), listManifest,mfViewModel)
         }
     }
 
@@ -102,6 +106,7 @@ fun Body(modifier: Modifier, listManifest: List<Data>) {
 fun manifestList(
     modifier: Modifier,
     listManifest: List<Data>,
+    mfViewModel: MFViewModel,
     //cmViewModel: CMViewModel,
     // mapListGuide: Map<String, String>,
 //    countGuide: Int,
@@ -124,17 +129,18 @@ fun manifestList(
             HeadTable()
         }
         items(listManifest) {
-            itemManifest(modifier = modifier, manifest = it.fieldData!!)
+            itemManifest(modifier = modifier, manifest = it.fieldData!!,mfViewModel)
         }
     }
 }
 
 @Composable
-fun itemManifest(modifier: Modifier, manifest: FieldData) {
+fun itemManifest(modifier: Modifier, manifest: FieldData, mfViewModel: MFViewModel) {
     Card(
         Modifier
             .fillMaxWidth()
             .clickable {
+                mfViewModel.clickManifest("${manifest.clavePrincipal}")
                 Log.i("Clic", "Le di clic al texto  ${manifest.clavePrincipal}")
             },
         // border = BorderStroke(1.dp, Color(0xFF4425a7))
@@ -237,10 +243,43 @@ fun HeadTable() {
 }
 
 @Composable
-fun dialogOptions(optionsDialog: Boolean) {
+fun dialogOptions(optionsDialog: Boolean, mfViewModel: MFViewModel, claveManifest: String) {
     if (optionsDialog){
-        Dialog(onDismissRequest = { }) {
-            
+        Dialog(onDismissRequest = { mfViewModel.onOptionDialog()}) {
+            Column(modifier= Modifier
+                .background(Color.White)
+                .padding(20.dp)
+                .fillMaxWidth()
+                .height(200.dp),
+                horizontalAlignment = Alignment.CenterHorizontally) {
+                Text(text = claveManifest,
+                    fontWeight = FontWeight.SemiBold,
+                    fontSize = 20.sp,
+                    color = Color(0xFF4425a7),
+                )
+                Divider()
+                Spacer(modifier = Modifier.size(8.dp))
+                Button(onClick = { /*TODO*/ },
+                    modifier = Modifier.width(100.dp)
+                ) {
+                    Text(text = "Ver")
+                }
+                Spacer(modifier =Modifier.size(2.dp))
+                Button(onClick = { /*TODO*/ },
+                    modifier = Modifier.width(100.dp)
+                ) {
+                    Text(text = "Editar")
+                }
+                Spacer(modifier =Modifier.size(8.dp))
+                Box(modifier = Modifier.align(Alignment.CenterHorizontally),
+                contentAlignment = Alignment.BottomEnd) {
+                    TextButton(onClick = { mfViewModel.onOptionDialog()},
+                    ) {
+                        Text(text = "Cerrar")
+                    }
+                }
+
+            }
         }
     }
 }
