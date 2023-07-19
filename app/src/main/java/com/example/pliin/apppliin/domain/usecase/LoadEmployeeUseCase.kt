@@ -13,7 +13,7 @@ class LoadEmployeeUseCase @Inject constructor(
 ) {
 
     suspend operator fun invoke(): FieldDataEI {
-        val user = usersRepository.getAllUserDatabase()[0].user
-        return employeeRepository.getEmployeeDB(generalMethodsGuide.toLowerLetter(user!!))
+        val user = usersRepository.getAllUserDatabase()
+        return employeeRepository.getEmployeeDB(generalMethodsGuide.toLowerLetter(user.user!!))
     }
 }

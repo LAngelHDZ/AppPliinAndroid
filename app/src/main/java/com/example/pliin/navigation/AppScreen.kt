@@ -11,6 +11,15 @@ sealed class AppScreen(val route:String){
             area:String
         )= "MainAppScreen/$nameEmployee/$area"
     }
+
+    object EditManifestScreen : AppScreen("EditManifestScreen/{nameEmployee}/{idRecord}/{route}/{claveManifest}"){
+        fun createRoute(
+            nameEmployee: String,
+            idRecord:String,
+            route:String,
+            claveManifest:String,
+        )= "EditManifestScreen/$nameEmployee/$idRecord/$route/$claveManifest"
+    }
     object ValidationArrastreScreen : AppScreen("ValidationArrastreScreen")
     object ReceptionGuideScreen : AppScreen("ReceptionGuideScreen/{function}") {
         fun createRoute(
@@ -25,6 +34,7 @@ sealed class AppScreen(val route:String){
       }*/
 
     object ManifiestoMainScreen : AppScreen("ManifiestoMainScreen")
+    object ReasignacionGuideScreen : AppScreen("ReasignacionGuideScreen")
     object ManifestScreen : AppScreen("ManifestScreen")
     object MenuGuideScreen : AppScreen("MenuGuideScreen")
     object CreateManifestScreen : AppScreen("CreateManifestScreen/{area}") {

@@ -14,7 +14,7 @@ interface UserDao {
     suspend fun getUserLogin(user:String, password:String):List<UserEntity>
 
     @Query("SELECT * FROM user_table")
-    suspend fun getUser():List<UserEntity>
+    suspend fun getUser():UserEntity
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAllUsers(users: List<UserEntity>)

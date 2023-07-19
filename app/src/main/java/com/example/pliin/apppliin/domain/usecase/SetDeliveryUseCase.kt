@@ -21,7 +21,7 @@ class SetDeliveryUseCase @Inject constructor(
         Log.i("quien recibe", recibe!!)
 
         val userData = usersRepository.getAllUserDatabase()
-        val user = userData[0].user!!
+        val user = userData.user!!
 
 
         val responseDelivery = deliveryR.setDelivery(guide!!, recibe, parentOrFailDelivery)

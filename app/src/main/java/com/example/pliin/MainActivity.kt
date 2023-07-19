@@ -39,8 +39,10 @@ import com.example.pliin.apppliin.ui.mainloading.MainLoadScreen
 import com.example.pliin.apppliin.ui.manifest.ManifiestoMainScreen
 import com.example.pliin.apppliin.ui.manifest.createmanifest.CMViewModel
 import com.example.pliin.apppliin.ui.manifest.createmanifest.CreateManifestScreen
+import com.example.pliin.apppliin.ui.manifest.editmanifest.EditManifestScreen
 import com.example.pliin.apppliin.ui.manifest.mymanifest.MFViewModel
 import com.example.pliin.apppliin.ui.manifest.mymanifest.ManifestScreen
+import com.example.pliin.apppliin.ui.manifest.reasignacionguide.ReasignacionGuideScreen
 import com.example.pliin.apppliin.ui.registerdelivery.RDViewModel
 import com.example.pliin.apppliin.ui.registerdelivery.RegisterDeliveryScreen
 import com.example.pliin.navigation.AppScreen
@@ -126,7 +128,7 @@ class MainActivity : ComponentActivity() {
             composable(route = AppScreen.AppMainScreen.route,
             arguments = listOf(
                 navArgument("nameEmployee") { type = NavType.StringType },
-                navArgument("area") { type = NavType.StringType },
+                navArgument("area") {type = NavType.StringType},
             )
             ) {backStackEntry ->
                 MainAppScreen(navigationController,
@@ -153,6 +155,11 @@ class MainActivity : ComponentActivity() {
             composable(route = AppScreen.MenuGuideScreen.route) {
                 MenuGuideScreen(navigationController)
             }
+
+            //Ruta para redirigirse a la screen de reasignación de guias
+            composable(route= AppScreen.ReasignacionGuideScreen.route){
+                ReasignacionGuideScreen(navigationController)
+            }
             //Ruta de Screen de validacion de guias que lleguan a almacenes foraneos
             composable(route = AppScreen.ValidationArrastreScreen.route) {
                 ValidationArrastreScreen(vaViewModel, navigationController)
@@ -165,6 +172,24 @@ class MainActivity : ComponentActivity() {
                 CreateManifestScreen(
                     navigationController,
                     backStackEntry.arguments?.getString("area") ?: ""
+                )
+            }
+
+            //Ruta de Screen para editar un manifiesto
+            composable(
+                route = AppScreen.EditManifestScreen.route,
+                arguments = listOf(navArgument("nameEmployee") { type = NavType.StringType},
+                    navArgument("idRecord"){ type = NavType.StringType },
+                    navArgument("route"){ type = NavType.StringType },
+                    navArgument("claveManifest"){ type = NavType.StringType },
+                    )
+            ) { backStackEntry ->
+                EditManifestScreen(
+                    navigationController,
+                    backStackEntry.arguments?.getString("nameEmployee") ?: "",
+                    backStackEntry.arguments?.getString("idRecord") ?: "",
+                    backStackEntry.arguments?.getString("route") ?: "",
+                    backStackEntry.arguments?.getString("claveManifest") ?: ""
                 )
             }
 

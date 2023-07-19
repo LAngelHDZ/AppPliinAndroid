@@ -11,7 +11,7 @@ interface TokenDao {
 
     //consulta el toquen de la DB
     @Query("SELECT * FROM token_table")
-    suspend fun getToken(): TokenEntity?
+    suspend fun getToken(): TokenEntity
 
     @Query("SELECT Count(*) FROM token_table")
     suspend fun tokenExists(): Boolean

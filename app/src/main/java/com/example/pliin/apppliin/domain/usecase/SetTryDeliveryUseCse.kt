@@ -17,7 +17,7 @@ class SetTryDeliveryUseCse @Inject constructor(
         comment: String
     ): Boolean {
         val userData = usersRepository.getAllUserDatabase()
-        val user = userData[0].user
+        val user = userData.user
         Log.i("user", user.toString())
         Log.i("seleted", parentOrFailDelivery)
         Log.i("status intento entrega eb use case", parentOrFailDelivery!!)

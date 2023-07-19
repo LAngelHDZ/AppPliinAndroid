@@ -21,7 +21,7 @@ class RechazadoUseCase @Inject constructor(
         parentOrFailDelivery: String?
     ): Boolean {
         val userData = usersRepository.getAllUserDatabase()
-        val user = userData[0].user
+        val user = userData.user
         var messageDelivery = ""
         Log.i("user", user.toString())
         Log.i("seleted", parentOrFailDelivery!!)

@@ -29,6 +29,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.example.pliin.apppliin.domain.model.consecutivomanifestitem.Data
 import com.example.pliin.apppliin.domain.model.consecutivomanifestitem.FieldData
@@ -68,18 +69,18 @@ fun ManifestScreen(navigationController: NavHostController, mfViewModel: MFViewM
         }
     }
 
-    dialogOptions(optionsDialog,mfViewModel,claveManifest)
+    dialogOptions(optionsDialog,mfViewModel,claveManifest,navigationController)
 
 }
 
 @Composable
 fun Header(modifier: Modifier, navigationController: NavHostController, mfViewModel: MFViewModel) {
     TopAppBar(modifier = modifier.fillMaxWidth(),
-        title = { Text(text = "Manifiestos") },
+        title = { Text(text = "Manifiestos")},
         backgroundColor = Color(0xFF4425a7),
         contentColor = Color.White,
         elevation = 4.dp,
-        navigationIcon = {
+        navigationIcon ={
             IconButton(onClick = { mfViewModel.navigate(navigationController) }) {
                 Icon(
                     imageVector = Icons.Rounded.Cancel,
@@ -129,18 +130,23 @@ fun manifestList(
             HeadTable()
         }
         items(listManifest) {
-            itemManifest(modifier = modifier, manifest = it.fieldData!!,mfViewModel)
+            itemManifest(modifier = modifier, manifest = it.fieldData!!,mfViewModel,it)
         }
     }
 }
 
 @Composable
-fun itemManifest(modifier: Modifier, manifest: FieldData, mfViewModel: MFViewModel) {
+fun itemManifest(modifier: Modifier, manifest: FieldData, mfViewModel: MFViewModel, data: Data) {
     Card(
         Modifier
             .fillMaxWidth()
             .clickable {
-                mfViewModel.clickManifest("${manifest.clavePrincipal}")
+                mfViewModel.clickManifest(
+                    "${manifest.clavePrincipal}",
+                    "${data.recordId}",
+                    "${manifest.nombreOperador}",
+                    "${manifest.ruta}"
+                )
                 Log.i("Clic", "Le di clic al texto  ${manifest.clavePrincipal}")
             },
         // border = BorderStroke(1.dp, Color(0xFF4425a7))
@@ -243,7 +249,12 @@ fun HeadTable() {
 }
 
 @Composable
-fun dialogOptions(optionsDialog: Boolean, mfViewModel: MFViewModel, claveManifest: String) {
+fun dialogOptions(
+    optionsDialog: Boolean,
+    mfViewModel: MFViewModel,
+    claveManifest: String,
+    navigationController: NavHostController
+) {
     if (optionsDialog){
         Dialog(onDismissRequest = { mfViewModel.onOptionDialog()}) {
             Column(modifier= Modifier
@@ -259,13 +270,13 @@ fun dialogOptions(optionsDialog: Boolean, mfViewModel: MFViewModel, claveManifes
                 )
                 Divider()
                 Spacer(modifier = Modifier.size(8.dp))
-                Button(onClick = { /*TODO*/ },
+               /* Button(onClick = { *//*TODO*//* },
                     modifier = Modifier.width(100.dp)
                 ) {
                     Text(text = "Ver")
-                }
+                }*/
                 Spacer(modifier =Modifier.size(2.dp))
-                Button(onClick = { /*TODO*/ },
+                Button(onClick = { mfViewModel.viewEditManifest(navigationController)},
                     modifier = Modifier.width(100.dp)
                 ) {
                     Text(text = "Editar")

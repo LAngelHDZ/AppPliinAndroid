@@ -58,9 +58,9 @@ class UsersRepository @Inject constructor(
         return response.map { it.toDomain() }
     }
     //Consulta todos los usuarios de l BD y devuelve una lista de usuarios
-    suspend fun  getAllUserDatabase():List<UserItem>{
-        val response: List<UserEntity> = userDao.getUser()
-        return response.map { it.toDomain() }
+    suspend fun  getAllUserDatabase():UserItem{
+        val response: UserEntity = userDao.getUser()
+        return response.toDomain()
     }
 
     //Inserta en la DB los usuarios recuperados de la API,

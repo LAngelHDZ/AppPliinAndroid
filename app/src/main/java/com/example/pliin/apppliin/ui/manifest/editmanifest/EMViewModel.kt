@@ -19,9 +19,12 @@ import com.example.pliin.apppliin.domain.usecase.CreateManifestUseCase
 import com.example.pliin.apppliin.domain.usecase.GetAllEmployeesUseCase
 import com.example.pliin.apppliin.domain.usecase.GetConsecManUseCase
 import com.example.pliin.apppliin.domain.usecase.GetGuideUseCase
+import com.example.pliin.apppliin.domain.usecase.GetGuidesManifestUseCase
+import com.example.pliin.apppliin.domain.usecase.GetOneManifestUseCase
 import com.example.pliin.apppliin.domain.usecase.LoadEmployeeUseCase
 import com.example.pliin.apppliin.domain.usecase.RegisterDatosPqtUseCase
 import com.example.pliin.apppliin.domain.usecase.RegisterDireccionUseCase
+import com.example.pliin.apppliin.domain.usecase.UpdateManifestUseCase
 import com.example.pliin.apppliin.domain.usecase.ValidateExistsAddressUseCase
 import com.example.pliin.apppliin.domain.usecase.ValidateExistsDataPqtUseCase
 import com.example.pliin.apppliin.domain.usecase.ValidateGuideSystemUseCase
@@ -52,7 +55,10 @@ class EMViewModel @Inject constructor(
     private val validateExistsAddressUseCase: ValidateExistsAddressUseCase,
     private val validateExistsDataPqtUseCase: ValidateExistsDataPqtUseCase,
     private val registerDatosPqtUseCase: RegisterDatosPqtUseCase,
-    private val registerDireccionUseCase: RegisterDireccionUseCase
+    private val registerDireccionUseCase: RegisterDireccionUseCase,
+    private val getGuidesManifestUseCase: GetGuidesManifestUseCase,
+    private val updateManifestUseCase: UpdateManifestUseCase,
+    private val getOneManifestUseCase: GetOneManifestUseCase
 
 ) : ViewModel() {
 
@@ -61,6 +67,9 @@ class EMViewModel @Inject constructor(
 
     private val _isSesionDialog = MutableLiveData<Boolean>()
     var isSesionDialog: LiveData<Boolean> = _isSesionDialog
+
+    private val _isLoadGuideManifest = MutableLiveData<Boolean>()
+    var isLoadGuideManifest: LiveData<Boolean> = _isLoadGuideManifest
 
     /*Variable que habilita el modal para ingresar los datos de direccion del paquete*/
     private val _isDireccionDialog = MutableLiveData<Boolean>()
@@ -87,6 +96,9 @@ class EMViewModel @Inject constructor(
 
     private val _isSelectRutaEnabled = MutableLiveData<Boolean>()
     var isSelectRutaEnabled: LiveData<Boolean> = _isSelectRutaEnabled
+
+    private val _idRecord = MutableLiveData<String>()
+    var idRecord: LiveData<String> = _idRecord
 
     private val _nameEmployye = MutableLiveData<String>()
     var nameEmployye: LiveData<String> = _nameEmployye
@@ -209,6 +221,8 @@ class EMViewModel @Inject constructor(
     private val _mapListGuide = MutableLiveData<Map<String, String>>()
     var mapListGuide: LiveData<Map<String, String>> = _mapListGuide
 
+    private val _mapListGuideAdd = MutableLiveData<Map<String, String>>()
+    var mapListGuideAdd: LiveData<Map<String, String>> = _mapListGuideAdd
 
     private val _isGuideRegisted = MutableLiveData<Boolean>()
     var isGuideRegisted: LiveData<Boolean> = _isGuideRegisted
@@ -231,17 +245,45 @@ class EMViewModel @Inject constructor(
     }
 
     var codeMessage: Boolean = false
-
     val keyGuide: Int = 1
 
-    fun onSearchChanged(guia: String) {
+    fun onSearchChanged(guia:String) {
         _guia.value = guia
         _isSearchEnable.value = enableSearch(guia)
     }
 
+    fun loadData(
+        nameEmploye:String,
+        idRecord:String,
+        route:String,
+        claveManifest:String
+    ){
+        _ruta.value =route
+        _nameEmployye.value=nameEmploye
+        _idRecord.value=idRecord
+        _clavePreManifest.value=claveManifest
+        loadGuidesManifest(claveManifest)
+        getDataEmployee()
+        _isLoadGuideManifest.value=false
+    }
+    fun loadGuidesManifest(claveManifest: String){
+        val currentmap = _mapListGuide.value?.toMutableMap() ?: mutableMapOf()
+        viewModelScope.launch{
+           val response= getGuidesManifestUseCase.invoke(claveManifest)
+            if (response != null) {
+                for (value in response){
+                    val guia = value?.fieldData?.idGuia.toString()
+                    currentmap[guia] = guia
+                    _mapListGuide.value = currentmap
+                    _countGuides.value = _mapListGuide.value?.size
+                }
+            }
+        }
+    }
+
     fun enableSearch(guia: String) = guia.length > 9
 
-    fun enableLoadBtn(CountGuide: Int) = CountGuide >= 1
+    fun enableLoadBtn(CountGuide: Int,Employee:String) = (CountGuide >= 1 || Employee.length >1)
 
     fun onChangedFormDireccion(
         nombre: String,
@@ -288,8 +330,7 @@ class EMViewModel @Inject constructor(
         dir3: String,
         cp: String,
         municipio: String
-    ) =
-        ((nombre.length > 5 && telefono.length >= 7 && cp.length > 4 && municipio.length > 4) && (dir1.length > 7 || dir2.length > 7 || dir3.length > 7))
+    ) = ((nombre.length >= 3 && telefono.length >= 7 && cp.length >= 5 && municipio.length >= 4) && (dir1.length >= 5 || dir2.length >= 5 || dir3.length >= 5))
 
     fun onRadioBtnSeleted(value: String) {
         if (value != "Chico") {
@@ -336,6 +377,9 @@ class EMViewModel @Inject constructor(
 
     fun onValueChangeEmployee(name: FieldDataEI) {
         _nameEmployye.value = "${name.nombre} ${name.aPaterno} ${name.aMaterno}"
+
+        val nameEM = "${name.nombre} ${name.aPaterno} ${name.aMaterno}"
+       _isLoadBtnEnable.value = enableLoadBtn(countGuides.value!!, nameEM)
     }
 
     fun onValueChangedRuta(selected: String) {
@@ -410,6 +454,7 @@ class EMViewModel @Inject constructor(
         _countGuides.value = 0
         _clavePreManifest.value = ""
         _mapListGuide.value = emptyMap()
+        _mapListGuideAdd.value = emptyMap()
         _progressCircularLoad.value = 0.0f
         _isDialogLoadEnable.value = false
         _isSelectbtn.value = false
@@ -468,7 +513,7 @@ class EMViewModel @Inject constructor(
         if (form == "datospqt") {
             val typeEmbalaje = _typeEmbalaje.value.toString()
             Log.i("Valor type Embalaje", typeEmbalaje)
-            if (typeEmbalaje == "null") {
+            if (typeEmbalaje == "null"){
                 _typeEmbalaje.value = false
             }
             Log.i("Valor type Embalaje livedata", "${_typeEmbalaje.value}")
@@ -541,6 +586,7 @@ class EMViewModel @Inject constructor(
     fun getContentQR(guia: String, navigationController: NavHostController) {
         val formateValidate = generalMethodsGuide.validateFormatGuia(guia)
         val currentmap = _mapListGuide.value?.toMutableMap() ?: mutableMapOf()
+        val currentmapadd = _mapListGuideAdd.value?.toMutableMap() ?: mutableMapOf()
         val direccionmap = _mapListDireccion.value?.toMutableMap() ?: mutableMapOf()
         val datosPqtMap = _mapListDatosPqt.value?.toMutableMap() ?: mutableMapOf()
         val datosRepetidos = datosPqtMap[guia]
@@ -584,12 +630,15 @@ class EMViewModel @Inject constructor(
                             Log.d("valos de isdialog direccion", "${isDireccionDialog.value}")
 
                             var key = currentmap.size + keyGuide
+                            currentmapadd[guia] = guia
                             currentmap[guia] = guia
                             _mapListGuide.value = currentmap
+                            _mapListGuideAdd.value = currentmapadd
                             _contentQR.value = guia
-                            _countGuides.value = _mapListGuide.value?.size
+                            _countGuides.value = _mapListGuideAdd.value?.size
                             //setData(guia)
-                            _isLoadBtnEnable.value = enableLoadBtn(currentmap.size)
+                            _isLoadBtnEnable.value = enableLoadBtn(currentmapadd.size, nameEmployye.value!!
+                            )
                         } else {
                             _isSesionDialog.value = true
                             _messageGuideValidate.value =
@@ -632,12 +681,12 @@ class EMViewModel @Inject constructor(
         Thread.sleep(3000)
     }
 
-    fun onRemoveguideList(guia: String, second: String) {
-        val currentmap = _mapListGuide.value?.toMutableMap() ?: mutableMapOf()
+    fun onRemoveguideList(guia: String, second: String){
+        val currentmap = _mapListGuideAdd.value?.toMutableMap() ?: mutableMapOf()
         currentmap.remove(guia)
         _mapListGuide.value = currentmap
         _countGuides.value = _mapListGuide.value?.size
-        _isLoadBtnEnable.value = enableLoadBtn(currentmap.size)
+        _isLoadBtnEnable.value = enableLoadBtn(currentmap.size,nameEmployye.value!!)
     }
 
     fun clavePreGenerate(area: String) {
@@ -646,17 +695,13 @@ class EMViewModel @Inject constructor(
         when (selectedOptionTM.value) {
             "Local" -> {
                 typeManifest = "LCA"
-
             }
-
             "Traslado" -> {
                 typeManifest = "TRF"
             }
-
             else -> {
                 typeManifest = "LCA"
             }
-
         }
         /* val typeManifest = if (selectedOptionTM.value.equals("Local")) {
              "LCA"
@@ -683,7 +728,7 @@ class EMViewModel @Inject constructor(
 
     fun create(navigationController: NavHostController) {
         viewModelScope.launch {
-            getConsecutivoManifest()
+            updateManifest()
             Thread.sleep(1000)
         }
         // backScreen(navigationController)
@@ -703,7 +748,7 @@ class EMViewModel @Inject constructor(
             val clave = clavePreManifest.value
             _clavePreManifest.value = "$clave$consecutivo"
             Log.i("Clave Completa PreM", "${clavePreManifest.value}")
-            createManifest(consecutivo)
+
         }
     }
 
@@ -717,36 +762,40 @@ class EMViewModel @Inject constructor(
         return nameEmployee
     }
 
-    fun createManifest(consecutivo: Int) {
+    fun updateManifest() {
         viewModelScope.launch {
             val employee = loadEmployeeUseCase.invoke()
-
+            val currentmap = _mapListGuideAdd.value?.toMutableMap() ?: mutableMapOf()
+            val guias= currentmap.size
             val claveManifest = clavePreManifest.value
             val nodo = "UPS"
             val totalPqt = countGuides.value.toString()
             val consecutivoMan = consecutiveMan.value.toString()
             var nameEmployee = selectEmployye(employee)
             val typeManifest = typePreManifest.value
+            val idRecord = idRecord.value
             val ruta = generalMethodsGuide.toUpperLetter(ruta.value!!)
 
             if (nameEmployee.isNullOrEmpty()) {
                 nameEmployee = ""
             }
-
             val dataDto: List<String?> = listOf(
-                claveManifest,
-                consecutivoMan,
-                nodo,
                 nameEmployee,
-                ruta,
                 totalPqt,
                 totalPqt,
-                typeManifest,
+                idRecord
             )
-
-            createManifestUseCase.invoke(dataDto)
+            updateManifestUseCase.invoke(dataDto)
             Log.i("Datos dto Manifest", "$dataDto")
-            loadGuideServer()
+            if (guias>=1){
+                loadGuideServer()
+            }else{
+                _isLoadingDataGuide.value = true
+                _progressCircularLoad.value = 1f
+                _countRegisterGuide.value = 1
+                _countGuides.value=1
+            }
+
         }
     }
 
@@ -754,7 +803,7 @@ class EMViewModel @Inject constructor(
         var progres = 0
         _progressCircularLoad.value = 0f
         _isLoadingDataGuide.value = true
-        val currentmap = _mapListGuide.value?.toMutableMap() ?: mutableMapOf()
+        val currentmap = _mapListGuideAdd.value?.toMutableMap() ?: mutableMapOf()
         val direccionmap = _mapListDireccion.value?.toMutableMap() ?: mutableMapOf()
         val datosPqtMap = _mapListDatosPqt.value?.toMutableMap() ?: mutableMapOf()
         val totalguides = countGuides.value
@@ -769,7 +818,7 @@ class EMViewModel @Inject constructor(
                 val numPaquetes = "1"
                 val observacion = "Asignado"
 
-                for ((key, value) in currentmap) {
+                for ((key, value) in currentmap){
                     val direccion = direccionmap[value]
                     val datosPqt = datosPqtMap[value]
                     var dataGuiaDto = listOf(idPreM, value, numPaquetes, observacion)

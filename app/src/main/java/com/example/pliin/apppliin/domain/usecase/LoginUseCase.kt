@@ -19,7 +19,7 @@ class LoginUseCase @Inject constructor(
         user: String,
         password: String
     ): Boolean {
-        usersRepository.clearUser()
+       // usersRepository.clearUser()
         val userexiste =
             usersRepository.getLoginUserDatabaseB(generalMethodsGuide.toLowerLetter(user), password)
         var userValidate: String = ""

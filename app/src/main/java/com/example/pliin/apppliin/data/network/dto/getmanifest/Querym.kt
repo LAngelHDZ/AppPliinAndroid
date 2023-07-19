@@ -5,7 +5,9 @@ import com.google.gson.annotations.SerializedName
 
 data class Querym(
     @SerializedName("Fecha")
-    val fecha: String,
+    val fecha: String ="",
     @SerializedName("NombreOperador")
-    val nombreOperador: String
+    val nombreOperador: String ="",
+    @SerializedName("ClavePrincipal")
+    val idPreM: String="",
 )

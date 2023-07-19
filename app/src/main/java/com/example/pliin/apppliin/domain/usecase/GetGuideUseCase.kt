@@ -18,7 +18,7 @@ class GetGuideUseCase @Inject constructor(
     @SuppressLint("SuspiciousIndentation")
     suspend operator fun invoke(
         guide: String
-    ): List<String?> {
+    ): List<String?>{
         var guides: GetDataGuideRDItem
         do {
             Log.i("Guia escaneada", guide)
@@ -37,9 +37,9 @@ class GetGuideUseCase @Inject constructor(
         return if (codeStatus.equals("0") && message.equals("OK")) {
             GetData(guides)
         } else if (codeStatus.equals("500")) {
-            listOf("500", "", "", "", "", "", "", "", "", "", "", "")
+            listOf("500", "", "", "", "", "", "", "", "", "", "", "","")
         } else {
-            listOf("", "", "", "", "", "", "", "", "", "", "", "")
+            listOf("", "", "", "", "", "", "", "", "", "", "", "","")
         }
     }
 
@@ -67,7 +67,8 @@ class GetGuideUseCase @Inject constructor(
             refillvacio(response.fieldData?.pesokg.toString()),
             refillvacio(response.fieldData?.valorGuia.toString()),
             refillvacio(response.portalData.manifiestoPaquetes[0]!!.recordId),
-            refillvacio(response.fieldData?.statusIntento)
+            refillvacio(response.fieldData?.statusIntento),
+            refillvacio(response.recordId),
         )
     }
 

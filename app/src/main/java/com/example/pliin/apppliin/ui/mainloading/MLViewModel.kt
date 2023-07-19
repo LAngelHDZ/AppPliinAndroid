@@ -38,7 +38,7 @@ class MLViewModel @Inject constructor(
         viewModelScope.launch {
             val data = loadEmployeeUseCase.invoke()
             val user = usersRepository.getAllUserDatabase()
-            loginUseCase(user[0].user!!, user[0].password!!)
+            loginUseCase(user.user!!, user.password!!)
             //Remplaza los espacios por un punto para poder pasarlo por parametro en la URL a la vista nueva, de l¡no hacerlo manda un error de ruta ya que cada parametro debe ser separado por un "/"
             val name=  generalMethodsGuide.reemplazaCaracter("${data.nombre} ${data.aPaterno}",' ',' ')
             val area=  generalMethodsGuide.reemplazaCaracter("${data.area}",' ',' ')

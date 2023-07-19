@@ -46,11 +46,20 @@ fun getdatenow(): String {
 }
 
 @Composable
-fun CreateManifestScreen(
+fun EditManifestScreen(
     navigationController: NavHostController,
-    area: String,
+    nameEmploye: String,
+    idRecord:String,
+    route:String,
+    idPrem:String,
     EMViewModel: EMViewModel = hiltViewModel()
 ) {
+    val isLoadGuideManifest: Boolean by EMViewModel.isLoadGuideManifest.observeAsState(true)
+
+    if (isLoadGuideManifest){
+        EMViewModel.loadData(nameEmploye,idRecord,route,idPrem)
+    }
+
     val nombre: String by EMViewModel.nombre.observeAsState("")
     val telefono: String by EMViewModel.telefono.observeAsState("")
     val dir1: String by EMViewModel.dir1.observeAsState("")
@@ -155,17 +164,6 @@ fun CreateManifestScreen(
                 show = isSesionDialog,
                 EMViewModel,
                 messageGuideValidate
-            )
-
-            selectRuta(
-                EMViewModel,
-                selectedOptionRuta,
-                selectedOptionTM,
-                navigationController,
-                isDialogRuta,
-                isSelectbtn,
-                isSelectRutaEnabled,
-                area
             )
 
             dataGuides(
@@ -1056,6 +1054,8 @@ fun NameOPTextField(nameEmployee: String) {
                 fontWeight = FontWeight.Normal,
                 color = Color.DarkGray
             ),
+            maxLines = 1,
+            singleLine = true,
             decorationBox = { innerTextField ->
                 Row(
                     modifier = Modifier
@@ -1167,7 +1167,7 @@ fun ClavePMTextField(claveManifest: String) {
     Column() {
         TextLabelClavePM()
         BasicTextField(
-            value = "$claveManifest-XXX",
+            value = claveManifest,
             readOnly = true,
             onValueChange = {
             },
@@ -1176,6 +1176,8 @@ fun ClavePMTextField(claveManifest: String) {
                 fontWeight = FontWeight.Normal,
                 color = Color.DarkGray
             ),
+            maxLines = 1,
+            singleLine = true,
             decorationBox = { innerTextField ->
                 Row(
                     modifier = Modifier
@@ -1213,6 +1215,8 @@ fun RutaTextField(ruta: String) {
                 fontWeight = FontWeight.Normal,
                 color = Color.DarkGray
             ),
+            maxLines = 1,
+            singleLine = true,
             decorationBox = { innerTextField ->
                 Row(
                     modifier = Modifier
@@ -1635,106 +1639,6 @@ fun ButtonLoadServer(
 }
 
 
-@Composable
-fun selectRuta(
-    EMViewModel: EMViewModel,
-    selectedOptionRuta: String,
-    selectedOptionTM: String,
-    navigationController: NavHostController,
-    isDialogRuta: Boolean,
-    isSelectbtn: Boolean,
-    isSelectRutaEnabled: Boolean,
-    area: String
-) {
-    if (isDialogRuta) {
-        Dialog(onDismissRequest = { }) {
-            Column(
-                Modifier
-                    .background(Color.White)
-                    .padding(24.dp)
-                    .fillMaxWidth()
-                    .height(350.dp)
-            ) {
-
-                selectRutaDialog(
-                    EMViewModel,
-                    selectedOptionRuta,
-                    selectedOptionTM,
-                    isSelectRutaEnabled,
-                    area
-                )
-                Spacer(modifier = Modifier.size(4.dp))
-                ButtonsConfirmation(EMViewModel, navigationController, isSelectbtn, area)
-            }
-        }
-    }
-}
-
-
-@Composable
-fun selectRutaDialog(
-    EMViewModel: EMViewModel,
-    selectedOptionRuta: String,
-    selectedOptionTM: String,
-    isSelectRutaEnabled: Boolean,
-    area: String,
-) {
-
-    val typeManifest = remember {
-        mutableStateListOf(
-            "Traslado",
-            "Local",
-        )
-    }
-
-    val items = remember {
-        mutableStateListOf(
-            "Corta",
-            "Local",
-            "Costa Chica",
-            "Zihuatanejo",
-            "Ixtapa",
-            "Petatlan",
-            "La unión"
-        )
-    }
-
-    Text(
-        modifier = Modifier.fillMaxWidth(),
-        textAlign = TextAlign.Center,
-        fontWeight = FontWeight.SemiBold,
-        fontSize = 20.sp,
-        color = Color(0xFF4425a7),
-        text = "MANIFIESTO"
-    )
-
-
-    if (area.equals("AuxiliarAdministrativo")) {
-        Spacer(modifier = Modifier.size(16.dp))
-        Text(text = "Tipo")
-        DromMenuTM(selectedOptionTM, EMViewModel, typeManifest) {
-            EMViewModel.onValueChangedMT(
-                selected = it
-            )
-        }
-    }
-
-    Spacer(modifier = Modifier.size(16.dp))
-    Text(text = "Ruta")
-    DromMenuRuta(
-        selectedOptionRuta,
-        selectedOptionTM,
-        EMViewModel,
-        items,
-        isSelectRutaEnabled,
-        area
-    ) { EMViewModel.onValueChangedRuta(selected = it) }
-    Spacer(modifier = Modifier.size(14.dp))
-
-    // Text(text = "")
-    // Recibe(parents) { dgsViewModel.onValueChangedRecibe(nameparent = it) }
-
-}
 
 @Composable
 fun DromMenuTM(
@@ -1784,110 +1688,6 @@ fun DromMenuTM(
                     Text(text = option)
                 }
             }
-        }
-    }
-}
-
-@Composable
-fun DromMenuRuta(
-    selectedOptionRuta: String,
-    selectedOptionTM: String,
-    EMViewModel: EMViewModel,
-    listRutas: MutableList<String>,
-    isSelectRutaEnabled: Boolean,
-    area: String,
-    onTextChanged: (String) -> Unit
-) {
-    val listRutasistRutas: MutableList<String>
-    if (area == "OperadorLogistico") {
-        listRutasistRutas = listRutas
-
-    } else {
-        if (selectedOptionTM == "Local") {
-            listRutasistRutas = remember {
-                mutableStateListOf(
-                    "Corta",
-                    "Local",
-                    "Costa Chica",
-                )
-            }
-        } else {
-            listRutasistRutas = remember {
-                mutableStateListOf(
-                    "Zihuatanejo",
-                    "Ixtapa",
-                    "Petatlan",
-                    "La unión"
-                )
-            }
-        }
-    }
-
-    var expand by remember { mutableStateOf(false) }
-    var textFiledSize by remember { mutableStateOf(Size.Zero) }
-    OutlinedTextField(
-        value = selectedOptionRuta,
-        onValueChange = { },
-        enabled = false,
-        readOnly = true,
-        modifier = Modifier
-            .clickable {
-                expand = true
-            }
-            .fillMaxWidth()
-            .onGloballyPositioned { coordinates ->
-                textFiledSize = coordinates.size.toSize()
-            },
-        shape = RoundedCornerShape(10),
-        colors = TextFieldDefaults.outlinedTextFieldColors(
-            focusedBorderColor = Color(96, 127, 243),
-            unfocusedBorderColor = Color(76, 81, 198),
-            backgroundColor = Color.White
-        ),
-        maxLines = 1,
-        singleLine = true,
-    )
-    Box() {
-        if (isSelectRutaEnabled || area == "OperadorLogistico") {
-            DropdownMenu(
-                expanded = expand,
-                onDismissRequest = { expand = false },
-                modifier = Modifier
-                    .height(200.dp)
-                    .width(with(LocalDensity.current) { textFiledSize.width.toDp() })
-            ) {
-                Log.i("lista de rutas", listRutas.toString())
-                listRutasistRutas.forEach { option ->
-                    DropdownMenuItem(
-                        onClick = {
-                            expand = false
-                            onTextChanged(option)
-                        }
-                    ) {
-                        Text(text = option)
-                    }
-                }
-            }
-        }
-    }
-}
-
-@Composable
-fun ButtonsConfirmation(
-    EMViewModel: EMViewModel,
-    navigationController: NavHostController,
-    isSelectbtn: Boolean,
-    area: String,
-) {
-    Row() {
-        TextButton(onClick = { EMViewModel.backScreen(navigationController) }) {
-            Text(text = "Cancelar")
-        }
-        TextButton(
-            onClick = { EMViewModel.continueSetGuides(area) },
-            enabled = isSelectbtn
-        ) {
-            Text(text = "Continuar")
         }
     }
 }

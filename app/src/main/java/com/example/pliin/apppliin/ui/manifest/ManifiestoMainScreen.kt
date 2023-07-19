@@ -55,7 +55,7 @@ fun HeadText(modifier: Modifier) {
     Box(modifier = modifier.fillMaxWidth()) {
         Text(
             modifier = modifier.padding(vertical = 16.dp),
-            text = "Guias",
+            text = "Manifiesto",
             fontSize = 30.sp,
             fontWeight = FontWeight.SemiBold,
             color = Color.White
@@ -98,8 +98,8 @@ fun GroupButton(
     ButtonCreateManifest(modifier, navigationController, mmViewModel)
     Spacer(modifier = spaces)
     ButtonViewManifest(modifier, navigationController)
-    // Spacer(modifier = spaces)
-    // ButtonConsult(modifier)
+    Spacer(modifier = spaces)
+    ReasignacionGuide(modifier,navigationController)
     //  Spacer(modifier = spaces)
     //   ButtonConsultDelivery(modifier)
 
@@ -157,10 +157,10 @@ fun ButtonViewManifest(modifier: Modifier, navigationController: NavHostControll
 }
 
 @Composable
-fun ButtonConsult(modifier: Modifier) {
+fun ReasignacionGuide(modifier: Modifier, navigationController: NavHostController) {
     Button(
         modifier = modifier,
-        onClick = { },
+        onClick = { navigationController.navigate(AppScreen.ReasignacionGuideScreen.route)},
         colors = ButtonDefaults.buttonColors(
             backgroundColor = Color.White,
             contentColor = Color.Black
@@ -174,7 +174,7 @@ fun ButtonConsult(modifier: Modifier) {
         )
         //  Spacer(Modifier.size(5.dp))
         Text(
-            text = "Consultar guia",
+            text = "Reasignar",
             fontSize = 18.sp,
             modifier = Modifier.padding(end = 53.dp)
         )

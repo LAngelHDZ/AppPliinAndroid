@@ -7,9 +7,11 @@ import javax.inject.Inject
 
 
 class GetAllEmployeesUseCase @Inject constructor(
-    private val employeeRepository: EmployeeRepository
+    private val employeeRepository: EmployeeRepository,
+    private val reloginUseCase: ReloginUseCase
 ) {
     suspend operator fun invoke(): List<DataEI?>? {
+        reloginUseCase()
         val response = employeeRepository.getAllEmployeeApi()
         return response.response?.data
     }
