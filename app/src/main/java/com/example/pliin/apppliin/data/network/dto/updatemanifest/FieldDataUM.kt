@@ -4,4 +4,5 @@ data class FieldDataUM(
     val NombreOperador: String? = "",
     val Totalpqt: String? = "",
     val TotaolGuias: String?,
+    val statusPreM:String? =""
 )

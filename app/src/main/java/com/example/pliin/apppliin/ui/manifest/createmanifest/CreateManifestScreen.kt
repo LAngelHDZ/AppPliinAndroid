@@ -49,8 +49,9 @@ fun getdatenow(): String {
 fun CreateManifestScreen(
     navigationController: NavHostController,
     area: String,
-    cmViewModel: CMViewModel = hiltViewModel()
+    cmViewModel: CMViewModel
 ) {
+
     val nombre: String by cmViewModel.nombre.observeAsState("")
     val telefono: String by cmViewModel.telefono.observeAsState("")
     val dir1: String by cmViewModel.dir1.observeAsState("")
@@ -83,7 +84,8 @@ fun CreateManifestScreen(
     val isDialogDatosPqt: Boolean by cmViewModel.isDatosPQTnDialog.observeAsState(false)
     val isSelectbtn: Boolean by cmViewModel.isSelectbtn.observeAsState(false)
     val isSelectRutaEnabled: Boolean by cmViewModel.isSelectRutaEnabled.observeAsState(false)
-    val isSesionDialog: Boolean by cmViewModel.isSesionDialog.observeAsState(false)
+    val isDialogMessageGuide: Boolean by cmViewModel.isDialogMessageGuide.observeAsState(false)
+    val isDialogExitScreen: Boolean by cmViewModel.isDialogExitScreen.observeAsState(false)
     val isLoadingDatGuide: Boolean by cmViewModel.isLoadingDataGuide.observeAsState(false)
     val isDialogLoadGuides: Boolean by cmViewModel.isDialogLoadEnable.observeAsState(false)
     val isGuideRegisted: Boolean by cmViewModel.isGuideRegisted.observeAsState(false)
@@ -96,6 +98,9 @@ fun CreateManifestScreen(
         mutableMapOf()
     )
     val date: String = getdatenow()
+
+
+
     val scanLauncher = rememberLauncherForActivityResult(
         contract = ScanContract(),
     ) { result ->
@@ -152,7 +157,7 @@ fun CreateManifestScreen(
                 )
             }
             AlertDialogGuide(
-                show = isSesionDialog,
+                show = isDialogMessageGuide,
                 cmViewModel,
                 messageGuideValidate
             )
@@ -190,7 +195,43 @@ fun CreateManifestScreen(
                 messageGuideValidate,
                 navigationController
             )
+
+            AlertDialogexitScreen(isDialogExitScreen,cmViewModel,navigationController)
         }
+    }
+}
+
+@Composable
+fun AlertDialogexitScreen(
+    show: Boolean,
+    cmViewModel: CMViewModel,
+    navigationController: NavHostController
+) {
+    if (show) {
+        AlertDialog(onDismissRequest = {},
+            title = { Text(text = "Esta por salir") },
+            text = { Text(text = "¿Quiere mantener los cambios?") },
+            confirmButton = {
+                TextButton(onClick = {
+                    cmViewModel.onAlertDialogexit(
+                        true,
+                        navigationController
+                    )
+                }) {
+                    Text(text = "Si")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = {
+                    cmViewModel.onAlertDialogexit(
+                        false,
+                        navigationController
+                    )
+                }) {
+                    Text(text = "No")
+                }
+            }
+        )
     }
 }
 
@@ -1886,7 +1927,7 @@ fun ButtonsConfirmation(
         TextButton(
             onClick = { cmViewModel.continueSetGuides(area) },
             enabled = isSelectbtn
-        ) {
+        ){
             Text(text = "Continuar")
         }
     }

@@ -55,6 +55,7 @@ fun EditManifestScreen(
     EMViewModel: EMViewModel = hiltViewModel()
 ) {
     val isLoadGuideManifest: Boolean by EMViewModel.isLoadGuideManifest.observeAsState(true)
+    val isDialogExitScreen: Boolean by EMViewModel.isAlertDialogexit.observeAsState(false)
 
     if (isLoadGuideManifest){
         EMViewModel.loadData(nameEmploye,idRecord,route,idPrem)
@@ -77,7 +78,6 @@ fun EditManifestScreen(
     val isEnableBtnCalcular: Boolean by EMViewModel.isenableBtnCalcular.observeAsState(false)
     val typeExcedente: String by EMViewModel.typePaq.observeAsState("")
     val isFormDatosPqt: Boolean by EMViewModel.isFormDatosPqt.observeAsState(false)
-
 
     val isSearchEnable: Boolean by EMViewModel.isSearchEnable.observeAsState(false)
     val progressCircular: Float by EMViewModel.progressCircularLoad.observeAsState(0f)

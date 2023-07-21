@@ -141,7 +141,7 @@ class ManifestService @Inject constructor(
 
     @SuppressLint("SuspiciousIndentation")
     suspend fun createManifest(data: List<String>): ResponseRUDModel {
-        val bearer = daoToken.getToken()?.token!!
+        val bearer = daoToken.getToken().token!!
 
         val query = CreateManifestDto(
             FieldData(
@@ -153,9 +153,10 @@ class ManifestService @Inject constructor(
                 data[5],
                 data[6],
                 data[7],
+                data[8]
             )
         )
-        return withContext(Dispatchers.IO) {
+        return withContext(Dispatchers.IO){
             try {
                 val response = dataManifestClient.createManifest("Bearer $bearer", query)
                 val data = if (response.isSuccessful) {
@@ -194,13 +195,14 @@ class ManifestService @Inject constructor(
 
     @SuppressLint("SuspiciousIndentation")
     suspend fun updateManifest(data: List<String>): ResponseRUDModel {
-        val bearer = daoToken.getToken()?.token!!
+        val bearer = daoToken.getToken().token!!
 
         val query = UpdateManifestDto(
             FieldDataUM(
                 data[0],
                 data[1],
-                data[2]
+                data[2],
+                data[4]
             )
         )
         return withContext(Dispatchers.IO) {

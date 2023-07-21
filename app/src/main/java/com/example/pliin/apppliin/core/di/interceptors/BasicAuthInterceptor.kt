@@ -12,6 +12,8 @@ import javax.inject.Inject
 class BasicAuthInterceptor : Interceptor {
     override fun intercept(chain: Interceptor.Chain): Response {
         val request: Request = chain.request()
+        val content= request.url.toUrl()
+        Log.i("URL impresa", content.toString())
         val authenticatedRequest: Request = request.newBuilder()
             .addHeader("Content-Type", "application/json")
             .addHeader("Accept", "/")

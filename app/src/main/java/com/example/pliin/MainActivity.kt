@@ -171,7 +171,8 @@ class MainActivity : ComponentActivity() {
             ) { backStackEntry ->
                 CreateManifestScreen(
                     navigationController,
-                    backStackEntry.arguments?.getString("area") ?: ""
+                    backStackEntry.arguments?.getString("area") ?: "",
+                    cmViewModel
                 )
             }
 

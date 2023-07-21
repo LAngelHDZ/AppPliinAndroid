@@ -156,37 +156,73 @@ fun itemManifest(modifier: Modifier, manifest: FieldData, mfViewModel: MFViewMod
             modifier = modifier.padding(horizontal = 4.dp, vertical = 16.dp)
         ) {
             Box(
-                modifier = Modifier.weight(2f)
-            ) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(
-                        imageVector = Icons.Rounded.ArrowRight,
-                        contentDescription = null,
-                        modifier = Modifier
-                            .size(20.dp)
-                            .padding(0.dp),
-                        tint = Color(0xFF4425a7)
-                    )
-                    Text(
-                        text = "${manifest.clavePrincipal}",
-                        //modifier =modifier.padding(horizontal = 4.dp),
-                        fontWeight = FontWeight.Normal, fontSize = 16.sp
-                    )
-                }
-            }
-
-            Box(
                 Modifier
                     .fillMaxWidth()
-                    .weight(1.5f)
+//                    .height(100.dp)
+                    .weight(0.1f)
+                    .background(Color(0xFF4425a7))
 //                            .padding(start = 8.dp)
                 , contentAlignment = Alignment.Center
             ) {
-                Text(
-                    text = "${manifest.fecha}",
+               /* Box(
+                    Modifier
+                        .fillMaxWidth()
+                        .fillMaxHeight()
+                        .background(Color(0xFF4425a7))
+//                            .padding(start = 8.dp)
+                )*/
+              /*  Text(
+                    text = "*",
+                    color= Color.White,
                     //modifier =modifier.padding(horizontal = 4.dp),
                     fontWeight = FontWeight.Normal, fontSize = 16.sp
-                )
+                )*/
+
+            }
+            Box(
+                modifier = Modifier.weight(2f)
+            ) {
+                Column() {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                       /* Icon(
+                            imageVector = Icons.Rounded.ArrowRight,
+                            contentDescription = null,
+                            modifier = Modifier
+                                .size(20.dp)
+                                .padding(0.dp),
+                            tint = Color(0xFF4425a7)
+                        )*/
+                        Text(
+                            text = "${manifest.clavePrincipal}",
+                            //modifier =modifier.padding(horizontal = 4.dp),
+                            fontWeight = FontWeight.Normal, fontSize = 16.sp
+                        )
+                    }
+                    Box(
+                        Modifier
+                            .fillMaxWidth()
+//                            .padding(start = 8.dp)
+                        , contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = "${manifest.ruta}",
+                            //modifier =modifier.padding(horizontal = 4.dp),
+                            fontWeight = FontWeight.Normal, fontSize = 16.sp
+                        )
+                    }
+                    Box(
+                        Modifier
+                            .fillMaxWidth()
+//                            .padding(start = 8.dp)
+                        , contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = "${manifest.fecha}",
+                            //modifier =modifier.padding(horizontal = 4.dp),
+                            fontWeight = FontWeight.Normal, fontSize = 16.sp
+                        )
+                    }
+                }
             }
 
             Box(
@@ -225,7 +261,7 @@ fun HeadTable() {
                     text = "Manifiesto", fontWeight = FontWeight.SemiBold
                 )
             }
-            Box(
+         /*   Box(
                 modifier = Modifier
                     .weight(1.5f)
                     .fillMaxWidth(), contentAlignment = Alignment.Center
@@ -233,7 +269,7 @@ fun HeadTable() {
                 Text(
                     text = "Fecha", fontWeight = FontWeight.SemiBold
                 )
-            }
+            }*/
             Spacer(modifier = Modifier.size(2.dp))
             Box(
                 modifier = Modifier

@@ -65,6 +65,9 @@ class EMViewModel @Inject constructor(
     private val _progressCircularLoad = MutableLiveData<Float>()
     var progressCircularLoad: LiveData<Float> = _progressCircularLoad
 
+    private val _isDialogExitScreen = MutableLiveData<Boolean>()
+    var isDialogExitScreen: LiveData<Boolean> = _isDialogExitScreen
+
     private val _isSesionDialog = MutableLiveData<Boolean>()
     var isSesionDialog: LiveData<Boolean> = _isSesionDialog
 
@@ -635,7 +638,7 @@ class EMViewModel @Inject constructor(
                             _mapListGuide.value = currentmap
                             _mapListGuideAdd.value = currentmapadd
                             _contentQR.value = guia
-                            _countGuides.value = _mapListGuideAdd.value?.size
+                            _countGuides.value = mapListGuide.value?.size
                             //setData(guia)
                             _isLoadBtnEnable.value = enableLoadBtn(currentmapadd.size, nameEmployye.value!!
                             )
@@ -775,19 +778,26 @@ class EMViewModel @Inject constructor(
             val typeManifest = typePreManifest.value
             val idRecord = idRecord.value
             val ruta = generalMethodsGuide.toUpperLetter(ruta.value!!)
+            val statusPreM = if(nameEmployee.isNullOrEmpty()){
+                "NO APLICADO"
+            }else{
+                "APLICADO"
+            }
 
-            if (nameEmployee.isNullOrEmpty()) {
+            if (nameEmployee.isNullOrEmpty()){
                 nameEmployee = ""
             }
             val dataDto: List<String?> = listOf(
                 nameEmployee,
                 totalPqt,
                 totalPqt,
-                idRecord
+                idRecord,
+                statusPreM
             )
             updateManifestUseCase.invoke(dataDto)
             Log.i("Datos dto Manifest", "$dataDto")
             if (guias>=1){
+                _countGuides.value =currentmap.size
                 loadGuideServer()
             }else{
                 _isLoadingDataGuide.value = true

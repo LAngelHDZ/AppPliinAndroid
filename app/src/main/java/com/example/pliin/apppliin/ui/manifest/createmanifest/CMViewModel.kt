@@ -59,8 +59,11 @@ class CMViewModel @Inject constructor(
     private val _progressCircularLoad = MutableLiveData<Float>()
     var progressCircularLoad: LiveData<Float> = _progressCircularLoad
 
-    private val _isSesionDialog = MutableLiveData<Boolean>()
-    var isSesionDialog: LiveData<Boolean> = _isSesionDialog
+    private val _isDialogMessageGuide = MutableLiveData<Boolean>()
+    var isDialogMessageGuide: LiveData<Boolean> = _isDialogMessageGuide
+
+    private val _isDialogExitScreen = MutableLiveData<Boolean>()
+    var isDialogExitScreen: LiveData<Boolean> = _isDialogExitScreen
 
     /*Variable que habilita el modal para ingresar los datos de direccion del paquete*/
     private val _isDireccionDialog = MutableLiveData<Boolean>()
@@ -69,6 +72,9 @@ class CMViewModel @Inject constructor(
     /*Variable que habilita el modal para ingresar los datos de peso del paquete*/
     private val _isDatosPQTnDialog = MutableLiveData<Boolean>()
     var isDatosPQTnDialog: LiveData<Boolean> = _isDatosPQTnDialog
+
+    private val _isSaveChanges = MutableLiveData<Boolean>()
+    var isSaveChanges: LiveData<Boolean> = _isSaveChanges
 
     private val _isAlertDialogexit = MutableLiveData<Boolean>()
     var isAlertDialogexit: LiveData<Boolean> = _isAlertDialogexit
@@ -348,7 +354,7 @@ class CMViewModel @Inject constructor(
     fun enableSelectbtn(select: String) = select.length > 1
 
     fun guideregistedOk(navigationController: NavHostController) {
-        backScreen(navigationController)
+        onAlertDialogexit(false,navigationController)
         _isDialogLoadEnable.value = false
         _isLoadingDataGuide.value = false
         _isGuideRegisted.value = false
@@ -360,8 +366,23 @@ class CMViewModel @Inject constructor(
     }
 
     fun backScreen(navigationController: NavHostController) {
-        reset()
-        navigationController.popBackStack()
+        _isDialogExitScreen.value=true
+    }
+
+    fun onAlertDialogexit(exit:Boolean, navigationController: NavHostController){
+        if (exit){
+            navigationController.popBackStack()
+            _isDialogExitScreen.value=false
+            _isDialogRuta.value = false
+        }else{
+            navigationController.popBackStack()
+            reset()
+            _isDialogExitScreen.value=false
+        }
+    }
+
+    fun saveChanges(){
+        _isSaveChanges.value = true
     }
 
     fun clearForm() {
@@ -406,6 +427,7 @@ class CMViewModel @Inject constructor(
         _selectedOptionRuta.value = ""
         _selectedOptionTM.value = ""
         _ruta.value = ""
+        _nameEmployye.value=""
         _consecutiveMan.value = 0
         _countGuides.value = 0
         _clavePreManifest.value = ""
@@ -418,7 +440,7 @@ class CMViewModel @Inject constructor(
     }
 
     fun onAlertDialog() {
-        _isSesionDialog.value = false
+        _isDialogMessageGuide.value = false
         _isDialogLoadEnable.value = false
     }
 
@@ -591,23 +613,26 @@ class CMViewModel @Inject constructor(
                             //setData(guia)
                             _isLoadBtnEnable.value = enableLoadBtn(currentmap.size)
                         } else {
-                            _isSesionDialog.value = true
-                            _messageGuideValidate.value =
-                                "Esta guia ya se encuentra asignada a un manifiesto"
+                            mesageValidateGuide("Esta guia ya se encuentra asignada a un manifiesto")
+
                         }
                     } else {
-                        _isSesionDialog.value = true
-                        _messageGuideValidate.value = "La guia $guia no se encuentra en el sistema"
+                        mesageValidateGuide("La guia $guia no se encuentra en el sistema")
                     }
                 } else {
-                    _isSesionDialog.value = true
-                    _messageGuideValidate.value = "Ya ha agregado esta guia: $guia"
+                    mesageValidateGuide("Ya ha agregado esta guia: $guia")
+
                 }
             } else {
-                _isSesionDialog.value = true
-                _messageGuideValidate.value = "El formato de la guia $guia no es valido"
+                mesageValidateGuide("El formato de la guia $guia no es valido")
+
             }
         }
+    }
+
+    fun mesageValidateGuide(message:String){
+        _isDialogMessageGuide.value = true
+        _messageGuideValidate.value = message
     }
 
     fun guideOtherManifest(guide: String): Boolean {
@@ -728,9 +753,15 @@ class CMViewModel @Inject constructor(
             var nameEmployee = selectEmployye(employee)
             val typeManifest = typePreManifest.value
             val ruta = generalMethodsGuide.toUpperLetter(ruta.value!!)
+            val statusPreM = if(nameEmployee.isNullOrEmpty()){
+                "NO APLICADO"
+            }else{
+               "APLICADO"
+            }
 
             if (nameEmployee.isNullOrEmpty()) {
                 nameEmployee = ""
+
             }
 
             val dataDto: List<String?> = listOf(
@@ -742,6 +773,7 @@ class CMViewModel @Inject constructor(
                 totalPqt,
                 totalPqt,
                 typeManifest,
+                statusPreM
             )
 
             createManifestUseCase.invoke(dataDto)
