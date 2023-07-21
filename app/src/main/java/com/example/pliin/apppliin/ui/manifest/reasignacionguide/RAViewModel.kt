@@ -141,7 +141,7 @@ class RAViewModel @Inject constructor(
     fun navigation(navigationController: NavHostController) {
         val previousScreenName = navigationController.previousBackStackEntry?.destination?.route
 
-        if (previousScreenName.equals("ReasignacionGuideScreen")) {
+        if (previousScreenName.equals("ManifiestoMainScreen")) {
 
             navigationController.popBackStack()
         } else {
