@@ -129,10 +129,13 @@ fun DataGuideScannerScreen(
     )
     val listStatusIntentos: List<String> by dgsViewModel.listStatusIntentos.observeAsState(listOf())
     val isDeliveryConfirmation: Boolean by dgsViewModel.isDeliveryConfirmation.observeAsState(false)
+
+    val isBtnregisterStatus: Boolean by dgsViewModel.isBtnRegisterStatus.observeAsState(false)
+    val isEnabledFTCommentRecibe: Boolean by dgsViewModel.isEnabledTFCommentRecibe.observeAsState(false)
     val isAnotherParent: Boolean by dgsViewModel.isAnotherParent.observeAsState(false)
     val title: String by dgsViewModel.titleAlertDialog.observeAsState(" ")
     val text: String by dgsViewModel.textAlertDialog.observeAsState(" ")
-    val status: String by dgsViewModel.status.observeAsState(" ")
+    val statu: String by dgsViewModel.status.observeAsState("")
     val nameparents: String by dgsViewModel.nameRecibe.observeAsState(" ")
     val anotherParents: String by dgsViewModel.parentOrFailDelivery.observeAsState(" ")
     val selectedOption: String by dgsViewModel.selectedOption.observeAsState(" ")
@@ -171,12 +174,14 @@ fun DataGuideScannerScreen(
                     data[11],
                     data[14],
                     text,
-                    status,
+                    statu,
                     nameparents,
                     selectedOption,
                     anotherParents,
                     isAnotherParent,
-                    listStatusIntentos
+                    listStatusIntentos,
+                    isBtnregisterStatus,
+                    isEnabledFTCommentRecibe
                 )
             }
         }
@@ -933,6 +938,8 @@ fun AlertDialogConfirmation(
     anotherParents: String,
     isAnotherParent: Boolean,
     listStatusIntentos: List<String>,
+    isBtnregisterStatus: Boolean,
+    isEnabledFTCommentRecibe: Boolean,
 
     ) {
     var expanded by remember { mutableStateOf(false) }
@@ -954,7 +961,8 @@ fun AlertDialogConfirmation(
                         selectedOption,
                         nameparents,
                         isAnotherParent,
-                        anotherParents
+                        anotherParents,
+                        isEnabledFTCommentRecibe
                     ) {
                         dgsViewModel.onValueChanged(selected = it)
                         dgsViewModel.onValueChangedRecibe(nameparent = it)
@@ -966,7 +974,8 @@ fun AlertDialogConfirmation(
                         selectedOption,
                         nameparents,
                         statusIntento,
-                        listStatusIntentos
+                        listStatusIntentos,
+                        isEnabledFTCommentRecibe
                     ) {
                         dgsViewModel.onValueChanged(selected = it)
                         dgsViewModel.onValueChangedRecibe(nameparent = it)
@@ -975,7 +984,7 @@ fun AlertDialogConfirmation(
                 }
 
                 Spacer(modifier = Modifier.size(4.dp))
-                ButtonsConfirmation(dgsViewModel, idGuia, recordId, navigationController)
+                ButtonsConfirmation(dgsViewModel, idGuia, recordId, navigationController,isBtnregisterStatus)
             }
         }
     }
@@ -988,6 +997,7 @@ fun ConfirmarEntregaDialog(
     parents: String,
     isAnotherParent: Boolean,
     anotherParents: String,
+    isEnabledFTCommentRecibe:Boolean,
     onTextChanged: (String) -> Unit,
 ) {
     val options = listOf(
@@ -1037,7 +1047,7 @@ fun ConfirmarEntregaDialog(
         AnotherParent(anotherParents) { dgsViewModel.onValueChangedParents(otherparent = it) }
     }
     Text(text = "Quien recibe")
-    RecibeOrComment(parents) { dgsViewModel.onValueChangedRecibe(nameparent = it) }
+    RecibeOrComment(parents,isEnabledFTCommentRecibe) { dgsViewModel.onValueChangedRecibe(nameparent = it) }
     Spacer(modifier = Modifier.size(14.dp))
    // btnSHowCameraX(dgsViewModel)
 }
@@ -1135,9 +1145,10 @@ fun AnotherParent(anotherParents: String, onTextChanged: (String) -> Unit) {
 }
 
 @Composable
-fun RecibeOrComment(parents: String, onTextChanged: (String) -> Unit) {
+fun RecibeOrComment(parents: String,isEnabledFTCommentRecibe:Boolean, onTextChanged: (String) -> Unit) {
     OutlinedTextField(
         value = parents,
+        enabled = isEnabledFTCommentRecibe,
         onValueChange = { onTextChanged(it) },
         shape = RoundedCornerShape(10),
         colors = TextFieldDefaults.outlinedTextFieldColors(
@@ -1228,6 +1239,7 @@ fun ConfirmarDevueltoDialog(
     parents: String,
     statusIntento: String,
     listStatusIntentos: List<String>,
+    isEnabledFTCommentRecibe:Boolean,
     onTextChanged: (String) -> Unit,
 ) {
     dgsViewModel.onChangeListStatusIntentos(statusIntento)
@@ -1277,7 +1289,7 @@ fun ConfirmarDevueltoDialog(
     }
     Spacer(modifier = Modifier.size(14.dp))
     Text(text = "Comentario")
-    RecibeOrComment(parents) { dgsViewModel.onValueChangedRecibe(nameparent = it) }
+    RecibeOrComment(parents,isEnabledFTCommentRecibe) { dgsViewModel.onValueChangedRecibe(nameparent = it) }
     // Text(text = "Quien recibe")
     // Recibe(parents){dgsViewModel.onValueChangedRecibe(nameparent = it)}
 }
@@ -1287,13 +1299,15 @@ fun ButtonsConfirmation(
     dgsViewModel: DGSViewModel,
     idGuia: String,
     recordId: String,
-    navigationController: NavHostController
+    navigationController: NavHostController,
+    isBtnregisterStatus: Boolean
 ) {
     Row() {
         TextButton(onClick = { dgsViewModel.reset() }) {
             Text(text = "Cancelar")
         }
-        TextButton(onClick = { dgsViewModel.setDelivery(idGuia, recordId, navigationController) }) {
+        TextButton(onClick = { dgsViewModel.setDelivery(idGuia, recordId, navigationController) },
+        enabled = isBtnregisterStatus) {
             Text(text = "Continuar")
         }
     }

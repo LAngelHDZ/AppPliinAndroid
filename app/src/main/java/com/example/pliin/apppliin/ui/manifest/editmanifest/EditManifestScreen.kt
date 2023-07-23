@@ -1556,7 +1556,6 @@ fun TextFieldGuia(
 
                 ButtonScanner(EMViewModel, navigationController, scanLauncher)
             }
-
         },
     )
 }
@@ -1630,7 +1629,7 @@ fun ButtonLoadServer(
                 tint = Color.White
             )
             Text(
-                text = "Crear Manifiesto",
+                text = "Actualizar",
                 fontSize = 14.sp,
                 modifier = Modifier.weight(2f),
             )

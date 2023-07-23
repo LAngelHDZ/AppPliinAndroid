@@ -43,8 +43,14 @@ class DGSViewModel @Inject() constructor(
     private val _isDeliveryConfirmation = MutableLiveData<Boolean>()
     var isDeliveryConfirmation: LiveData<Boolean> = _isDeliveryConfirmation
 
+    private val _isEnabledTFCommentRecibe = MutableLiveData<Boolean>()
+    var isEnabledTFCommentRecibe: LiveData<Boolean> = _isEnabledTFCommentRecibe
+
     private val _isAnotherParent = MutableLiveData<Boolean>()
     var isAnotherParent: LiveData<Boolean> = _isAnotherParent
+
+    private val _isBtnRegisterStatus = MutableLiveData<Boolean>()
+    var isBtnRegisterStatus: LiveData<Boolean> = _isBtnRegisterStatus
 
     private val _selectedOption = MutableLiveData<String>()
     var selectedOption: LiveData<String> = _selectedOption
@@ -208,12 +214,18 @@ class DGSViewModel @Inject() constructor(
 
     fun onValueChangedParents(otherparent: String) {
         _parentOrFailDelivery.value = otherparent
+
+        _isEnabledTFCommentRecibe.value=enabledTFCommentRecibe(otherparent)
         Log.i("pariente", "${selectedOption.value}")
         Log.i("Recibio", "${nameRecibe.value}")
+
+
     }
 
     fun onValueChangedRecibe(nameparent: String) {
         _nameRecibe.value = nameparent
+
+        _isBtnRegisterStatus.value = btnContinueRegisterStu(nameparent)
         Log.i("pariente", "${selectedOption.value}")
         Log.i("Recibio", "${nameRecibe.value}")
     }
@@ -228,20 +240,28 @@ class DGSViewModel @Inject() constructor(
             _nameRecibe.value = nameCliente.value
             _parentOrFailDelivery.value = selected
             _isAnotherParent.value = false
+            _isEnabledTFCommentRecibe.value= enabledTFCommentRecibe(selected)
         } else {
             _nameRecibe.value = ""
             _isAnotherParent.value = false
             _selectedOption.value = selected
             _parentOrFailDelivery.value = selected
+            _isEnabledTFCommentRecibe.value= enabledTFCommentRecibe(selected)
         }
+
         _selectedOption.value = selected
         Log.i("pariente", "${selectedOption.value}")
         Log.i("Recibio", "${nameRecibe.value}")
     }
 
+
+    fun enabledTFCommentRecibe(parameter:String) =parameter.length >1
+
     fun onAlertDialogExitexchange() {
         _isAlertDialogexit.value = true
     }
+
+    fun btnContinueRegisterStu(commentOrRecibe:String)=commentOrRecibe.length>1
 
     fun onAlertDialogConfirmationexchange(title: String, text: String, status: String) {
         _status.value = status
@@ -251,6 +271,8 @@ class DGSViewModel @Inject() constructor(
     }
 
     fun reset() {
+        _isEnabledTFCommentRecibe.value=false
+        _isEnabledTFCommentRecibe.value=false
         _status.value = ""
         _titleAlertDialog.value = ""
         _textAlertDialog.value = ""
