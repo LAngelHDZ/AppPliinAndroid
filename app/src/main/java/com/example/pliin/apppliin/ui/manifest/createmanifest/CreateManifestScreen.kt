@@ -49,9 +49,8 @@ fun getdatenow(): String {
 fun CreateManifestScreen(
     navigationController: NavHostController,
     area: String,
-    cmViewModel: CMViewModel
+    cmViewModel: CMViewModel = hiltViewModel()
 ) {
-
     val nombre: String by cmViewModel.nombre.observeAsState("")
     val telefono: String by cmViewModel.telefono.observeAsState("")
     val dir1: String by cmViewModel.dir1.observeAsState("")
@@ -70,7 +69,7 @@ fun CreateManifestScreen(
     val typeExcedente: String by cmViewModel.typePaq.observeAsState("")
     val isFormDatosPqt: Boolean by cmViewModel.isFormDatosPqt.observeAsState(false)
 
-
+    val isDialogHighValue: Boolean by cmViewModel.isAlertDialogHighValue.observeAsState(false)
     val isSearchEnable: Boolean by cmViewModel.isSearchEnable.observeAsState(false)
     val progressCircular: Float by cmViewModel.progressCircularLoad.observeAsState(0f)
     val guia: String by cmViewModel.guia.observeAsState("")
@@ -84,8 +83,7 @@ fun CreateManifestScreen(
     val isDialogDatosPqt: Boolean by cmViewModel.isDatosPQTnDialog.observeAsState(false)
     val isSelectbtn: Boolean by cmViewModel.isSelectbtn.observeAsState(false)
     val isSelectRutaEnabled: Boolean by cmViewModel.isSelectRutaEnabled.observeAsState(false)
-    val isDialogMessageGuide: Boolean by cmViewModel.isDialogMessageGuide.observeAsState(false)
-    val isDialogExitScreen: Boolean by cmViewModel.isDialogExitScreen.observeAsState(false)
+    val isSesionDialog: Boolean by cmViewModel.isSesionDialog.observeAsState(false)
     val isLoadingDatGuide: Boolean by cmViewModel.isLoadingDataGuide.observeAsState(false)
     val isDialogLoadGuides: Boolean by cmViewModel.isDialogLoadEnable.observeAsState(false)
     val isGuideRegisted: Boolean by cmViewModel.isGuideRegisted.observeAsState(false)
@@ -98,9 +96,6 @@ fun CreateManifestScreen(
         mutableMapOf()
     )
     val date: String = getdatenow()
-
-
-
     val scanLauncher = rememberLauncherForActivityResult(
         contract = ScanContract(),
     ) { result ->
@@ -157,7 +152,7 @@ fun CreateManifestScreen(
                 )
             }
             AlertDialogGuide(
-                show = isDialogMessageGuide,
+                show = isSesionDialog,
                 cmViewModel,
                 messageGuideValidate
             )
@@ -189,44 +184,36 @@ fun CreateManifestScreen(
                 isEnableBtnCalcular
             )
 
+            alertDialogHighValue(cmViewModel,isDialogHighValue)
+
             AlertDialogLoadGuides(
                 isDialogLoadGuides,
                 cmViewModel,
                 messageGuideValidate,
                 navigationController
             )
-
-            AlertDialogexitScreen(isDialogExitScreen,cmViewModel,navigationController)
         }
     }
 }
 
 @Composable
-fun AlertDialogexitScreen(
-    show: Boolean,
-    cmViewModel: CMViewModel,
-    navigationController: NavHostController
-) {
-    if (show) {
-        AlertDialog(onDismissRequest = {},
-            title = { Text(text = "Esta por salir") },
-            text = { Text(text = "¿Quiere mantener los cambios?") },
+fun alertDialogHighValue(cmViewModel: CMViewModel, isDialogHighValue: Boolean) {
+    if(isDialogHighValue){
+        AlertDialog(onDismissRequest = {
+
+        },
+            title = { Text(text = "Mensaje") },
+            text = { Text(text = "¿EL paquete es de aLto valor?") },
             confirmButton = {
                 TextButton(onClick = {
-                    cmViewModel.onAlertDialogexit(
-                        true,
-                        navigationController
-                    )
+                    cmViewModel.onHighValuePqt("SI")
                 }) {
                     Text(text = "Si")
                 }
             },
             dismissButton = {
                 TextButton(onClick = {
-                    cmViewModel.onAlertDialogexit(
-                        false,
-                        navigationController
-                    )
+                    cmViewModel.onHighValuePqt("NO")
                 }) {
                     Text(text = "No")
                 }
@@ -1423,8 +1410,10 @@ fun HeadTable() {
                 )
             }
             Spacer(modifier = Modifier.size(2.dp))
+
         }
     }
+
 }
 
 @Composable
@@ -1927,7 +1916,7 @@ fun ButtonsConfirmation(
         TextButton(
             onClick = { cmViewModel.continueSetGuides(area) },
             enabled = isSelectbtn
-        ){
+        ) {
             Text(text = "Continuar")
         }
     }
