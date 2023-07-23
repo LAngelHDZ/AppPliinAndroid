@@ -83,7 +83,7 @@ fun CreateManifestScreen(
     val isDialogDatosPqt: Boolean by cmViewModel.isDatosPQTnDialog.observeAsState(false)
     val isSelectbtn: Boolean by cmViewModel.isSelectbtn.observeAsState(false)
     val isSelectRutaEnabled: Boolean by cmViewModel.isSelectRutaEnabled.observeAsState(false)
-    val isSesionDialog: Boolean by cmViewModel.isSesionDialog.observeAsState(false)
+    val isSesionDialog: Boolean by cmViewModel.isDialogMessageGuide.observeAsState(false)
     val isLoadingDatGuide: Boolean by cmViewModel.isLoadingDataGuide.observeAsState(false)
     val isDialogLoadGuides: Boolean by cmViewModel.isDialogLoadEnable.observeAsState(false)
     val isGuideRegisted: Boolean by cmViewModel.isGuideRegisted.observeAsState(false)
@@ -107,7 +107,6 @@ fun CreateManifestScreen(
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
-
         if (isLoadingDatGuide) {
             ScreenConfirmation(
                 Modifier.align(Alignment.Center),

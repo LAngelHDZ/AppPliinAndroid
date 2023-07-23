@@ -208,7 +208,6 @@ private val _isAlertDialogHighValue = MutableLiveData<Boolean>()
     private val _status = MutableLiveData<String>()
     var status: LiveData<String> = _status
 
-
     /*Variable que captura lo que captura el scanner en este caos las guias que escanee*/
     private val _contentQR = MutableLiveData<String>()
     val contentQR: LiveData<String> = _contentQR

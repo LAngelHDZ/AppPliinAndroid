@@ -160,7 +160,8 @@ class EMViewModel @Inject constructor(
     var municipio: LiveData<String> = _municipio
 //=======================================================
     //Variables para agregar las medidas del paquete y el peso si es necesario
-
+    private val _isAlertDialogHighValue = MutableLiveData<Boolean>()
+    var isAlertDialogHighValue: LiveData<Boolean> = _isAlertDialogHighValue
     /*Variable que alamcena las guias que se escanean*/
     private val _mapListDatosPqt = MutableLiveData<Map<String, DatosGuideItem>>()
     var mapListDatosPqt: LiveData<Map<String, DatosGuideItem>> = _mapListDatosPqt
@@ -191,6 +192,9 @@ class EMViewModel @Inject constructor(
 
     private val _typePaq = MutableLiveData<String>()
     var typePaq: LiveData<String> = _typePaq
+
+    private val _altoValor = MutableLiveData<String>()
+    var altoValor: LiveData<String> = _altoValor
 //=======================================================
 
     private val _ruta = MutableLiveData<String>()
@@ -282,6 +286,13 @@ class EMViewModel @Inject constructor(
                 }
             }
         }
+    }
+
+    fun onHighValuePqt(highValue:String){
+        _isAlertDialogHighValue.value=false
+        _isDireccionDialog.value=true
+        _altoValor.value=highValue
+
     }
 
     fun enableSearch(guia: String) = guia.length > 9
@@ -559,7 +570,8 @@ class EMViewModel @Inject constructor(
                 _largo.value?.toFloat(),
                 _pesoVol.value?.toFloat(),
                 _pesoKg.value?.toFloat(),
-                _typePaq.value
+                _typePaq.value,
+                _altoValor.value
             )
         } else {
             datosPqtMap[guia] = DatosGuideItem(
@@ -569,7 +581,8 @@ class EMViewModel @Inject constructor(
                 1f,
                 1f,
                 1f,
-                "No excedente"
+                "No excedente",
+                altoValor.value
             )
         }
         /*  datosPqtMap[guia] = DatosGuideItem(
@@ -616,7 +629,7 @@ class EMViewModel @Inject constructor(
                                 val existeDireccion = validateExistsAddressUseCase.invoke(guia)
                                 if (!existeDireccion) {
                                     Log.d("Dentro de if 2", "$")
-                                    _isDireccionDialog.value = true
+                                    _isAlertDialogHighValue.value = true
                                 } else {
                                     accessIfDataPqt = true
                                 }
@@ -862,7 +875,8 @@ class EMViewModel @Inject constructor(
                                 datosPqt.largo!!,
                                 datosPqt.pesoVol!!,
                                 datosPqt.pesoKg!!,
-                                generalMethodsGuide.toUpperLetter(datosPqt.typePaq!!)
+                                generalMethodsGuide.toUpperLetter(datosPqt.typePaq!!),
+                                datosPqt.ALtoValor!!
                             )
                         )
                         val deferredDatosPqt = async { registerDatosPqtUseCase.invoke(dataPqt) }

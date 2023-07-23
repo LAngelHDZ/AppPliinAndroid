@@ -79,6 +79,9 @@ fun EditManifestScreen(
     val typeExcedente: String by EMViewModel.typePaq.observeAsState("")
     val isFormDatosPqt: Boolean by EMViewModel.isFormDatosPqt.observeAsState(false)
 
+
+
+    val isDialogHighValue: Boolean by EMViewModel.isAlertDialogHighValue.observeAsState(false)
     val isSearchEnable: Boolean by EMViewModel.isSearchEnable.observeAsState(false)
     val progressCircular: Float by EMViewModel.progressCircularLoad.observeAsState(0f)
     val guia: String by EMViewModel.guia.observeAsState("")
@@ -181,7 +184,10 @@ fun EditManifestScreen(
                 isFormDatosPqt,
                 isEnableBtnCalcular
             )
-
+            alertDialogHighValue(
+                EMViewModel,
+                isDialogHighValue
+            )
             AlertDialogLoadGuides(
                 isDialogLoadGuides,
                 EMViewModel,
@@ -189,6 +195,32 @@ fun EditManifestScreen(
                 navigationController
             )
         }
+    }
+}
+
+@Composable
+fun alertDialogHighValue(emViewModel: EMViewModel, isDialogHighValue: Boolean) {
+    if(isDialogHighValue){
+        AlertDialog(onDismissRequest = {
+
+        },
+            title = { Text(text = "Mensaje") },
+            text = { Text(text = "¿EL paquete es de aLto valor?") },
+            confirmButton = {
+                TextButton(onClick = {
+                    emViewModel.onHighValuePqt("SI")
+                }) {
+                    Text(text = "Si")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = {
+                    emViewModel.onHighValuePqt("NO")
+                }) {
+                    Text(text = "No")
+                }
+            }
+        )
     }
 }
 
