@@ -69,6 +69,8 @@ fun CreateManifestScreen(
     val typeExcedente: String by cmViewModel.typePaq.observeAsState("")
     val isFormDatosPqt: Boolean by cmViewModel.isFormDatosPqt.observeAsState(false)
 
+
+    val isDialogExitScreen: Boolean by cmViewModel.isDialogExitScreen.observeAsState(false)
     val isDialogHighValue: Boolean by cmViewModel.isAlertDialogHighValue.observeAsState(false)
     val isSearchEnable: Boolean by cmViewModel.isSearchEnable.observeAsState(false)
     val progressCircular: Float by cmViewModel.progressCircularLoad.observeAsState(0f)
@@ -191,7 +193,43 @@ fun CreateManifestScreen(
                 messageGuideValidate,
                 navigationController
             )
+
+            AlertDialogexitScreen(isDialogExitScreen,cmViewModel,navigationController)
         }
+    }
+}
+
+@Composable
+fun AlertDialogexitScreen(
+    show: Boolean,
+    cmViewModel: CMViewModel,
+    navigationController: NavHostController
+) {
+    if (show) {
+        AlertDialog(onDismissRequest = {},
+            title = { Text(text = "Esta por salir") },
+            text = { Text(text = "¿Quiere mantener los cambios?") },
+            confirmButton = {
+                TextButton(onClick = {
+                    cmViewModel.onAlertDialogexit(
+                        true,
+                        navigationController
+                    )
+                }) {
+                    Text(text = "Si")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = {
+                    cmViewModel.onAlertDialogexit(
+                        false,
+                        navigationController
+                    )
+                }) {
+                    Text(text = "No")
+                }
+            }
+        )
     }
 }
 
