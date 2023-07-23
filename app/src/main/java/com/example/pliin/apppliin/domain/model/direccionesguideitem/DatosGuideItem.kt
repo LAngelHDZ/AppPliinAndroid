@@ -7,5 +7,6 @@ data class DatosGuideItem(
     val largo: Float?,
     val pesoVol: Float?,
     val pesoKg: Float?,
-    val typePaq: String?
+    val typePaq: String?,
+    val ALtoValor:String?
 )

@@ -17,5 +17,8 @@ data class FieldDataDP(
     @SerializedName("PesoVol")
     val pesoVol: Float,
     @SerializedName("Tipo")
-    val tipo: String
+    val tipo: String,
+    @SerializedName("AltoValor")
+    val altoValue: String,
+
 )

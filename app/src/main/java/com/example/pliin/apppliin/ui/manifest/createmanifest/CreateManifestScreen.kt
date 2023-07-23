@@ -69,7 +69,7 @@ fun CreateManifestScreen(
     val typeExcedente: String by cmViewModel.typePaq.observeAsState("")
     val isFormDatosPqt: Boolean by cmViewModel.isFormDatosPqt.observeAsState(false)
 
-
+    val isDialogHighValue: Boolean by cmViewModel.isAlertDialogHighValue.observeAsState(false)
     val isSearchEnable: Boolean by cmViewModel.isSearchEnable.observeAsState(false)
     val progressCircular: Float by cmViewModel.progressCircularLoad.observeAsState(0f)
     val guia: String by cmViewModel.guia.observeAsState("")
@@ -184,6 +184,8 @@ fun CreateManifestScreen(
                 isEnableBtnCalcular
             )
 
+            alertDialogHighValue(cmViewModel,isDialogHighValue)
+
             AlertDialogLoadGuides(
                 isDialogLoadGuides,
                 cmViewModel,
@@ -191,6 +193,32 @@ fun CreateManifestScreen(
                 navigationController
             )
         }
+    }
+}
+
+@Composable
+fun alertDialogHighValue(cmViewModel: CMViewModel, isDialogHighValue: Boolean) {
+    if(isDialogHighValue){
+        AlertDialog(onDismissRequest = {
+
+        },
+            title = { Text(text = "Mensaje") },
+            text = { Text(text = "¿EL paquete es de aLto valor?") },
+            confirmButton = {
+                TextButton(onClick = {
+                    cmViewModel.onHighValuePqt("SI")
+                }) {
+                    Text(text = "Si")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = {
+                    cmViewModel.onHighValuePqt("NO")
+                }) {
+                    Text(text = "No")
+                }
+            }
+        )
     }
 }
 

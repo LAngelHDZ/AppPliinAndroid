@@ -116,6 +116,9 @@ class CMViewModel @Inject constructor(
 
 //Variables para agregar la direccion a la guia
 
+private val _isAlertDialogHighValue = MutableLiveData<Boolean>()
+    var isAlertDialogHighValue: LiveData<Boolean> = _isAlertDialogHighValue
+
     /*Variable que alamcena las guias que se escanean*/
     private val _mapListDireccion = MutableLiveData<Map<String, DireccionesGuideItem>>()
     var mapListDireccion: LiveData<Map<String, DireccionesGuideItem>> = _mapListDireccion
@@ -176,6 +179,9 @@ class CMViewModel @Inject constructor(
 
     private val _typePaq = MutableLiveData<String>()
     var typePaq: LiveData<String> = _typePaq
+
+    private val _altoValor = MutableLiveData<String>()
+    var altoValor: LiveData<String> = _altoValor
 //=======================================================
 
     private val _ruta = MutableLiveData<String>()
@@ -364,6 +370,13 @@ class CMViewModel @Inject constructor(
         navigationController.popBackStack()
     }
 
+    fun onHighValuePqt(highValue:String){
+        _isAlertDialogHighValue.value=false
+        _isDireccionDialog.value=true
+        _altoValor.value=highValue
+
+    }
+
     fun clearForm() {
         _nombre.value = ""
         _telefono.value = ""
@@ -511,7 +524,8 @@ class CMViewModel @Inject constructor(
                 _largo.value?.toFloat(),
                 _pesoVol.value?.toFloat(),
                 _pesoKg.value?.toFloat(),
-                _typePaq.value
+                _typePaq.value,
+                _altoValor.value
             )
         } else {
             datosPqtMap[guia] = DatosGuideItem(
@@ -521,7 +535,8 @@ class CMViewModel @Inject constructor(
                 1f,
                 1f,
                 1f,
-                "No excedente"
+                "No excedente",
+                _altoValor.value
             )
         }
         /*  datosPqtMap[guia] = DatosGuideItem(
@@ -567,7 +582,7 @@ class CMViewModel @Inject constructor(
                                 val existeDireccion = validateExistsAddressUseCase.invoke(guia)
                                 if (!existeDireccion) {
                                     Log.d("Dentro de if 2", "$")
-                                    _isDireccionDialog.value = true
+                                    _isAlertDialogHighValue.value = true
                                 } else {
                                     accessIfDataPqt = true
                                 }
@@ -803,7 +818,8 @@ class CMViewModel @Inject constructor(
                                 datosPqt.largo!!,
                                 datosPqt.pesoVol!!,
                                 datosPqt.pesoKg!!,
-                                generalMethodsGuide.toUpperLetter(datosPqt.typePaq!!)
+                                generalMethodsGuide.toUpperLetter(datosPqt.typePaq!!),
+                                datosPqt.ALtoValor!!
                             )
                         )
                         val deferredDatosPqt = async { registerDatosPqtUseCase.invoke(dataPqt) }
