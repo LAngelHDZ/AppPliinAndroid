@@ -57,7 +57,7 @@ fun getdatenow(): String {
     return LocalDate.now().toString()
 }
 
-@SuppressLint("SuspiciousIndentation", "UnrememberedMutableState")
+
 @Composable
 fun DataGuideScannerScreen(
     dgsViewModel: DGSViewModel,
@@ -74,32 +74,8 @@ fun DataGuideScannerScreen(
     pesokg: String,
     valorGuia: String,
     recordId: String,
-    statusIntento: String
+    statusIntento: String,
 ) {
-
-    /* lateinit var outputDirectory: File
-      lateinit var cameraExecutor: ExecutorService
-
-       var shouldShowCamera: MutableState<Boolean> = mutableStateOf(false)
-
-       lateinit var photoUri: Uri
-      var shouldShowPhoto: MutableState<Boolean> = mutableStateOf(false)
-
-       val requestPermissionLauncher = registerForActivityResult(
-          ActivityResultContracts.RequestPermission()
-      ) { isGranted ->
-          if (isGranted) {
-              Log.i("kilo", "Permission granted")
-              shouldShowCamera.value = true
-          } else {
-              Log.i("kilo", "Permission denied")
-          }
-      }*/
-
-
-
-
-
 
     Log.i("recordid ene view", "$recordId")
     Log.i("status entrega ene view", "$statusIntento")
@@ -131,6 +107,7 @@ fun DataGuideScannerScreen(
     val isDeliveryConfirmation: Boolean by dgsViewModel.isDeliveryConfirmation.observeAsState(false)
 
     val isBtnregisterStatus: Boolean by dgsViewModel.isBtnRegisterStatus.observeAsState(false)
+    val isBtnTakePhoto: Boolean by dgsViewModel.isBtnTakePhoto.observeAsState(false)
     val isEnabledFTCommentRecibe: Boolean by dgsViewModel.isEnabledTFCommentRecibe.observeAsState(false)
     val isAnotherParent: Boolean by dgsViewModel.isAnotherParent.observeAsState(false)
     val title: String by dgsViewModel.titleAlertDialog.observeAsState(" ")
@@ -140,10 +117,28 @@ fun DataGuideScannerScreen(
     val anotherParents: String by dgsViewModel.parentOrFailDelivery.observeAsState(" ")
     val selectedOption: String by dgsViewModel.selectedOption.observeAsState(" ")
     dgsViewModel.getNameCLient(nombre)
-
+//    val  PERMISSION_REQUEST_CODE:Int = 200
     Box(modifier = Modifier.fillMaxSize()) {
         if (isShowCameraX) {
-            CameraXview(dgsViewModel, Modifier)
+//            val contexta = getApplication(Conte)
+            CameraXview(dgsViewModel, Modifier,isBtnTakePhoto)
+
+//           dgsViewModel.requestExternalStoragePermission(context)
+         /*   val permisoHdd = ContextCompat.checkSelfPermission(contexta,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE)
+
+            if(permisoHdd == PackageManager.PERMISSION_GRANTED){
+                CameraXview(dgsViewModel, Modifier)
+                Toast.makeText(contexta,"Permiso concedido", Toast.LENGTH_SHORT).show()
+            }else{
+                requestPermissions(
+                    MainActivity(), arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
+                    PERMISSION_REQUEST_CODE
+                )
+            }*/
+
+
+
         } else {
             if (isDeliveryConfirmation) {
                 ScreenConfirmation(Modifier.align(Alignment.Center))
@@ -181,7 +176,8 @@ fun DataGuideScannerScreen(
                     isAnotherParent,
                     listStatusIntentos,
                     isBtnregisterStatus,
-                    isEnabledFTCommentRecibe
+                    isEnabledFTCommentRecibe,
+                    isBtnTakePhoto
                 )
             }
         }
@@ -940,7 +936,7 @@ fun AlertDialogConfirmation(
     listStatusIntentos: List<String>,
     isBtnregisterStatus: Boolean,
     isEnabledFTCommentRecibe: Boolean,
-
+    isBtnTakePhoto: Boolean
     ) {
     var expanded by remember { mutableStateOf(false) }
     var columnSize by remember { mutableStateOf(Size.Zero) }
@@ -962,6 +958,7 @@ fun AlertDialogConfirmation(
                         nameparents,
                         isAnotherParent,
                         anotherParents,
+                        isBtnTakePhoto,
                         isEnabledFTCommentRecibe
                     ) {
                         dgsViewModel.onValueChanged(selected = it)
@@ -997,6 +994,7 @@ fun ConfirmarEntregaDialog(
     parents: String,
     isAnotherParent: Boolean,
     anotherParents: String,
+    isBtnTakePhoto: Boolean,
     isEnabledFTCommentRecibe:Boolean,
     onTextChanged: (String) -> Unit,
 ) {
@@ -1028,8 +1026,6 @@ fun ConfirmarEntregaDialog(
             "Otro"
         )
     }
-
-
     Text(
         modifier = Modifier.fillMaxWidth(),
         textAlign = TextAlign.Center,
@@ -1049,15 +1045,15 @@ fun ConfirmarEntregaDialog(
     Text(text = "Quien recibe")
     RecibeOrComment(parents,isEnabledFTCommentRecibe) { dgsViewModel.onValueChangedRecibe(nameparent = it) }
     Spacer(modifier = Modifier.size(14.dp))
-   // btnSHowCameraX(dgsViewModel)
+    btnSHowCameraX(dgsViewModel,isBtnTakePhoto)
 }
 
 @Composable
-fun btnSHowCameraX(dgsViewModel: DGSViewModel) {
+fun btnSHowCameraX(dgsViewModel: DGSViewModel, isBtnTakePhoto: Boolean) {
     Button(
         onClick = { dgsViewModel.onShowCameraX() },
+        enabled = isBtnTakePhoto,
         modifier = Modifier.fillMaxWidth()
-
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -1075,7 +1071,7 @@ fun btnSHowCameraX(dgsViewModel: DGSViewModel) {
 }
 
 @Composable
-fun CameraXview(dgsViewModel: DGSViewModel, modifier: Modifier) {
+fun CameraXview(dgsViewModel: DGSViewModel, modifier: Modifier, isBtnTakePhoto: Boolean) {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
     val configuration = LocalConfiguration.current
@@ -1131,7 +1127,6 @@ fun AnotherParent(anotherParents: String, onTextChanged: (String) -> Unit) {
     OutlinedTextField(
         value = anotherParents,
         onValueChange = { onTextChanged(it) },
-        placeholder = { Text(text = "Selected") },
         shape = RoundedCornerShape(10),
         colors = TextFieldDefaults.outlinedTextFieldColors(
             focusedBorderColor = Color(96, 127, 243),

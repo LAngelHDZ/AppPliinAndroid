@@ -1,16 +1,23 @@
 package com.example.pliin.apppliin.ui.dataguidescanner
 
+import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.pm.PackageManager
 import android.util.Log
-import androidx.activity.ComponentActivity
+import android.widget.Toast
+import androidx.camera.core.impl.utils.ContextUtil.getApplicationContext
 import androidx.camera.view.PreviewView
+import androidx.core.app.ActivityCompat
+import androidx.core.app.ActivityCompat.requestPermissions
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
+import com.example.pliin.MainActivity
 import com.example.pliin.apppliin.domain.repository.CustomCameraX
 import com.example.pliin.apppliin.domain.usecase.RechazadoUseCase
 import com.example.pliin.apppliin.domain.usecase.SetDeliveryUseCase
@@ -18,7 +25,9 @@ import com.example.pliin.apppliin.domain.usecase.SetTryDeliveryUseCse
 import com.example.pliin.apppliin.generals.GeneralMethodsGuide
 import com.example.pliin.navigation.AppScreen
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -31,6 +40,8 @@ class DGSViewModel @Inject() constructor(
     private val generalMethodsGuide: GeneralMethodsGuide,
     private val repo: CustomCameraX
 ) : ViewModel() {
+
+
     private val _isAlertDialogexit = MutableLiveData<Boolean>()
     var isAlertDialogexit: LiveData<Boolean> = _isAlertDialogexit
 
@@ -51,6 +62,10 @@ class DGSViewModel @Inject() constructor(
 
     private val _isBtnRegisterStatus = MutableLiveData<Boolean>()
     var isBtnRegisterStatus: LiveData<Boolean> = _isBtnRegisterStatus
+
+    private val _isBtnTakePhoto = MutableLiveData<Boolean>()
+    var isBtnTakePhoto: LiveData<Boolean> = _isBtnTakePhoto
+
 
     private val _selectedOption = MutableLiveData<String>()
     var selectedOption: LiveData<String> = _selectedOption
@@ -83,6 +98,11 @@ class DGSViewModel @Inject() constructor(
     var directoryPhoto: LiveData<String> = _directoryPhoto
 
 
+    private val permissionRequestChannel = Channel<Boolean>()
+    val permissionRequestFlow = permissionRequestChannel.receiveAsFlow()
+
+
+
     fun showCameraPreview(
         previewView: PreviewView,
         lifecycleOwner: LifecycleOwner
@@ -103,8 +123,11 @@ class DGSViewModel @Inject() constructor(
             delay(1500)
             _isShowCameraX.value = false
             Log.d("Directorio de la photo en DSGVIewmodel", directoryPhoto.value!!)
+            _isBtnRegisterStatus.value = btnContinueRegisterStu(directoryPhoto.value!!)
         }
     }
+
+    fun onPhotoCaptured(directoryPhoto:String) = directoryPhoto.isNotEmpty()
 
     fun onShowCameraX() {
         _isShowCameraX.value = true
@@ -214,18 +237,14 @@ class DGSViewModel @Inject() constructor(
 
     fun onValueChangedParents(otherparent: String) {
         _parentOrFailDelivery.value = otherparent
-
         _isEnabledTFCommentRecibe.value=enabledTFCommentRecibe(otherparent)
         Log.i("pariente", "${selectedOption.value}")
         Log.i("Recibio", "${nameRecibe.value}")
-
-
     }
 
     fun onValueChangedRecibe(nameparent: String) {
         _nameRecibe.value = nameparent
-
-        _isBtnRegisterStatus.value = btnContinueRegisterStu(nameparent)
+        _isBtnTakePhoto.value = btnTakePhoto(nameparent)
         Log.i("pariente", "${selectedOption.value}")
         Log.i("Recibio", "${nameRecibe.value}")
     }
@@ -236,11 +255,11 @@ class DGSViewModel @Inject() constructor(
             _nameRecibe.value = ""
             _parentOrFailDelivery.value = ""
             _isAnotherParent.value = true
-        } else if (selected.equals("Titular")) {
+        } else if (selected.equals("Titular")){
             _nameRecibe.value = nameCliente.value
             _parentOrFailDelivery.value = selected
             _isAnotherParent.value = false
-            _isEnabledTFCommentRecibe.value= enabledTFCommentRecibe(selected)
+            _isBtnTakePhoto.value = btnTakePhoto(nameCliente.value!!)
         } else {
             _nameRecibe.value = ""
             _isAnotherParent.value = false
@@ -255,13 +274,15 @@ class DGSViewModel @Inject() constructor(
     }
 
 
-    fun enabledTFCommentRecibe(parameter:String) =parameter.length >1
+    fun enabledTFCommentRecibe(parameter:String) = parameter.length >1
 
     fun onAlertDialogExitexchange() {
         _isAlertDialogexit.value = true
     }
 
-    fun btnContinueRegisterStu(commentOrRecibe:String)=commentOrRecibe.length>1
+    fun   btnContinueRegisterStu(commentOrRecibe:String)=commentOrRecibe.length>1
+
+    fun btnTakePhoto(commentOrRecibe:String)=commentOrRecibe.length>1
 
     fun onAlertDialogConfirmationexchange(title: String, text: String, status: String) {
         _status.value = status
@@ -271,7 +292,8 @@ class DGSViewModel @Inject() constructor(
     }
 
     fun reset() {
-        _isEnabledTFCommentRecibe.value=false
+        _isBtnTakePhoto.value=false
+        _isBtnRegisterStatus.value=false
         _isEnabledTFCommentRecibe.value=false
         _status.value = ""
         _titleAlertDialog.value = ""
@@ -314,8 +336,10 @@ class DGSViewModel @Inject() constructor(
                     recordId,
                     generalMethodsGuide.toUpperLetter(status.value!!),
                     textfieldvacio(nameRecibe.value),
-                    textfieldvacio(parentOrFailDelivery.value)
+                    textfieldvacio(parentOrFailDelivery.value),
+                    directoryPhoto.value!!
                 )
+
             }
             /*else if(parentOrFailDelivery.value!!.equals("Rechazado")){
                 responseOK = rechazadoUseCase.invoke(

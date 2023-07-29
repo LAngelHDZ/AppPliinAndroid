@@ -15,7 +15,8 @@ class SetDeliveryUseCase @Inject constructor(
         recordId: String?,
         status: String?,
         recibe: String?,
-        parentOrFailDelivery: String?
+        parentOrFailDelivery: String?,
+        url:String
     ): Boolean {
         Log.i("status intento entrega", parentOrFailDelivery!!)
         Log.i("quien recibe", recibe!!)
@@ -26,6 +27,10 @@ class SetDeliveryUseCase @Inject constructor(
 
         val responseDelivery = deliveryR.setDelivery(guide!!, recibe, parentOrFailDelivery)
         val messageDelivery = responseDelivery.messages!![0].code
+        val recordIdDelivery= responseDelivery.response?.recordId
+        val setPhoto = deliveryR.setDeliveryPhoto(recordIdDelivery!!,url)
+        val messageResponsePhoto = setPhoto.messages
+        Log.i("COde set photo",messageResponsePhoto.toString())
 
         val responseUpdateStaus = deliveryR.setUpdateStatus(status, recordId!!)
         val messageUpdateStatus = responseUpdateStaus.messages!![0].code

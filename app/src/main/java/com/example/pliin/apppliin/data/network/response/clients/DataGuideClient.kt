@@ -16,11 +16,15 @@ import com.example.pliin.apppliin.data.network.dto.queryguidescanner.QueryGuideD
 import com.example.pliin.apppliin.data.network.dto.queyguidereception.QueryGuidePliinDto
 import com.example.pliin.apppliin.data.network.dto.registerdelivery.RegisterDeliveryDto
 import com.example.pliin.apppliin.data.network.dto.updatestatus.UpdatStatusDto
+import okhttp3.MultipartBody
+import okhttp3.Request
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.Header
+import retrofit2.http.Multipart
 import retrofit2.http.PATCH
 import retrofit2.http.POST
+import retrofit2.http.Part
 import retrofit2.http.Path
 
 
@@ -67,6 +71,21 @@ interface DataGuideClient {
         @Header("Authorization") bearer: String,
         @Body Guide: RegisterDeliveryDto
     ): Response<ResponseRegisterDeliveryModel>
+
+    //ENdPoint para subir una foto en el contenedro de la entrega registrada
+
+   @Multipart
+    @POST("/fmi/data/v2/databases/PLIIN/layouts/relacionEntrega/records/{recordId}/containers/contenedorFoto/1")
+    suspend fun setDeliveryGuidePhoto(
+       @Header("Authorization") bearer: String,
+       @Path("recordId") recordId: String,
+       @Part upload: MultipartBody.Part,
+    ): Response<ResponseRegisterDeliveryModel>
+
+    @POST
+    suspend fun setDeliveryGuidePhoto2(request: Request): Response<ResponseRegisterDeliveryModel>
+
+
 
     //Enpoint para agregar una guia al sistema
     @POST("/fmi/data/v2/databases/PLIIN/layouts/manifiestoPaquetes/records/")

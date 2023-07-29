@@ -35,7 +35,7 @@ class GuideService @Inject constructor(
     @SuppressLint("SuspiciousIndentation")
     suspend fun getGuide(guide: String): GetDataGuideDRModel {
         val query = QueryGuideDto(listOf(query(guide, "Asignado")))
-        val bearer = daotoken.getToken()?.token
+        val bearer = daotoken.getToken().token
         return withContext(Dispatchers.IO) {
             val response = guideapiclient.getDataguide("Bearer $bearer", query)
             try {

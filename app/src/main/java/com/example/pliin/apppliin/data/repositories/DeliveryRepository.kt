@@ -24,6 +24,12 @@ class DeliveryRepository @Inject constructor(
         return response.toDomain()
     }
 
+    suspend fun setDeliveryPhoto(recordId: String,url:String):ResponseRegisterDeliveryItem{
+        val response = apidelivery.setDeliveryPhoto(url,recordId)
+        Log.i("response", "$response")
+        return response.toDomain()
+    }
+
     //Opbtiene las response de la actualizacion del status de la guia
     suspend fun setUpdateStatus(status: String?, recordId: String): ResponseRegisterDeliveryItem {
         val response = apiupdate.setUpdateStatus(status, recordId)

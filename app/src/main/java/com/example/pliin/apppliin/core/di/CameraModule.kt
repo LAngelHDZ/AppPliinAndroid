@@ -1,4 +1,4 @@
-package com.example.pliin.apppliin.core.di.interceptors
+package com.example.pliin.apppliin.core.di
 
 import android.app.Application
 import androidx.camera.core.AspectRatio

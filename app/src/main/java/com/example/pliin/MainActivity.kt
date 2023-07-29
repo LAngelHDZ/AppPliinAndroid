@@ -1,8 +1,10 @@
 package com.example.pliin
 
-import android.net.Uri
+import android.Manifest
+import android.content.Context
+import android.content.pm.PackageManager
 import android.os.Bundle
-import android.util.Log
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
@@ -11,10 +13,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -49,8 +51,6 @@ import com.example.pliin.navigation.AppScreen
 import com.example.pliin.ui.theme.PliinTheme
 
 import dagger.hilt.android.AndroidEntryPoint
-import java.io.File
-import java.util.concurrent.ExecutorService
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -65,29 +65,24 @@ class MainActivity : ComponentActivity() {
     private val mfViewModel: MFViewModel by viewModels()
     private lateinit var connectionLiveData: NetworkConectivity
 
-
-    private lateinit var outputDirectory: File
-    private lateinit var cameraExecutor: ExecutorService
-
-    private var shouldShowCamera: MutableState<Boolean> = mutableStateOf(false)
-
-    private lateinit var photoUri: Uri
-    private var shouldShowPhoto: MutableState<Boolean> = mutableStateOf(false)
-
-    private val requestPermissionLauncher = registerForActivityResult(
-        ActivityResultContracts.RequestPermission()
-    ) { isGranted ->
-        if (isGranted) {
-            Log.i("kilo", "Permission granted")
-            shouldShowCamera.value = true
-        } else {
-            Log.i("kilo", "Permission denied")
-        }
-    }
-
+    private val requestPermissionLauncher =
+       registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
+           if (isGranted) {
+               Toast.makeText(this,"Permiso concedido", Toast.LENGTH_SHORT).show()
+           } else {
+               Toast.makeText(this,"Permiso denegado, la app necesita de este permiso para su correcta funcionalidad", Toast.LENGTH_SHORT).show()
+           }
+       }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        val permission = Manifest.permission.WRITE_EXTERNAL_STORAGE
+
+        if (!isWritePermissionGranted()) {
+            requestPermissionLauncher.launch(permission)
+        }
+
         connectionLiveData = NetworkConectivity(this)
         setContent {
             PliinTheme {
@@ -98,12 +93,19 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colors.background
                 ) {
-
                     AppNavigation(isNetworkAvailable)
                 }
             }
         }
     }
+
+    fun isWritePermissionGranted(): Boolean {
+        return ContextCompat.checkSelfPermission(
+            applicationContext,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE
+        ) == PackageManager.PERMISSION_GRANTED
+    }
+
 
     @Composable
     fun AppNavigation(isNetworkAvailable: Boolean) {
@@ -179,11 +181,12 @@ class MainActivity : ComponentActivity() {
             //Ruta de Screen para editar un manifiesto
             composable(
                 route = AppScreen.EditManifestScreen.route,
-                arguments = listOf(navArgument("nameEmployee") { type = NavType.StringType},
-                    navArgument("idRecord"){ type = NavType.StringType },
-                    navArgument("route"){ type = NavType.StringType },
-                    navArgument("claveManifest"){ type = NavType.StringType },
-                    )
+                arguments = listOf(
+                    navArgument("nameEmployee") { type = NavType.StringType },
+                    navArgument("idRecord") { type = NavType.StringType },
+                    navArgument("route") { type = NavType.StringType },
+                    navArgument("claveManifest") { type = NavType.StringType },
+                )
             ) { backStackEntry ->
                 EditManifestScreen(
                     navigationController,
@@ -210,7 +213,8 @@ class MainActivity : ComponentActivity() {
             }
 
             //Ruta de Screen que muiestra la informaciòn de una guia cuando se scanea para eregfsitrarla como entregado o intento de entrega
-            composable(route = AppScreen.DataGuideScannerScreen.route,
+            composable(
+                route = AppScreen.DataGuideScannerScreen.route,
                 arguments = listOf(
                     navArgument("idGuia") { type = NavType.StringType },
                     navArgument("idPreM") { type = NavType.StringType },
@@ -225,7 +229,7 @@ class MainActivity : ComponentActivity() {
                     navArgument("valorGuia") { type = NavType.StringType },
                     navArgument("recordId") { type = NavType.StringType },
                     navArgument("statusIntento") { type = NavType.StringType }
-                )
+                ),
             ) { backStackEntry ->
                 DataGuideScannerScreen(
                     dgsViewModel = dgsViewModel,
@@ -242,7 +246,7 @@ class MainActivity : ComponentActivity() {
                     backStackEntry.arguments?.getString("pesokg") ?: "0",
                     backStackEntry.arguments?.getString("valorGuia") ?: "",
                     backStackEntry.arguments?.getString("recordId") ?: "",
-                    backStackEntry.arguments?.getString("statusIntento") ?: ""
+                    backStackEntry.arguments?.getString("statusIntento") ?: "",
                 )
             }
         }

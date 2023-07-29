@@ -23,31 +23,55 @@ class BodyInterceptor : Interceptor {
             buffer.readUtf8().isEmpty()
         } ?: true
 
+        val url= originalRequest.url.toUrl()
+        val contenType= originalRequest.body?.contentType().toString()
+
         val requestString = convertRequestBodyToString(requestBodyOrigin)
         val restq = reemplazaCaracter(requestString, '/', ' ')
 
         // Elimina barras diagonales del RequestBody
         val modifiedRequestBody = converterJson(requestString)
+        val modifiedRequestBodyMp = converterMultipart(requestString)
 
         // Crea una solicitud nueva con el RequestBody modificado
         val newRequest = originalRequest.newBuilder()
             .method(originalRequest.method, modifiedRequestBody)
             .build()
 
+        // Crea una solicitud nueva con el RequestBody modificado
+        val newRequestMp = originalRequest.newBuilder()
+            .method(originalRequest.method, modifiedRequestBodyMp)
+            .build()
+
         // Envía la solicitud original
 
-        Log.i("Json modificado", convertRequestBodyToString(newRequest.body))
-        if (hasEmptyBody) {
-            Log.i("request body", "El body es nulo")
+        Log.i("Json modificado", convertRequestBodyToString(newRequestMp.body))
+        if (hasEmptyBody || contenType == "multipart/form-data") {
+            Log.i("request body", "El body es nulo o el contet-type eis multipart/ form data")
         } else {
             Log.i("request body", "El body no es nulo")
         }
 
-        return if (hasEmptyBody) {
-            chain.proceed(originalRequest)
+        /*return if (hasEmptyBody || contenType == "multipart/form-data") {
+            if ( contenType == "multipart/form-data"){
+                chain.proceed(originalRequest)
+            }else chain.proceed(originalRequest)
+
         } else {
-            chain.proceed(newRequest)
+            if(contenType =="application/json" || !hasEmptyBody){
+                chain.proceed(newRequest)
+            }else  chain.proceed(originalRequest)
+        }*/
+        return if (hasEmptyBody){
+            chain.proceed(originalRequest)
+
+        }else{
+            when(contenType){
+                "application/json; charset=UTF-8"->{chain.proceed(newRequest)}
+                else -> chain.proceed(originalRequest)
+            }
         }
+
     }
 
 
@@ -90,6 +114,13 @@ class BodyInterceptor : Interceptor {
     private fun converterJson(bodyrest: String): RequestBody? {
         return bodyrest.encodeUtf8()
             .toRequestBody("application/json".toMediaType())
+        // return modifiedRequestBodyString.toRequestBody("application/json".toMediaTypeOrNull())
+
+    }
+
+    private fun converterMultipart(bodyrest: String): RequestBody? {
+        return bodyrest.encodeUtf8()
+            .toRequestBody("multipart/form-data".toMediaType())
         // return modifiedRequestBodyString.toRequestBody("application/json".toMediaTypeOrNull())
 
     }
