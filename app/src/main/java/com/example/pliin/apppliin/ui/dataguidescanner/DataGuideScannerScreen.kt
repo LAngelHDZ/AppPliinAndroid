@@ -959,12 +959,10 @@ fun AlertDialogConfirmation(
                         isAnotherParent,
                         anotherParents,
                         isBtnTakePhoto,
-                        isEnabledFTCommentRecibe
-                    ) {
-                        dgsViewModel.onValueChanged(selected = it)
-                        dgsViewModel.onValueChangedRecibe(nameparent = it)
+                        isEnabledFTCommentRecibe,
+                        "ENTREGA"
+                    )
 
-                    }
                 } else {
                     ConfirmarDevueltoDialog(
                         dgsViewModel,
@@ -972,11 +970,11 @@ fun AlertDialogConfirmation(
                         nameparents,
                         statusIntento,
                         listStatusIntentos,
-                        isEnabledFTCommentRecibe
-                    ) {
-                        dgsViewModel.onValueChanged(selected = it)
-                        dgsViewModel.onValueChangedRecibe(nameparent = it)
-                    }
+                        isEnabledFTCommentRecibe,
+                        "FALLIDO"
+                    )
+
+
 
                 }
 
@@ -996,7 +994,7 @@ fun ConfirmarEntregaDialog(
     anotherParents: String,
     isBtnTakePhoto: Boolean,
     isEnabledFTCommentRecibe:Boolean,
-    onTextChanged: (String) -> Unit,
+    typeStatus: String
 ) {
     val options = listOf(
         "Titular",
@@ -1043,7 +1041,10 @@ fun ConfirmarEntregaDialog(
         AnotherParent(anotherParents) { dgsViewModel.onValueChangedParents(otherparent = it) }
     }
     Text(text = "Quien recibe")
-    RecibeOrComment(parents,isEnabledFTCommentRecibe) { dgsViewModel.onValueChangedRecibe(nameparent = it) }
+    RecibeOrComment(parents,isEnabledFTCommentRecibe) { dgsViewModel.onValueChangedRecibe(
+        nameparent = it,
+        typeStatus = typeStatus
+    ) }
     Spacer(modifier = Modifier.size(14.dp))
     btnSHowCameraX(dgsViewModel,isBtnTakePhoto)
 }
@@ -1235,7 +1236,7 @@ fun ConfirmarDevueltoDialog(
     statusIntento: String,
     listStatusIntentos: List<String>,
     isEnabledFTCommentRecibe:Boolean,
-    onTextChanged: (String) -> Unit,
+    typeStatus: String,
 ) {
     dgsViewModel.onChangeListStatusIntentos(statusIntento)
     var options = listOf(
@@ -1284,7 +1285,7 @@ fun ConfirmarDevueltoDialog(
     }
     Spacer(modifier = Modifier.size(14.dp))
     Text(text = "Comentario")
-    RecibeOrComment(parents,isEnabledFTCommentRecibe) { dgsViewModel.onValueChangedRecibe(nameparent = it) }
+    RecibeOrComment(parents,isEnabledFTCommentRecibe) { dgsViewModel.onValueChangedRecibe(nameparent = it,typeStatus) }
     // Text(text = "Quien recibe")
     // Recibe(parents){dgsViewModel.onValueChangedRecibe(nameparent = it)}
 }

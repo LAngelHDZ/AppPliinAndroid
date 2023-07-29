@@ -1,23 +1,15 @@
 package com.example.pliin.apppliin.ui.dataguidescanner
 
-import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context
-import android.content.pm.PackageManager
 import android.util.Log
-import android.widget.Toast
-import androidx.camera.core.impl.utils.ContextUtil.getApplicationContext
 import androidx.camera.view.PreviewView
-import androidx.core.app.ActivityCompat
-import androidx.core.app.ActivityCompat.requestPermissions
-import androidx.core.content.ContextCompat
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
-import com.example.pliin.MainActivity
 import com.example.pliin.apppliin.domain.repository.CustomCameraX
 import com.example.pliin.apppliin.domain.usecase.RechazadoUseCase
 import com.example.pliin.apppliin.domain.usecase.SetDeliveryUseCase
@@ -242,9 +234,15 @@ class DGSViewModel @Inject() constructor(
         Log.i("Recibio", "${nameRecibe.value}")
     }
 
-    fun onValueChangedRecibe(nameparent: String) {
+    fun onValueChangedRecibe(nameparent: String, typeStatus: String) {
         _nameRecibe.value = nameparent
-        _isBtnTakePhoto.value = btnTakePhoto(nameparent)
+
+        if (typeStatus.equals("ENTREGA")){
+            _isBtnTakePhoto.value = btnTakePhoto(nameparent)
+        }else{
+            _isBtnRegisterStatus.value= btnContinueRegisterStu(nameparent)
+        }
+
         Log.i("pariente", "${selectedOption.value}")
         Log.i("Recibio", "${nameRecibe.value}")
     }
