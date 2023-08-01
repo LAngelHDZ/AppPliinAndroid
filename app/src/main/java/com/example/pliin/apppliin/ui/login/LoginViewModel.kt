@@ -86,7 +86,7 @@ class LoginViewModel @Inject constructor(
 
     fun onLoginSelected(navigationController: NavHostController) {
         _isLoginLoading.value = true
-        viewModelScope.launch() {
+        viewModelScope.launch {
             if (generalMethodsGuide.checkInternetConnection()) {
                 delay(1000)
                 val tokenEmpty = loginUseCase(user.value!!, password.value!!)

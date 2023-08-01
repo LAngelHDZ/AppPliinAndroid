@@ -2,11 +2,30 @@ package com.example.pliin.apppliin.data.database.dao
 
 import androidx.room.*
 import com.example.pliin.apppliin.data.database.entities.GuideEntity
+import com.example.pliin.apppliin.data.database.entities.SessionEntity
 import com.example.pliin.apppliin.data.database.entities.UserEntity
 import com.example.pliin.apppliin.data.database.entities.relations.UserWithManifest
 
 @Dao
 interface UserDao {
+
+    //Valida si existe una sesion activa de un usuario
+    @Query("SELECT COUNT(*) FROM session_table WHERE username = :user AND password = :password")
+    suspend fun session(user:String, password:String):Boolean
+
+    //Recupera el usaurio con la session iniciada
+    @Query("SELECT * FROM session_table")
+    suspend fun getUserSession():UserEntity
+
+    //Inserta los datos de una session del usuario
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun createSession(Session: SessionEntity)
+
+    //Elimina la session del usuario
+    @Query("DELETE FROM session_table")
+    suspend fun deleteSession()
+
+    //Valida si el usuario existe en la Base de datos
     @Query("SELECT COUNT(*) FROM user_table WHERE username = :user AND password = :password")
     suspend fun getUserLoginB(user:String, password:String):Boolean
 

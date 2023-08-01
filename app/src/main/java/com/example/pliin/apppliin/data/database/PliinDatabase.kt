@@ -15,7 +15,8 @@ import com.example.pliin.apppliin.data.database.entities.*
         GuideEntity::class,
         ManifestEntity::class,
         TokenEntity::class,
-        EmployeeEntity::class
+        EmployeeEntity::class,
+        SessionEntity::class,
     ], version = 1
 )
 @TypeConverters(DateConverter::class)
