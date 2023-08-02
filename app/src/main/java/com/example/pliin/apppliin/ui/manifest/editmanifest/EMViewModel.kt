@@ -791,7 +791,7 @@ class EMViewModel @Inject constructor(
             val typeManifest = typePreManifest.value
             val idRecord = idRecord.value
             val ruta = generalMethodsGuide.toUpperLetter(ruta.value!!)
-            val statusPreM = if(nameEmployee.isNullOrEmpty()){
+            val statusPreM = if(nameEmployee.isNullOrEmpty() || nameEmployee == "-"){
                 "NO APLICADO"
             }else{
                 "APLICADO"

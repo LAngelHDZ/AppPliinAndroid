@@ -24,7 +24,7 @@ class GetAllManifestUseCase @Inject constructor(
         val  limit = if(employee.area.equals("Operador Logistico")){
             "5"
         }else{
-            "20"
+            "50"
         }
 
         val data: List<String> = listOf(date, nameEmployee, limit,"")
