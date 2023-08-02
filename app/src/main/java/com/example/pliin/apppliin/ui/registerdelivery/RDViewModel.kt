@@ -90,9 +90,9 @@ class RDViewModel @Inject() constructor(
                                     messageGuideValidate("La guia No. $guia esta en ENTREGA FALLIDA")
                                 }
 
-                                "ARRASTRE" -> {
+                              /*  "ARRASTRE" -> {
                                     messageGuideValidate("La guia No. $guia se encuentra en ARRASTRE")
-                                }
+                                }*/
 
                                 "EN ALMACEN " -> {
                                     messageGuideValidate("La guia No. $guia se encuentra en ALMACEN")

@@ -24,11 +24,35 @@ class LoginRepository @Inject constructor(
     private val userDao: UserDao
 ){
 
-    //Verifica si existe una sesion activa de un usuarios offline e Online
-    suspend fun onSession(user: String,password: String,token:String){
+    //Crea una session de usuario
+    suspend fun CreateSession(user: String,password: String,token:String){
         val session = SessionItem(user,password,token)
         val response = userDao.createSession(session.toDatabase())
     }
+    //Consigue los datos de la session
+    suspend fun getSession():SessionItem{
+        val response = userDao.getUserSession()
+        return response.toDomain()
+    }
+
+    //Verifica si existe una sesion activa de un usuarios offline e Online
+    suspend fun onSession():Boolean {
+       /* val response: = tokenDao.getToken()
+        var token: String = ""
+        if (response?.token.isNullOrBlank()) {
+            token = ""
+        } else {
+            token = response?.token!!
+        }*/
+        return userDao.onSession()
+    }
+
+    //Elimina la session actual
+    suspend fun closeSession() {
+        userDao.deleteSession()
+    }
+
+
 
 
     suspend fun dologinDB(user: String, password: String): TokenItem {
@@ -53,10 +77,17 @@ class LoginRepository @Inject constructor(
     }
 
     //Consulta el token de la DB
-    suspend fun getTokenDB(): TokenItem {
+    suspend fun getTokenDB(): TokenItem? {
         val response: TokenEntity = tokenDao.getToken()
         return response.toDomain()
     }
+
+    //Consulta si el token existe
+    suspend fun tokenDBExists():Boolean {
+        return  tokenDao.tokenExists()
+    }
+
+
 
     suspend fun getToken(): String? {
         val response: TokenEntity? = tokenDao.getToken()

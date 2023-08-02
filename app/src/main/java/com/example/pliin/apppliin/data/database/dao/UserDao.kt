@@ -9,13 +9,17 @@ import com.example.pliin.apppliin.data.database.entities.relations.UserWithManif
 @Dao
 interface UserDao {
 
-    //Valida si existe una sesion activa de un usuario
+    //Valida si existe una sesion activa de un usuario con el usuario y contraseña
     @Query("SELECT COUNT(*) FROM session_table WHERE username = :user AND password = :password")
     suspend fun session(user:String, password:String):Boolean
 
+    //Verifica si existe una session activa
+    @Query("SELECT COUNT(*) FROM session_table")
+    suspend fun onSession():Boolean
+
     //Recupera el usaurio con la session iniciada
     @Query("SELECT * FROM session_table")
-    suspend fun getUserSession():UserEntity
+    suspend fun getUserSession():SessionEntity
 
     //Inserta los datos de una session del usuario
     @Insert(onConflict = OnConflictStrategy.REPLACE)
