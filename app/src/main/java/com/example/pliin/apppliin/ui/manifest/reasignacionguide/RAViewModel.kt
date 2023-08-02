@@ -57,10 +57,8 @@ class RAViewModel @Inject constructor(
         _isSesionDialog.value = false
     }
 
-    fun getContentQR(guia: String, navigationController: NavHostController) {
-
+    fun getContentQR(guia: String, navigationController: NavHostController){
         val formatGuide = generalMethodsGuide.validateFormatGuia(guia)
-
         if (formatGuide) {
             _conteQR.value = guia
             _isLoadingDataGuide.value = true
@@ -79,7 +77,7 @@ class RAViewModel @Inject constructor(
                             when (result[6]) {
                                 "ENTREGADO" -> {
                                     Log.i("Status Guia", result[6].toString())
-                                    messageGuideValidate("No se puede reasignar esta guia  con estatus ENTREGADO")
+                                    messageGuideValidate("No se puede reasignar esta guia  con estatus; ENTREGADO")
                                 }
 
                                 "EN RUTA A SALTER" -> {
@@ -97,9 +95,9 @@ class RAViewModel @Inject constructor(
                                     val totaguias= manifest?.get(0)?.fieldData?.totaolGuias?.minus(1)
                                     val nameEMploye = manifest?.get(0)?.fieldData?.nombreOperador
                                     val idRecord = manifest?.get(0)?.recordId
-                                    val data:List<String?> = listOf(nameEMploye,totalpqt.toString(),totaguias.toString(),idRecord)
+                                    val statusMAn = manifest!!.get(0)!!.fieldData!!.statusPreM
+                                    val data:List<String?> = listOf(nameEMploye,totalpqt.toString(),totaguias.toString(),idRecord,statusMAn)
                                     val updateMan = updateManifestUseCase.invoke(data)
-
                                     if (response && updateMan){
                                         messageGuideValidate("La guia No. $guia se a reasignado, puede agrearla a otro manifiesto")
                                     }else{
@@ -112,7 +110,7 @@ class RAViewModel @Inject constructor(
                         messageGuideValidate("Hubo un error al consultar la información")
                     }
                 } else {
-                    messageGuideValidate("Hubo un error de comunicación, favor de revizar su conexión a internet")
+                    messageGuideValidate("Hubo un error de comunicación, favor de revisar su conexión a internet")
                 }
             }
         } else {
@@ -127,7 +125,7 @@ class RAViewModel @Inject constructor(
     }
 
     //inicaliza el scanner
-    fun initScanner(scanLauncher: ManagedActivityResultLauncher<ScanOptions, ScanIntentResult>) {
+    fun initScanner(scanLauncher: ManagedActivityResultLauncher<ScanOptions,ScanIntentResult>){
 
         val scanOptions = ScanOptions()
         scanOptions.setDesiredBarcodeFormats(ScanOptions.ALL_CODE_TYPES)

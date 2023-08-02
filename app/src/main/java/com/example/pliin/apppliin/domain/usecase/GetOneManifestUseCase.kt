@@ -11,7 +11,7 @@ class GetOneManifestUseCase @Inject constructor(
     private val loadEmployeeUseCase: LoadEmployeeUseCase
 ) {
     suspend operator fun invoke(claveManifest: String):List<Data?>?{
-        reloginUseCase
+        reloginUseCase()
         val data: List<String> = listOf("", "", "1",claveManifest)
         val response = manifestRepository.getManifest(data)
         Log.d("Manifest", "$response")

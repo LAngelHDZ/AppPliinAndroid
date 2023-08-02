@@ -84,8 +84,8 @@ class ManifestService @Inject constructor(
         }
     }
 
-    suspend fun getManifest(data: List<String>): ConsecutivoManModel {
-        val bearer = daoToken.getToken()?.token
+    suspend fun getManifest(data: List<String>): ConsecutivoManModel{
+        val bearer = daoToken.getToken().token
         val query = GetManifestDto(
             listOf(Querym(data.component1(), data.component2(),data.component4())),
             listOf(Sortm("Fecha"), Sortm("hora")),
@@ -95,8 +95,7 @@ class ManifestService @Inject constructor(
 //            listOf(Query("<=$date")),
 //            listOf(Sort("Fecha"), Sort("hora"))
 //        )
-        return withContext(Dispatchers.IO) {
-
+        return withContext(Dispatchers.IO){
             try {
                 val response = dataManifestClient.getManifest("Bearer $bearer", query)
                 val data = if (response.isSuccessful) {
@@ -127,7 +126,7 @@ class ManifestService @Inject constructor(
                     }
                 }
                 data
-            } catch (e: IOException) {
+            } catch (e: IOException){
                 ConsecutivoManModel(
                     ResponseConsecutive(
                         DataInfoModel("", 0, "", 0, "", 0),
