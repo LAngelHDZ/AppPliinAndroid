@@ -86,16 +86,11 @@ class LoginViewModel @Inject constructor(
 
     fun onLoginSelected(navigationController: NavHostController) {
         _isLoginLoading.value = true
-        viewModelScope.launch() {
+        viewModelScope.launch {
             if (generalMethodsGuide.checkInternetConnection()) {
                 delay(1000)
-                val tokenEmpty = loginUseCase(user.value!!, password.value!!)
-                if (tokenEmpty) {
-                    _isLoginLoading.value = false
-                    messageDialog("El usuario o la contraseña son incorrectos")
-                    Log.i("System", "Invalid User")
-                } else {
-
+                val sessionSuccess = loginUseCase(user.value!!, password.value!!)
+                if (sessionSuccess) {
                     val data = loadEmployeeUseCase.invoke()
                     Log.i("System", "result OK")
                     //Remplaza los espacios por un punto para poder pasarlo por parametro en la URL a la vista nueva, de l¡no hacerlo manda un error de ruta ya que cada parametro debe ser separado por un "/"
@@ -108,6 +103,10 @@ class LoginViewModel @Inject constructor(
                     reset()
                     navigationController.navigate(AppScreen.AppMainScreen.createRoute(name, area))
                     _isLoginLoading.value = false
+                } else {
+                    _isLoginLoading.value = false
+                    messageDialog("El usuario o la contraseña son incorrectos")
+                    Log.i("System", "Invalid User")
                 }
             } else {
                 messageDialog("Error de comunicación, favor de verificar la conexión a internet")

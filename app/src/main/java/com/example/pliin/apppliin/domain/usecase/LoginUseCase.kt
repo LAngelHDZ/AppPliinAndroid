@@ -19,32 +19,38 @@ class LoginUseCase @Inject constructor(
         user: String,
         password: String
     ): Boolean {
-       // usersRepository.clearUser()
+        // usersRepository.clearUser()
         val userexiste =
             usersRepository.getLoginUserDatabaseB(generalMethodsGuide.toLowerLetter(user), password)
         var userValidate: String = ""
         var employeeActive: String = ""
-
-        if (!userexiste) {
-            val dataUser = usersRepository.SetUserItem(user, password)
-            usersRepository.insertUsers(dataUser.map { it.toDatabase() })
-        }
-
-        val token = Loginrepository.dologin(user, password)
-        if (!token.token.isNullOrEmpty()) {
-            Loginrepository.clearToken()
-            Loginrepository.insertToken(token.toDatabase())
-            Log.i("GetTokenAPI", token.token.toString())
-            Log.i("GetTokenDB", Loginrepository.getTokenDB().token.toString())
-            userValidate = Loginrepository.getTokenDB().token!!
-            val existeEmployee =
-                employeeRepository.queryDataEmployee(generalMethodsGuide.toLowerLetter(user))
-            if (!existeEmployee) {
-                val data = employeeRepository.getEmployeeApi(user)
-                employeeRepository.saveDataEmployee(data)
+        val access: Boolean = if (userexiste) {
+//            val token: String = Loginrepository.getTokenDB()?.token.toString()
+            Loginrepository.CreateSession(user, password, "")
+            true
+        }else{
+            val sessionAPi = Loginrepository.dologin(user, password)
+            val sessionOk = if (!sessionAPi.token.isNullOrEmpty()){
+                Loginrepository.CreateSession(user, password, sessionAPi.token)
+                Loginrepository.clearToken()
+                Loginrepository.insertToken(sessionAPi.toDatabase())
+                Log.i("GetTokenAPI", sessionAPi.token.toString())
+                Log.i("GetTokenDB", Loginrepository.getTokenDB()?.token.toString())
+                val dataUser = usersRepository.SetUserItem(user, password)
+                usersRepository.insertUsers(dataUser.map { it.toDatabase() })
+                val existeEmployee = employeeRepository.queryDataEmployee(generalMethodsGuide.toLowerLetter(user))
+                if (!existeEmployee) {
+                    val data = employeeRepository.getEmployeeApi(user)
+                    employeeRepository.saveDataEmployee(data)
+                }
+                Log.i("access ok", "true")
+                true
+            } else {
+                Log.i("acces denegate", "false")
+                false
             }
-            // employeeActive = employeeRepository.getEmployeeDB(user).statusLaboral.toString()
+            sessionOk
         }
-        return token.token.isNullOrEmpty()
+        return access
     }
 }

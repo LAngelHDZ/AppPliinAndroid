@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
+import com.example.pliin.apppliin.domain.usecase.CloseSessionUseCase
 import com.example.pliin.apppliin.domain.usecase.DeleteUserUSeCase
 import com.example.pliin.apppliin.domain.usecase.LoadEmployeeUseCase
 import com.example.pliin.apppliin.domain.usecase.LogoutUseCase
@@ -18,7 +19,8 @@ import javax.inject.Inject
 class MainAppViewModel @Inject constructor(
     private val logoutUseCase: LogoutUseCase,
     private val deleteUserUSeCase: DeleteUserUSeCase,
-    private val loadEmployeeUseCase: LoadEmployeeUseCase
+    private val loadEmployeeUseCase: LoadEmployeeUseCase,
+    private val closeSessionUseCase: CloseSessionUseCase
 ) : ViewModel() {
 
     private val _isLogout = MutableLiveData<Boolean>()
@@ -38,7 +40,7 @@ class MainAppViewModel @Inject constructor(
         viewModelScope.launch {
             delay(1500)
             if (logoutUseCase.invoke()) {
-                deleteUserUSeCase.invoke()
+                closeSessionUseCase.invoke()
                 navigate(navigationController)
 
             }

@@ -11,11 +11,11 @@ data class TokenItem(
 //Funcion de mapeo de datos entre modelo User de la capa de  Data y el Modelo User de la capa de Dominio
 fun TokenModel.toDomain() =
     TokenItem(
-        token
+        token!!
     )
 
 //Funcion de mapeo de datos entre el modelo user de la capa de dominio y la entidad User de la database
-fun TokenEntity.toDomain() =
+fun TokenEntity?.toDomain() =
     TokenItem(
-        token!!
+        this!!.token
     )

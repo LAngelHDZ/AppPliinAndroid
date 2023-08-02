@@ -47,7 +47,7 @@ fun Loading(
         val checknetwork = ping("www.google.com")
 
         if (checknetwork) {
-            mlViewModel.noToken(navigationController)
+        mlViewModel.sessionValidate(navigationController)
         } else {
             navigationController.popBackStack()
             navigationController.navigate(AppScreen.FailLoadScreen.route)

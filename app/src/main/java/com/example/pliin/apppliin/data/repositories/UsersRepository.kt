@@ -16,20 +16,7 @@ class UsersRepository @Inject constructor(
     private val userDao:UserDao
     ){
 
-    /*
-    suspend fun  getAllUser():List<UserModel>{
 
-        val response = api.getUsers()
-        UserProvider.users = response
-        return response
-
-    }*/
-
-    //Opbtiene las guias de la API
-    /*suspend fun  getAllGuideFromApi():List<GuideItem>{
-         val response = api.getGuides()
-         return response.map {it.toDomain()}
-     }*/
 
     //Opbtiene los usuarios de la API
     suspend fun SetUserItem(user: String, password: String): List<UserItem> {
