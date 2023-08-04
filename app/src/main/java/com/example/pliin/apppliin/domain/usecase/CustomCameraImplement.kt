@@ -19,6 +19,7 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import com.example.pliin.MainActivity
 import com.example.pliin.apppliin.domain.repository.CustomCameraX
 import java.io.File
 import java.text.SimpleDateFormat
@@ -39,7 +40,35 @@ class CustomCameraImplement @Inject constructor(
     override suspend fun captureAndSaveImage(
         context: Context
     ) {
-        val directorioDestino = File(context.getExternalFilesDir(null), "/storage/")
+
+        val directoryName = "/storage/"
+        val targetDirectory = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            Environment.getExternalStoragePublicDirectory(DIRECTORY_PICTURES)
+        } else{
+            Environment.getExternalStoragePublicDirectory(DIRECTORY_PICTURES)
+           // File(Environment.getExternalStorageDirectory(), "/storage/")
+        }
+        // Verificar si el directorio ya existe antes de crearlo
+        if (targetDirectory != null && !targetDirectory.exists()) {
+            val isDirectoryCreated = targetDirectory.mkdirs()
+            if (isDirectoryCreated) {
+                // El directorio se creó correctamente
+            } else {
+                // Ocurrió un error al crear el directorio
+            }
+        } else {
+            // El directorio ya existe
+        }
+
+
+
+
+
+
+
+
+
+        val directorioDestino = File(context.getExternalFilesDir("p0"), "/storage/")
         if (!directorioDestino.exists()) {
             directorioDestino.mkdirs()
         }
@@ -50,7 +79,7 @@ class CustomCameraImplement @Inject constructor(
         ).format(System.currentTimeMillis())
         /* val rutaCarpetaPictures = Environment.getExternalStoragePublicDirectory(DIRECTORY_PICTURES).absolutePath
          val directorioDestino = File(context.getExternalFilesDir(null), rutaCarpetaPictures)*/
-        val archivoDestino = File(directorioDestino, "$name.jpg")
+        val archivoDestino = File(targetDirectory, "$name.jpg")
         _directory.value = archivoDestino.absolutePath
         val contentValues = ContentValues().apply {
             put(MediaStore.MediaColumns.DISPLAY_NAME, "$name.jpg")
@@ -60,10 +89,8 @@ class CustomCameraImplement @Inject constructor(
             /* if(Build.VERSION.SDK_INT > Build.VERSION_CODES.P){
                  put(MediaStore.Images.Media.RELATIVE_PATH,"Pictures/Pliin")
              }else{
-
              }*/
         }
-
         val outputOptions = ImageCapture.OutputFileOptions
             .Builder(
                 context.contentResolver,
