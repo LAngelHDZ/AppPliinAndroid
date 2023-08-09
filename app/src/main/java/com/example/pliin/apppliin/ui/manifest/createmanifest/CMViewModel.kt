@@ -767,7 +767,7 @@ private val _isAlertDialogHighValue = MutableLiveData<Boolean>()
             var nameEmployee = selectEmployye(employee)
             val typeManifest = typePreManifest.value
             val ruta = generalMethodsGuide.toUpperLetter(ruta.value!!)
-            val statusPreM = if(nameEmployee.isNullOrEmpty()){
+            val statusPreM = if(nameEmployee.isNullOrEmpty() || nameEmployee == "-"){
                 "NO APLICADO"
             }else{
                "APLICADO"
