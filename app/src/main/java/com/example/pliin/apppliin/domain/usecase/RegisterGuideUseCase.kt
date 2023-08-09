@@ -15,13 +15,12 @@ class RegisterGuideUseCase @Inject constructor(
     suspend operator fun invoke(
         guide: String
     ): Boolean {
-
         reloginUseCase()
         val code = validateGuide(guide)
         val messageInsertGuide = if (code.component1() == "401") {
             insertGuideUseCase(guide)
         } else {
-            updateStatusUseCase("EN ALMACEN", code.component2())
+            updateStatusUseCase("EN ALMACEN", code.component2(),"manifiestoPaquetes")
         }
         val messageCreateStatus = createStatusUSeCase(guide, "EN ALMACEN")
 

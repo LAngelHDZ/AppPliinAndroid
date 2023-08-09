@@ -36,7 +36,7 @@ class RechazadoUseCase @Inject constructor(
             messageDelivery = "0"
         }
 
-        val responseUpdateStaus = deliveryR.setUpdateStatus(status, recordId!!)
+        val responseUpdateStaus = deliveryR.setUpdateStatus(status, recordId!!,"manifiestoPaquetes")
         val messageUpdateStatus = responseUpdateStaus.messages!![0]!!.code
         val responseCreateStatus = deliveryR.setCreateStatus(guide!!, status!!)
         val messageCreateStatus = responseCreateStatus.messages!![0]!!.code

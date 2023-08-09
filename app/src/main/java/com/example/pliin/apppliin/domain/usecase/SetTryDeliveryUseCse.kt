@@ -22,13 +22,13 @@ class SetTryDeliveryUseCse @Inject constructor(
         Log.i("seleted", parentOrFailDelivery)
         Log.i("status intento entrega eb use case", parentOrFailDelivery!!)
         //  Log.i("seleted", selectedOption.value!!)
-        if (parentOrFailDelivery.equals("RECHAZADO")) {
 
-            val responseDelivery =
-                deliveryR.setDelivery(guide!!, "No recibido", parentOrFailDelivery)
+        if (parentOrFailDelivery.equals("RECHAZADO")){
+            val responseDelivery = deliveryR.setDelivery(guide!!, "No recibido", parentOrFailDelivery)
             val messageDelivery = responseDelivery.messages!![0]!!.code
         }
-        val responseUpdateStaus = deliveryR.setUpdateStatus(status, recordId!!)
+
+        val responseUpdateStaus = deliveryR.setUpdateStatus(status, recordId!!,"manifieestoPaquetes")
         val messageUpdateStatus = responseUpdateStaus.messages!![0]!!.code
         val responseCreateStatus = deliveryR.setCreateStatus(guide!!, status!!)
         val messageCreateStatus = responseCreateStatus.messages!![0]!!.code

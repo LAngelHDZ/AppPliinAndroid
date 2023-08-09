@@ -19,6 +19,7 @@ import com.example.pliin.apppliin.data.network.dto.direccionguide.FieldDataDG
 import com.example.pliin.apppliin.data.network.dto.insertguide.FieldData
 import com.example.pliin.apppliin.data.network.dto.insertguide.InsertGuideDto
 import com.example.pliin.apppliin.data.network.dto.queryguidescanner.QueryGuideDto
+import com.example.pliin.apppliin.data.network.dto.queryguidescanner.Sort
 import com.example.pliin.apppliin.data.network.dto.queryguidescanner.query
 import com.example.pliin.apppliin.data.network.dto.queyguidereception.Query
 import com.example.pliin.apppliin.data.network.dto.queyguidereception.QueryGuidePliinDto
@@ -33,8 +34,14 @@ class GuideService @Inject constructor(
     private val daotoken: TokenDao
 ) {
     @SuppressLint("SuspiciousIndentation")
-    suspend fun getGuide(guide: String): GetDataGuideDRModel {
-        val query = QueryGuideDto(listOf(query(guide, "Asignado")))
+    suspend fun getGuide(guide: String, observation: String, IdPreM: String): GetDataGuideDRModel{
+//        val query = QueryGuideDto(listOf(query(guide, "Asignado")))
+        val query = QueryGuideDto(listOf(query( IdPreM,guide,observation)),
+            listOf(Sort("Fecha"),
+                Sort("Hora")
+            )
+        )
+
         val bearer = daotoken.getToken().token
         return withContext(Dispatchers.IO) {
             val response = guideapiclient.getDataguide("Bearer $bearer", query)
@@ -78,7 +85,11 @@ class GuideService @Inject constructor(
 
     suspend fun guideValidateA(guide: String): GetDataGuideDRModel {
         // val query = QueryGuidePliinDto(listOf(Query(guide)))
-        val query = QueryGuideDto(listOf(query(guide, "Asignado")))
+        val query = QueryGuideDto(listOf(query( "",guide,"Asignado")),
+            listOf(Sort("Fecha"),
+                Sort("Hora")
+            )
+        )
         val bearer = daotoken.getToken()?.token
         return withContext(Dispatchers.IO) {
             try {
@@ -293,13 +304,14 @@ class GuideService @Inject constructor(
         }
     }
 
-    suspend fun addGuideManifest(data: List<String>): ResponseRUDModel {
+    suspend fun addGuideManifest(data: List<String>, status: String): ResponseRUDModel {
         val query = AddGuideToManifest(
             FieldDataAGM(
                 data.component1(),
                 data.component2(),
                 data.component3(),
-                data.component4()
+                data.component4(),
+                status
             )
         )
 

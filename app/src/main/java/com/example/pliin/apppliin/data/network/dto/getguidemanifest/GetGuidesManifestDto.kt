@@ -5,5 +5,5 @@ import com.google.gson.annotations.SerializedName
 
 data class GetGuidesManifestDto(
     @SerializedName("query")
-    val queryGGM: List<QueryGGM?>?
+    val queryGGM: List<QueryGGM?>?,
 )

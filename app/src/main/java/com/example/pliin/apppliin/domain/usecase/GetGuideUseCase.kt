@@ -22,7 +22,7 @@ class GetGuideUseCase @Inject constructor(
         var guides: GetDataGuideRDItem
         do {
             Log.i("Guia escaneada", guide)
-            guides = repository(guide)
+            guides = repository(guide,"Asignado","")
             message = guides.messages!![0]!!.message
             codeStatus = guides.messages!![0]!!.code
 
@@ -43,8 +43,8 @@ class GetGuideUseCase @Inject constructor(
         }
     }
 
-    suspend fun repository(guide: String): GetDataGuideRDItem {
-        return repository.getGuideQueryApi(guide)
+    suspend fun repository(guide: String,observation:String,IdPreM:String): GetDataGuideRDItem {
+        return repository.getGuideQueryApi(guide,observation,IdPreM)
     }
 
     private fun fiedDatanull(): FieldDataItem {
