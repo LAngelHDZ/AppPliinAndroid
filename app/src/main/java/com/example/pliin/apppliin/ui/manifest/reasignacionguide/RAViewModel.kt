@@ -70,10 +70,10 @@ class RAViewModel @Inject constructor(
 //                Log.i("Status Guia", result[6].toString())
                     //  Log.i("System guide","$guia")
                     val guide = result[0]
-                    if (!guide.equals("500")) {
-                        if (guide.isNullOrEmpty()) {
+                    if (!guide.equals("500")){
+                        if (guide.isNullOrEmpty()){
                             messageGuideValidate("La guia $guia no se ha encontrado en un manifiesto")
-                        } else {
+                        }else{
                             when (result[6]) {
                                 "ENTREGADO" -> {
                                     Log.i("Status Guia", result[6].toString())
@@ -87,7 +87,6 @@ class RAViewModel @Inject constructor(
                                 "RETORNO" -> {
                                     messageGuideValidate("La guia No. $guia se encuentra en RETORNO A UPS")
                                 }
-
                                 else -> {
                                     val response = reasignarGuideUseCase(result[13]!!)
                                     val manifest= getOneManifestUseCase.invoke(result[1]!!)

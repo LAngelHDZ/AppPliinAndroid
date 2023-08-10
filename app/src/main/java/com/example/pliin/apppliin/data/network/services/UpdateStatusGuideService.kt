@@ -22,7 +22,7 @@ class UpdateStatusGuideService @Inject constructor(
 
 ) {
 
-    suspend fun setUpdateStatus(status: String?, recordId: String): ResponseUpdateStatusModel {
+    suspend fun setUpdateStatus(status: String?, recordId: String,presentacion:String): ResponseUpdateStatusModel {
         val bearer = daotoken.getToken()?.token
         val query = UpdatStatusDto(
             FieldData(
@@ -32,7 +32,7 @@ class UpdateStatusGuideService @Inject constructor(
 
         return withContext(Dispatchers.IO) {
             try {
-                val response = apiclient.updateStatus("Bearer $bearer", recordId, query)
+                val response = apiclient.updateStatus("Bearer $bearer", recordId,presentacion, query)
                 val data = if (response.isSuccessful) {
                     response.body()!!
                 } else {
