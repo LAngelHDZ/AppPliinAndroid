@@ -619,7 +619,7 @@ class EMViewModel @Inject constructor(
                     Log.d("mesage en validación", "$codeMessage")
                     if (codeValidate) {
 //                        val guideAtManifest = guideOtherManifest(guia)
-                        val guideOtherManifest = getGuideUseCase.invoke(guia)
+                        val guideOtherManifest = getGuideUseCase.invoke(guia,"Asignado")
                         val code400 = guideOtherManifest.component1().isNullOrEmpty()
                         Log.d("mesage en validación", "$code400")
                         if (code400) {
@@ -678,7 +678,7 @@ class EMViewModel @Inject constructor(
     fun guideOtherManifest(guide: String): Boolean {
         var guideOtherManifest: List<String?> = emptyList()
         viewModelScope.launch {
-            guideOtherManifest = getGuideUseCase.invoke(guide)
+            guideOtherManifest = getGuideUseCase.invoke(guide,"Asignado")
             codeMessage = guideOtherManifest.isEmpty()
         }
         Thread.sleep(3000)

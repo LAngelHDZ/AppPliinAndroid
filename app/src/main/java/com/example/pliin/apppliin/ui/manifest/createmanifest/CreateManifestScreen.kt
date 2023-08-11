@@ -240,7 +240,7 @@ fun alertDialogHighValue(cmViewModel: CMViewModel, isDialogHighValue: Boolean) {
 
         },
             title = { Text(text = "Mensaje") },
-            text = { Text(text = "¿EL paquete es de aLto valor?") },
+            text = { Text(text = "¿EL paquete es de alto valor?") },
             confirmButton = {
                 TextButton(onClick = {
                     cmViewModel.onHighValuePqt("SI")
