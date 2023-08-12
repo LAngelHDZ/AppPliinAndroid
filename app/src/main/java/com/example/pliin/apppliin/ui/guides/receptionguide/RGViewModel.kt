@@ -101,23 +101,17 @@ class RGViewModel @Inject constructor(
         val loading: Float = 100 / totalguides!!.toFloat()
         Log.i("Load", "$loading")
         Log.i("Load", "$totalguides")
-
         currentmap.let {
-
-            viewModelScope.launch(Dispatchers.IO) {
-
-                for ((key, value) in currentmap) {
+            viewModelScope.launch(Dispatchers.IO){
+                for ((key, value) in currentmap){
                     Log.i(key, value)
                     var progress = progressCircularLoad.value
                     Log.i("Agregado", "$progress")
-                    val deferred = async { registerGuideUseCase.invoke(value) }
-
-
-                    Log.i("Agregado", "listo")
+                    val deferred = async { registerGuideUseCase.invoke(value)}
                     deferred.await()
                     Thread.sleep(1000)
-                    launch(Dispatchers.Main) {
-                        progres += 1
+                    launch(Dispatchers.Main){
+                        progres +=1
                         _countRegisterGuide.value = progres
                         _progressCircularLoad.value = _progressCircularLoad.value?.plus(loading)
                         // _progressCircularLoad.value= loadingporcentguide.value?.div(100)
@@ -169,7 +163,7 @@ class RGViewModel @Inject constructor(
                 _mapListGuide.value = currentmap
                 _conteQR.value = guia
                 _countGuides.value = _mapListGuide.value?.size
-                //setData(guia)
+                setData(guia)
                 _isLoadBtnEnable.value = enableLoadBtn(currentmap.size)
             } else {
                 _isSesionDialog.value = true

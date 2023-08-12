@@ -507,14 +507,13 @@ fun GroupButton(
     scanLauncher: ManagedActivityResultLauncher<ScanOptions, ScanIntentResult>,
     isLoadBtnEnable: Boolean
 ) {
-
     Column(modifier = modifier.padding(top = 10.dp)) {
         val StyleBox = (Modifier
             // .weight(1f)
             .height(70.dp))
         ButtonScanner(StyleBox, rdViewModel, scanLauncher)
         Spacer(modifier = Modifier.size(8.dp))
-        ButtonLoadServer(StyleBox, isLoadBtnEnable, guia, rdViewModel, navigationController)
+//        ButtonLoadServer(StyleBox, isLoadBtnEnable, guia, rdViewModel, navigationController)
 
     }
 }
@@ -527,7 +526,6 @@ fun ButtonAddGuide(
     rdViewModel: RGViewModel,
     navigationController: NavHostController
 ) {
-
     Button(
         modifier = modifier,
         onClick = { rdViewModel.getContentQR(guia, navigationController) },
