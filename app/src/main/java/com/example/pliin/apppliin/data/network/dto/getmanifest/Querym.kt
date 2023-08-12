@@ -10,4 +10,7 @@ data class Querym(
     val nombreOperador: String ="",
     @SerializedName("ClavePrincipal")
     val idPreM: String="",
+    @SerializedName("statusPreM")
+    val statusPreM: String="",
+
 )

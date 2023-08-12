@@ -87,7 +87,7 @@ class ManifestService @Inject constructor(
     suspend fun getManifest(data: List<String>): ConsecutivoManModel{
         val bearer = daoToken.getToken().token
         val query = GetManifestDto(
-            listOf(Querym(data.component1(), data.component2(),data.component4())),
+            listOf(Querym(data.component1(), data.component2(),data.component4(),data.component5())),
             listOf(Sortm("Fecha"), Sortm("hora")),
             data.component3()
         )

@@ -31,8 +31,8 @@ class DeliveryRepository @Inject constructor(
     }
 
     //Opbtiene las response de la actualizacion del status de la guia
-    suspend fun setUpdateStatus(status: String?, recordId: String): ResponseRegisterDeliveryItem {
-        val response = apiupdate.setUpdateStatus(status, recordId)
+    suspend fun setUpdateStatus(status: String?, recordId: String,presentacion:String): ResponseRegisterDeliveryItem {
+        val response = apiupdate.setUpdateStatus(status, recordId,presentacion)
         Log.i("response", "$response")
         // tokenDao.insertToken(response.toDatabase())
         return response.toDomain()

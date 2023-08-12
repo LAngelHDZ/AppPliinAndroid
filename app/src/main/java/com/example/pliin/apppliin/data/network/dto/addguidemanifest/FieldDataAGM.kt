@@ -11,5 +11,7 @@ data class FieldDataAGM(
     @SerializedName("NumPaquetes")
     val numPaquetes: String,
     @SerializedName("Observacion")
-    val observacion: String
+    val observacion: String,
+    @SerializedName("estatus")
+    val statusG: String
 )

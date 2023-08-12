@@ -69,7 +69,6 @@ fun CreateManifestScreen(
     val typeExcedente: String by cmViewModel.typePaq.observeAsState("")
     val isFormDatosPqt: Boolean by cmViewModel.isFormDatosPqt.observeAsState(false)
 
-
     val isDialogExitScreen: Boolean by cmViewModel.isDialogExitScreen.observeAsState(false)
     val isDialogHighValue: Boolean by cmViewModel.isAlertDialogHighValue.observeAsState(false)
     val isSearchEnable: Boolean by cmViewModel.isSearchEnable.observeAsState(false)
@@ -94,14 +93,12 @@ fun CreateManifestScreen(
     val claveManifest: String by cmViewModel.clavePreManifest.observeAsState("")
     val isLoadBtnEnable: Boolean by cmViewModel.isisLoadBtnEnable.observeAsState(false)
     val listEmployees: List<DataEI> by cmViewModel.listEmployees.observeAsState(initial = emptyList())
-    val mapListGuide: Map<String, String> by cmViewModel.mapListGuide.observeAsState(
-        mutableMapOf()
-    )
+    val mapListGuide: Map<String, String> by cmViewModel.mapListGuide.observeAsState(mutableMapOf())
     val date: String = getdatenow()
     val scanLauncher = rememberLauncherForActivityResult(
         contract = ScanContract(),
-    ) { result ->
-        if (result.contents != null) {
+    ){ result ->
+        if (result.contents != null){
             Log.i("quide scanner", result.contents)
             cmViewModel.getContentQR(result.contents, navigationController)
         }
@@ -157,7 +154,6 @@ fun CreateManifestScreen(
                 cmViewModel,
                 messageGuideValidate
             )
-
             selectRuta(
                 cmViewModel,
                 selectedOptionRuta,
@@ -168,7 +164,6 @@ fun CreateManifestScreen(
                 isSelectRutaEnabled,
                 area
             )
-
             dataGuides(
                 isDialogDatosPqt,
                 isDialogDireccion,
@@ -184,16 +179,13 @@ fun CreateManifestScreen(
                 isFormDatosPqt,
                 isEnableBtnCalcular
             )
-
             alertDialogHighValue(cmViewModel,isDialogHighValue)
-
             AlertDialogLoadGuides(
                 isDialogLoadGuides,
                 cmViewModel,
                 messageGuideValidate,
                 navigationController
             )
-
             AlertDialogexitScreen(isDialogExitScreen,cmViewModel,navigationController)
         }
     }
@@ -240,7 +232,7 @@ fun alertDialogHighValue(cmViewModel: CMViewModel, isDialogHighValue: Boolean) {
 
         },
             title = { Text(text = "Mensaje") },
-            text = { Text(text = "¿EL paquete es de aLto valor?") },
+            text = { Text(text = "¿EL paquete es de alto valor?") },
             confirmButton = {
                 TextButton(onClick = {
                     cmViewModel.onHighValuePqt("SI")
@@ -251,7 +243,7 @@ fun alertDialogHighValue(cmViewModel: CMViewModel, isDialogHighValue: Boolean) {
             dismissButton = {
                 TextButton(onClick = {
                     cmViewModel.onHighValuePqt("NO")
-                }) {
+                }){
                     Text(text = "No")
                 }
             }
@@ -1409,7 +1401,6 @@ fun ListGuide(
                 }
             }
         }
-
     }
 }
 
@@ -1447,10 +1438,8 @@ fun HeadTable() {
                 )
             }
             Spacer(modifier = Modifier.size(2.dp))
-
         }
     }
-
 }
 
 @Composable
@@ -1487,7 +1476,6 @@ fun FooterTable(countGuide: Int) {
 //            Spacer(modifier = Modifier.size(2.dp))
         }
     }
-
 }
 
 @Composable
@@ -1503,7 +1491,7 @@ fun Footer(
     Box(
         modifier = modifier.fillMaxWidth(),
         contentAlignment = Alignment.BottomCenter
-    ) {
+    ){
         Column() {
             val StyleBox = (Modifier
                 // .weight(1f)
@@ -1524,7 +1512,6 @@ fun Footer(
                 cmViewModel,
                 navigationController
             )
-
         }
     }
 }
@@ -1982,8 +1969,8 @@ fun AlertDialogLoadGuides(
     cmViewModel: CMViewModel,
     message: String,
     navigationController: NavHostController
-) {
-    if (show) {
+){
+    if (show){
         AlertDialog(
             onDismissRequest = { cmViewModel.onAlertDialog() },
             title = { Text(text = "Advertencia") },
