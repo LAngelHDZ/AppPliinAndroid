@@ -252,6 +252,7 @@ class EMViewModel @Inject constructor(
     }
 
     var codeMessage: Boolean = false
+    var btnpushCrate: Int = 0
     val keyGuide: Int = 1
 
     fun onSearchChanged(guia:String) {
@@ -743,11 +744,14 @@ class EMViewModel @Inject constructor(
     }
 
     fun create(navigationController: NavHostController) {
-        viewModelScope.launch {
-            updateManifest()
-            Thread.sleep(1000)
+        if (btnpushCrate<=0) {
+            Log.d("Boton presionado", "$btnpushCrate")
+            btnpushCrate =1
+            viewModelScope.launch {
+                updateManifest()
+                Thread.sleep(1000)
+            }
         }
-        // backScreen(navigationController)
     }
 
     fun getConsecutivoManifest() {
