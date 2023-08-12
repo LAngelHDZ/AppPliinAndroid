@@ -443,6 +443,7 @@ class EMViewModel @Inject constructor(
     }
 
     fun reset() {
+        btnpushCrate=0
         _nombre.value = ""
         _telefono.value = ""
         _dir1.value = ""

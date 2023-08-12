@@ -418,7 +418,8 @@ private val _isAlertDialogHighValue = MutableLiveData<Boolean>()
         _typePreManifest.value = ""
     }
 
-    fun reset() {
+    fun reset(){
+        createOne=0
         _nombre.value = ""
         _telefono.value = ""
         _dir1.value = ""
@@ -813,7 +814,6 @@ private val _isAlertDialogHighValue = MutableLiveData<Boolean>()
         Log.i("Load", "$totalguides")
 
         currentmap.let {
-
             viewModelScope.launch(Dispatchers.IO) {
                 val idPreM = clavePreManifest.value!!
                 val numPaquetes = "1"
