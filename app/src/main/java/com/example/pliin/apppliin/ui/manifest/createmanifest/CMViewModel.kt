@@ -245,6 +245,8 @@ private val _isAlertDialogHighValue = MutableLiveData<Boolean>()
 
     val keyGuide: Int = 1
 
+    var createOne: Int = 0
+
     fun onSearchChanged(guia: String) {
         _guia.value = guia
         _isSearchEnable.value = enableSearch(guia)
@@ -593,7 +595,7 @@ private val _isAlertDialogHighValue = MutableLiveData<Boolean>()
                     Log.d("mesage en validación", "$codeMessage")
                     if (codeValidate) {
 //                        val guideAtManifest = guideOtherManifest(guia)
-                        val guideOtherManifest = getGuideUseCase.invoke(guia)
+                        val guideOtherManifest = getGuideUseCase.invoke(guia,"Asignado")
                         val code400 = guideOtherManifest.component1().isNullOrEmpty()
                         Log.d("mesage en validación", "$code400")
                         if (code400) {
@@ -652,7 +654,7 @@ private val _isAlertDialogHighValue = MutableLiveData<Boolean>()
     fun guideOtherManifest(guide: String): Boolean {
         var guideOtherManifest: List<String?> = emptyList()
         viewModelScope.launch {
-            guideOtherManifest = getGuideUseCase.invoke(guide)
+            guideOtherManifest = getGuideUseCase.invoke(guide,"Asignado")
             codeMessage = guideOtherManifest.isEmpty()
         }
         Thread.sleep(3000)
@@ -721,11 +723,13 @@ private val _isAlertDialogHighValue = MutableLiveData<Boolean>()
     }
 
     fun create(navigationController: NavHostController) {
-        viewModelScope.launch {
-            getConsecutivoManifest()
-            Thread.sleep(1000)
+        if(createOne<=0){
+            createOne+=1
+            viewModelScope.launch {
+                getConsecutivoManifest()
+                Thread.sleep(1000)
+            }
         }
-        // backScreen(navigationController)
     }
 
     fun getConsecutivoManifest() {
@@ -749,7 +753,7 @@ private val _isAlertDialogHighValue = MutableLiveData<Boolean>()
     fun selectEmployye(employee: FieldDataEI): String? {
         val nameEmployee: String? = if (areaEmployye.value.equals("Operador Logistico")) {
             "${employee.nombre} ${employee.aPaterno} ${employee.aMaterno}"
-        } else {
+        } else{
             nameEmployye.value
         }
 
@@ -767,7 +771,7 @@ private val _isAlertDialogHighValue = MutableLiveData<Boolean>()
             var nameEmployee = selectEmployye(employee)
             val typeManifest = typePreManifest.value
             val ruta = generalMethodsGuide.toUpperLetter(ruta.value!!)
-            val statusPreM = if(nameEmployee.isNullOrEmpty()){
+            val statusPreM = if(nameEmployee.isNullOrEmpty() || nameEmployee == "-"){
                 "NO APLICADO"
             }else{
                "APLICADO"

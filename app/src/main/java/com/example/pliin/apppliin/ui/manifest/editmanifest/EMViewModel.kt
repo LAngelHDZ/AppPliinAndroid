@@ -252,6 +252,7 @@ class EMViewModel @Inject constructor(
     }
 
     var codeMessage: Boolean = false
+    var btnpushCrate: Int = 0
     val keyGuide: Int = 1
 
     fun onSearchChanged(guia:String) {
@@ -619,7 +620,7 @@ class EMViewModel @Inject constructor(
                     Log.d("mesage en validación", "$codeMessage")
                     if (codeValidate) {
 //                        val guideAtManifest = guideOtherManifest(guia)
-                        val guideOtherManifest = getGuideUseCase.invoke(guia)
+                        val guideOtherManifest = getGuideUseCase.invoke(guia,"Asignado")
                         val code400 = guideOtherManifest.component1().isNullOrEmpty()
                         Log.d("mesage en validación", "$code400")
                         if (code400) {
@@ -678,7 +679,7 @@ class EMViewModel @Inject constructor(
     fun guideOtherManifest(guide: String): Boolean {
         var guideOtherManifest: List<String?> = emptyList()
         viewModelScope.launch {
-            guideOtherManifest = getGuideUseCase.invoke(guide)
+            guideOtherManifest = getGuideUseCase.invoke(guide,"Asignado")
             codeMessage = guideOtherManifest.isEmpty()
         }
         Thread.sleep(3000)
@@ -743,11 +744,14 @@ class EMViewModel @Inject constructor(
     }
 
     fun create(navigationController: NavHostController) {
-        viewModelScope.launch {
-            updateManifest()
-            Thread.sleep(1000)
+        if (btnpushCrate<=0) {
+            Log.d("Boton presionado", "$btnpushCrate")
+            btnpushCrate =1
+            viewModelScope.launch {
+                updateManifest()
+                Thread.sleep(1000)
+            }
         }
-        // backScreen(navigationController)
     }
 
     fun getConsecutivoManifest() {

@@ -6,7 +6,7 @@ import javax.inject.Inject
 class QueryGuideValidateUseCase @Inject constructor(private val guideRepository: GuideRepository) {
 
     suspend operator fun invoke(guide: String): List<String?> {
-        val response = guideRepository.GuideQueryAarrastre(guide)
+        val response = guideRepository.GuideQueryAarrastre(guide,"","")
         val status = response.messages?.get(0)?.code
         return if (status.equals("0")) {
             val guide = response.response?.data?.get(0)?.fieldData?.idGuia

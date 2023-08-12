@@ -177,7 +177,8 @@ fun DataGuideScannerScreen(
                     listStatusIntentos,
                     isBtnregisterStatus,
                     isEnabledFTCommentRecibe,
-                    isBtnTakePhoto
+                    isBtnTakePhoto,
+                    data[1]
                 )
             }
         }
@@ -936,8 +937,9 @@ fun AlertDialogConfirmation(
     listStatusIntentos: List<String>,
     isBtnregisterStatus: Boolean,
     isEnabledFTCommentRecibe: Boolean,
-    isBtnTakePhoto: Boolean
-    ) {
+    isBtnTakePhoto: Boolean,
+    idPreM: String
+) {
     var expanded by remember { mutableStateOf(false) }
     var columnSize by remember { mutableStateOf(Size.Zero) }
 
@@ -979,7 +981,7 @@ fun AlertDialogConfirmation(
                 }
 
                 Spacer(modifier = Modifier.size(4.dp))
-                ButtonsConfirmation(dgsViewModel, idGuia, recordId, navigationController,isBtnregisterStatus)
+                ButtonsConfirmation(dgsViewModel, idGuia, recordId, navigationController,isBtnregisterStatus,idPreM)
             }
         }
     }
@@ -1296,13 +1298,14 @@ fun ButtonsConfirmation(
     idGuia: String,
     recordId: String,
     navigationController: NavHostController,
-    isBtnregisterStatus: Boolean
+    isBtnregisterStatus: Boolean,
+    idPreM:String
 ) {
     Row() {
         TextButton(onClick = { dgsViewModel.reset() }) {
             Text(text = "Cancelar")
         }
-        TextButton(onClick = { dgsViewModel.setDelivery(idGuia, recordId, navigationController) },
+        TextButton(onClick = { dgsViewModel.setDelivery(idGuia, recordId, navigationController,idPreM) },
         enabled = isBtnregisterStatus) {
             Text(text = "Continuar")
         }

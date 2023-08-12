@@ -52,7 +52,7 @@ class MFViewModel @Inject constructor(
         val day = addZeroDate(LocalDate.now().dayOfMonth)
         val dateDTO = "<=$month/$day/$year"
         viewModelScope.launch{
-            val result = getAllManifestUseCase(dateDTO)
+            val result = getAllManifestUseCase.invoke(dateDTO,)
             _listManifest.value = result as List<Data>?
         }
         _enableLoadManifest.value = false

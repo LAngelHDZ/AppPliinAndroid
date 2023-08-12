@@ -117,10 +117,11 @@ interface DataGuideClient {
 
 
     //Enpoint para actualizar el status de una guia
-    @PATCH("/fmi/data/v2/databases/PLIIN/layouts/manifiestoPaquetes/records/{recordId}/")
+    @PATCH("/fmi/data/v2/databases/PLIIN/layouts/{presentacion}/records/{recordId}/")
     suspend fun updateStatus(
         @Header("Authorization") bearer: String,
         @Path("recordId") recordId: String,
+        @Path("presentacion") presentation: String,
         @Body Guide: UpdatStatusDto
     ): Response<ResponseUpdateStatusModel>
 

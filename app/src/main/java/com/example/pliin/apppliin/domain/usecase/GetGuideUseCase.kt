@@ -17,12 +17,13 @@ class GetGuideUseCase @Inject constructor(
 
     @SuppressLint("SuspiciousIndentation")
     suspend operator fun invoke(
-        guide: String
+        guide: String,
+        observacion:String
     ): List<String?>{
         var guides: GetDataGuideRDItem
         do {
             Log.i("Guia escaneada", guide)
-            guides = repository(guide)
+            guides = repository(guide,observacion,"")
             message = guides.messages!![0]!!.message
             codeStatus = guides.messages!![0]!!.code
 
@@ -37,14 +38,14 @@ class GetGuideUseCase @Inject constructor(
         return if (codeStatus.equals("0") && message.equals("OK")) {
             GetData(guides)
         } else if (codeStatus.equals("500")) {
-            listOf("500", "", "", "", "", "", "", "", "", "", "", "","")
+            listOf("500", "", "", "", "", "", "", "", "", "", "", "","","","")
         } else {
-            listOf("", "", "", "", "", "", "", "", "", "", "", "","")
+            listOf("", "", "", "", "", "", "", "", "", "", "", "","","","")
         }
     }
 
-    suspend fun repository(guide: String): GetDataGuideRDItem {
-        return repository.getGuideQueryApi(guide)
+    suspend fun repository(guide: String,observation:String,IdPreM:String): GetDataGuideRDItem {
+        return repository.getGuideQueryApi(guide,observation,IdPreM)
     }
 
     private fun fiedDatanull(): FieldDataItem {
@@ -69,6 +70,7 @@ class GetGuideUseCase @Inject constructor(
             refillvacio(response.portalData.manifiestoPaquetes[0]!!.recordId),
             refillvacio(response.fieldData?.statusIntento),
             refillvacio(response.recordId),
+            refillvacio(response.fieldData?.observacion)
         )
     }
 

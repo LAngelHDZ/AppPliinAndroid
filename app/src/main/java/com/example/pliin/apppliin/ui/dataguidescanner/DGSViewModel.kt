@@ -316,7 +316,12 @@ class DGSViewModel @Inject() constructor(
         }
     }
 
-    fun setDelivery(guide: String, recordId: String, navigationController: NavHostController) {
+    fun setDelivery(
+        guide: String,
+        recordId: String,
+        navigationController: NavHostController,
+        idPreM: String
+    ) {
         var responseOK: Boolean
         _isDeliveryConfirmation.value = true
         
@@ -331,6 +336,7 @@ class DGSViewModel @Inject() constructor(
             if (status.value.equals("ENTREGADO")) {
                 responseOK = setDeliveryUseCase.invoke(
                     guide,
+                    idPreM,
                     recordId,
                     generalMethodsGuide.toUpperLetter(status.value!!),
                     textfieldvacio(nameRecibe.value),

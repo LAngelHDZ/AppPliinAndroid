@@ -21,13 +21,19 @@ class GetAllManifestUseCase @Inject constructor(
             ""
         }
 
+        val  statusPreM = if(employee.area.equals("Operador Logistico")){
+            "APLICADO"
+        }else{
+            "NO APLICADO"
+        }
+
         val  limit = if(employee.area.equals("Operador Logistico")){
             "5"
         }else{
             "50"
         }
 
-        val data: List<String> = listOf(date, nameEmployee, limit,"")
+        val data: List<String> = listOf(date, nameEmployee, limit,"",statusPreM)
         val response = manifestRepository.getManifest(data)
         Log.d("Manifest", "$response")
         return response.response?.data

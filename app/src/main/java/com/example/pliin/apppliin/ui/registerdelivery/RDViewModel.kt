@@ -63,7 +63,7 @@ class RDViewModel @Inject() constructor(
             viewModelScope.launch {
                 if (generalMethodsGuide.checkInternetConnection()) {
                     //  delay(1500)
-                    val result = getGuideUseCase.invoke(guia)
+                    val result = getGuideUseCase.invoke(guia,"Asignado")
 //                Log.i("Status intento", result[12].toString())
 //                Log.i("Status Guia", result[6].toString())
                     //  Log.i("System guide","$guia")
