@@ -5,6 +5,8 @@ import android.util.Log
 import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.lifecycle.*
 import androidx.navigation.NavHostController
+import com.example.pliin.apppliin.domain.usecase.GetGuideCodUseCase
+import com.example.pliin.apppliin.domain.usecase.RegisterGuideCodUseCase
 import com.example.pliin.apppliin.domain.usecase.RegisterGuideUseCase
 import com.example.pliin.apppliin.generals.GeneralMethodsGuide
 import com.example.pliin.navigation.AppScreen
@@ -22,17 +24,31 @@ import javax.inject.Inject
 @HiltViewModel
 class RGViewModel @Inject constructor(
     private val registerGuideUseCase: RegisterGuideUseCase,
-    private val generalMethodsGuide: GeneralMethodsGuide
+    private val generalMethodsGuide: GeneralMethodsGuide,
+    private val GetGuideCodUseCase: GetGuideCodUseCase,
+    private val registerGuideCodUseCase: RegisterGuideCodUseCase
 ) :
     ViewModel() {
     private val _isSesionDialog = MutableLiveData<Boolean>()
     var isSesionDialog: LiveData<Boolean> = _isSesionDialog
+
+    private val _isGuideExistCod = MutableLiveData<Boolean>()
+    var isGuideExistCod: LiveData<Boolean> = _isGuideExistCod
+
+    private val _isFormCod = MutableLiveData<Boolean>()
+    var isFormCod: LiveData<Boolean> = _isFormCod
 
     private val _progressCircularLoad = MutableLiveData<Float>()
     var progressCircularLoad: LiveData<Float> = _progressCircularLoad
 
     private val _countRegisterGuide = MutableLiveData<Int>()
     var countRegisterGuide: LiveData<Int> = _countRegisterGuide
+
+    private val _valueCod = MutableLiveData<String>()
+    var valueCod: LiveData<String> = _valueCod
+
+    private val _pagoCod = MutableLiveData<String>()
+    var pagoCod: LiveData<String> = _pagoCod
 
     private val _mapListGuide = MutableLiveData<Map<String, String>>()
     var mapListGuide: LiveData<Map<String, String>> = _mapListGuide
@@ -73,9 +89,41 @@ class RGViewModel @Inject constructor(
         minimumFractionDigits = 1
     }
 
+    fun setCodGuide() {
+        _isFormCod.value = false
+        _isGuideExistCod.value = false
+        viewModelScope.launch {
+            val pago = pagoCod.value
+            val guia = contentQR.value
+            val valueCod = valueCod.value?.toFloat()
+            if (pago.equals("SIN CONFIRMAR")){
+                setData(guia!!, pago)
+                val result = registerGuideCodUseCase.invoke(guia, valueCod!!, pago)
+            }else{
+                setData(guia!!, pago)
+            }
+        }
+    }
+
     fun onSearchChanged(guia: String) {
         _guia.value = guia
         _isSearchEnable.value = enableSearch(guia)
+    }
+
+    fun onExistsCod(option: String) {
+        if (option.equals("Si")) {
+            _isFormCod.value = true
+            _pagoCod.value = "SIN CONFIRMAR"
+        } else{
+
+            _isGuideExistCod.value = false
+            _pagoCod.value = "NO APLICA"
+            setCodGuide()
+        }
+    }
+
+    fun onChangeCod(cod: String) {
+        _valueCod.value = cod
     }
 
     fun enableSearch(guia: String) = guia.length > 10
@@ -101,17 +149,17 @@ class RGViewModel @Inject constructor(
         val loading: Float = 100 / totalguides!!.toFloat()
         Log.i("Load", "$loading")
         Log.i("Load", "$totalguides")
-        currentmap.let {
+        currentmap.let{
             viewModelScope.launch(Dispatchers.IO){
                 for ((key, value) in currentmap){
                     Log.i(key, value)
                     var progress = progressCircularLoad.value
                     Log.i("Agregado", "$progress")
-                    val deferred = async { registerGuideUseCase.invoke(value)}
+                    val deferred = async { registerGuideUseCase.invoke(value, "pago") }
                     deferred.await()
                     Thread.sleep(1000)
-                    launch(Dispatchers.Main){
-                        progres +=1
+                    launch(Dispatchers.Main) {
+                        progres += 1
                         _countRegisterGuide.value = progres
                         _progressCircularLoad.value = _progressCircularLoad.value?.plus(loading)
                         // _progressCircularLoad.value= loadingporcentguide.value?.div(100)
@@ -122,7 +170,7 @@ class RGViewModel @Inject constructor(
             }
         }
     }
-    
+
     fun loadingOk(progres: Int, totalguides: Int) {
 
         viewModelScope.launch(Dispatchers.Main) {
@@ -142,10 +190,10 @@ class RGViewModel @Inject constructor(
         _progressCircularLoad.value = formatted.toFloat()
     }
 
-    fun setData(guia: String) {
+    fun setData(guia: String, pago: String?) {
         viewModelScope.launch(Dispatchers.IO) {
             delay(1000)
-            val deferred = async { registerGuideUseCase.invoke(guia) }
+            val deferred = async { registerGuideUseCase.invoke(guia, pago) }
             Log.i("Agregado", "listo")
             deferred.await()
         }
@@ -154,34 +202,42 @@ class RGViewModel @Inject constructor(
     @SuppressLint("SuspiciousIndentation")
     fun getContentQR(guia: String, navigationController: NavHostController) {
         val validate = generalMethodsGuide.validateFormatGuia(guia)
-        if (validate) {
-            val currentmap = _mapListGuide.value?.toMutableMap() ?: mutableMapOf()
-            val guiarepeted = currentmap.get(guia)
-            if (guiarepeted.isNullOrEmpty()) {
-                var key = currentmap.size + keyGuide
-                currentmap[guia] = guia
-                _mapListGuide.value = currentmap
-                _conteQR.value = guia
-                _countGuides.value = _mapListGuide.value?.size
-                setData(guia)
-                _isLoadBtnEnable.value = enableLoadBtn(currentmap.size)
+        viewModelScope.launch {
+            if (validate) {
+                val currentmap = _mapListGuide.value?.toMutableMap() ?: mutableMapOf()
+                val guiarepeted = currentmap.get(guia)
+                if (guiarepeted.isNullOrEmpty()) {
+                    val existsCOd = GetGuideCodUseCase.invoke(guia)
+                    if (!existsCOd) {
+                        _isGuideExistCod.value = true
+                    }
+
+                    var key = currentmap.size + keyGuide
+                    currentmap[guia] = guia
+                    _mapListGuide.value = currentmap
+                    _conteQR.value = guia
+                    _countGuides.value = _mapListGuide.value?.size
+                    // setData(guia)
+
+                    _isLoadBtnEnable.value = enableLoadBtn(currentmap.size)
+                } else {
+                    _isSesionDialog.value = true
+                    Log.i("Ya ha agregado esta guia", guia)
+                    _messageGuideValidate.value = "Ya ha agregado esta guia: $guia"
+                }
+
+                Log.i("Formato de Guia Valido", guia)
+                // _messageGuideValidate.value ="Formato de guia $guia Valido"
+                //  _isSesionDialog.value = true
             } else {
                 _isSesionDialog.value = true
-                Log.i("Ya ha agregado esta guia", guia)
-                _messageGuideValidate.value = "Ya ha agregado esta guia: $guia"
+                Log.i("Formato de Guia Invalido", guia)
+                _messageGuideValidate.value = "El formato de la guia $guia no es valido"
             }
-
-            Log.i("Formato de Guia Valido", guia)
-            // _messageGuideValidate.value ="Formato de guia $guia Valido"
-            //  _isSesionDialog.value = true
-        } else {
-            _isSesionDialog.value = true
-            Log.i("Formato de Guia Invalido", guia)
-            _messageGuideValidate.value = "El formato de la guia $guia no es valido"
         }
     }
 
-    fun onRemoveguideList(guia: String, second: String) {
+    fun onRemoveguideList(guia: String, second: String){
         val currentmap = _mapListGuide.value?.toMutableMap() ?: mutableMapOf()
         currentmap.remove(guia)
         _mapListGuide.value = currentmap
@@ -189,7 +245,7 @@ class RGViewModel @Inject constructor(
         _isLoadBtnEnable.value = enableLoadBtn(currentmap.size)
     }
 
-    fun guideregistedOk() {
+    fun guideregistedOk(){
         _isDialogLoadEnable.value = false
         _isLoadingDataGuide.value = false
         _isGuideRegisted.value = false
@@ -197,11 +253,19 @@ class RGViewModel @Inject constructor(
         _countRegisterGuide.value = 0
         _mapListGuide.value = emptyMap()
         _conteQR.value = ""
+    }
 
+    fun reset() {
+        _pagoCod.value = ""
+        _valueCod.value = ""
+        _mapListGuide.value = emptyMap()
+        _conteQR.value = ""
+        _countGuides.value=0
+        _countRegisterGuide.value=0
+        _conteQR.value=""
     }
 
     fun initScanner(scanLauncher: ManagedActivityResultLauncher<ScanOptions, ScanIntentResult>) {
-
         val scanOptions = ScanOptions()
         scanOptions.setDesiredBarcodeFormats(ScanOptions.ALL_CODE_TYPES)
         scanOptions.setOrientationLocked(true)
@@ -215,9 +279,10 @@ class RGViewModel @Inject constructor(
         val previousScreenName = navigationController.previousBackStackEntry?.destination?.route
         if (previousScreenName.equals("MenuGuideScreen")) {
             navigationController.popBackStack()
+            reset()
         } else {
+            reset()
             navigationController.navigate(AppScreen.MenuGuideScreen.route)
         }
     }
-
 }

@@ -1,6 +1,5 @@
 package com.example.pliin.apppliin.domain.usecase
 
-import com.example.pliin.apppliin.data.repositories.DeliveryRepository
 import com.example.pliin.apppliin.data.repositories.GuideRepository
 import javax.inject.Inject
 
@@ -13,12 +12,13 @@ class RegisterGuideUseCase @Inject constructor(
 ) {
     private var recordId = ""
     suspend operator fun invoke(
-        guide: String
+        guide: String,
+        pago: String?
     ): Boolean {
         reloginUseCase()
         val code = validateGuide(guide)
         val messageInsertGuide = if (code.component1() == "401") {
-            insertGuideUseCase(guide)
+            insertGuideUseCase.invoke(guide, pago)
         } else {
             updateStatusUseCase("EN ALMACEN", code.component2(),"manifiestoPaquetes")
         }

@@ -13,9 +13,13 @@ import com.example.pliin.apppliin.data.model.responserudmodel.ResponseRUDModel
 import com.example.pliin.apppliin.data.model.responserudmodel.ResponseSetModel
 import com.example.pliin.apppliin.data.network.dto.addguidemanifest.AddGuideToManifest
 import com.example.pliin.apppliin.data.network.dto.addguidemanifest.FieldDataAGM
+import com.example.pliin.apppliin.data.network.dto.createguidecod.FieldDataCod
+import com.example.pliin.apppliin.data.network.dto.createguidecod.RegisterGuideCodDto
 import com.example.pliin.apppliin.data.network.dto.datospqt.DatosPqtDto
 import com.example.pliin.apppliin.data.network.dto.direccionguide.DireccionGuideDto
 import com.example.pliin.apppliin.data.network.dto.direccionguide.FieldDataDG
+import com.example.pliin.apppliin.data.network.dto.getGuideCod.GetGuideCodDto
+import com.example.pliin.apppliin.data.network.dto.getGuideCod.QueryGGC
 import com.example.pliin.apppliin.data.network.dto.insertguide.FieldData
 import com.example.pliin.apppliin.data.network.dto.insertguide.InsertGuideDto
 import com.example.pliin.apppliin.data.network.dto.queryguidescanner.QueryGuideDto
@@ -82,6 +86,98 @@ class GuideService @Inject constructor(
             }
         }
     }
+
+    @SuppressLint("SuspiciousIndentation")
+    suspend fun registerGuideCod(guide: String, valueCod: Float, pago: String?): ResponseRUDModel{
+//        val query = QueryGuideDto(listOf(query(guide, "Asignado")))
+        val query = RegisterGuideCodDto(FieldDataCod(guide,valueCod))
+        val bearer = daotoken.getToken().token
+        return withContext(Dispatchers.IO){
+            val response = guideapiclient.registerGuideCod("Bearer $bearer", query)
+            try{
+                val data = if (response.isSuccessful) {
+                    response.body()!!
+                } else {
+                    when (response.code()) {
+                        500 -> {
+                            ResponseRUDModel(
+                                response.body()?.response,
+                                listOf(Message("500", "No found Record"))
+                            )
+                        }
+
+                        401 -> {
+                            ResponseRUDModel(
+                                response.body()?.response,
+                                listOf(Message("500", "No found Record"))
+                            )
+                        }
+
+                        else -> {
+                            ResponseRUDModel(
+                                response.body()?.response,
+                                listOf(Message("500", "No found Record"))
+                            )
+                        }
+                    }
+                }
+                data
+            } catch (e: IOException) {
+                ResponseRUDModel(
+                    response.body()?.response,
+                    listOf(Message("500", "No found Record"))
+                )
+
+            }
+        }
+    }
+
+    @SuppressLint("SuspiciousIndentation")
+    suspend fun getGuideCod(guide: String): GetDataGuideDRModel{
+//        val query = QueryGuideDto(listOf(query(guide, "Asignado")))
+        val query = GetGuideCodDto(listOf(QueryGGC(guide)))
+
+        val bearer = daotoken.getToken().token
+        return withContext(Dispatchers.IO){
+            val response = guideapiclient.getGuideCod("Bearer $bearer", query)
+            try {
+                val data = if (response.isSuccessful) {
+                    response.body()!!
+                } else {
+                    when (response.code()) {
+                        500 -> {
+                            GetDataGuideDRModel(
+                                response.body()?.response,
+                                listOf(MessageModel("401", "No records match the request"))
+                            )
+                        }
+
+                        401 -> {
+                            GetDataGuideDRModel(
+                                response.body()?.response,
+                                listOf(MessageModel("952", "Invalid FileMaker Data API token (*)"))
+                            )
+                        }
+
+                        else -> {
+                            GetDataGuideDRModel(
+                                response.body()?.response,
+                                listOf(MessageModel("401", "Invalid FileMaker Data API token (*)"))
+                            )
+                        }
+                    }
+                }
+                data
+            } catch (e: IOException) {
+                GetDataGuideDRModel(
+                    response.body()?.response,
+                    listOf(MessageModel("500", "Error no network"))
+                )
+
+            }
+        }
+    }
+
 
     suspend fun guideValidateA(guide: String): GetDataGuideDRModel {
         // val query = QueryGuidePliinDto(listOf(Query(guide)))
@@ -264,8 +360,8 @@ class GuideService @Inject constructor(
         }
     }
 
-    suspend fun insertyGuide(guide: String): ResponseRUDModel {
-        val query = InsertGuideDto(FieldData(guide))
+    suspend fun insertyGuide(guide: String, pago: String?): ResponseRUDModel {
+        val query = InsertGuideDto(FieldData(guide,pago))
         val bearer = daotoken.getToken()?.token
         return withContext(Dispatchers.IO) {
             try {
