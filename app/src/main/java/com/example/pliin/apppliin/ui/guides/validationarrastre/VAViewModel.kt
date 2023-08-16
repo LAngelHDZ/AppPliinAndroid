@@ -14,7 +14,6 @@ import com.journeyapps.barcodescanner.ScanOptions
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.text.NumberFormat
 import java.util.*
@@ -111,15 +110,12 @@ class VAViewModel @Inject constructor(
         Log.i("Load", "$totalguides")
 
         currentmap.let {
-
             viewModelScope.launch(Dispatchers.IO) {
-
                 for ((key, value) in currentmap) {
                     Log.i(key, value)
                     var progress = progressCircularLoad.value
                     Log.i("Agregado", "$progress")
-                    val deferred = async { registerGuideUseCase.invoke(value) }
-
+                    val deferred = async { registerGuideUseCase.invoke(value, "pago") }
 
                     Log.i("Agregado", "listo")
                     deferred.await()
@@ -140,7 +136,6 @@ class VAViewModel @Inject constructor(
     fun loadingOk(progres: Int, totalguides: Int) {
         Log.i("Estoy en el metodo que verifica las guias registradas", "$progres de $totalguides")
         if (progres >= totalguides) {
-
             _isGuideRegisted.value = true
         }
     }
@@ -152,16 +147,13 @@ class VAViewModel @Inject constructor(
 
     fun setData(guia: String) {
         viewModelScope.launch(Dispatchers.IO) {
-
             val response = queryGuideValidateUseCase.invoke(guia)
             Log.i("recordID", "${response.component2()}")
-
-            launch(Dispatchers.Main) {
-                if (response[0].equals("")) {
+            launch(Dispatchers.Main){
+                if (response[0].equals("")){
                     Log.i("guia no existe", "is false")
                     guideNoEmpty = false
-                } else {
-
+                } else{
                     _recordId.value = response.component2()
                     guideNoEmpty = true
                     Log.i("guia existe", "is true")
@@ -171,7 +163,7 @@ class VAViewModel @Inject constructor(
     }
 
     @SuppressLint("SuspiciousIndentation")
-    fun getContentQR(guia: String, navigationController: NavHostController) {
+    fun getContentQR(guia: String, navigationController: NavHostController){
         val validate = generalMethodsGuide.validateFormatGuia(guia)
 
         if (validate) {
@@ -259,5 +251,4 @@ class VAViewModel @Inject constructor(
             navigationController.navigate(AppScreen.MenuGuideScreen.route)
         }
     }
-
 }

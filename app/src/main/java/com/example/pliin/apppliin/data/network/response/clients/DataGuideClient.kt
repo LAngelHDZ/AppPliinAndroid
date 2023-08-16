@@ -7,8 +7,10 @@ import com.example.pliin.apppliin.data.model.responseregisterdelivery.ResponseRe
 import com.example.pliin.apppliin.data.model.responserudmodel.ResponseRUDModel
 import com.example.pliin.apppliin.data.model.responseupdatestatus.ResponseUpdateStatusModel
 import com.example.pliin.apppliin.data.network.dto.addguidemanifest.AddGuideToManifest
+import com.example.pliin.apppliin.data.network.dto.createguidecod.RegisterGuideCodDto
 import com.example.pliin.apppliin.data.network.dto.datospqt.DatosPqtDto
 import com.example.pliin.apppliin.data.network.dto.direccionguide.DireccionGuideDto
+import com.example.pliin.apppliin.data.network.dto.getGuideCod.GetGuideCodDto
 import com.example.pliin.apppliin.data.network.dto.queryguidescanner.createstatus.CreateStatusGuideDto
 import com.example.pliin.apppliin.data.network.dto.insertguide.InsertGuideDto
 import com.example.pliin.apppliin.data.network.dto.intentoentrega.TryingDeliveryDto
@@ -36,6 +38,19 @@ interface DataGuideClient {
         @Header("Authorization") bearer: String,
         @Body query: QueryGuideDto,
     ): Response<GetDataGuideDRModel>
+
+    //EndPoint para consulta una guia en ula tabla cods
+    @POST("/fmi/data/v2/databases/PLIIN/layouts/CodAPI/_find/")
+    suspend fun getGuideCod(
+        @Header("Authorization") bearer: String,
+        @Body query: GetGuideCodDto,
+    ): Response<GetDataGuideDRModel>
+
+    @POST("/fmi/data/v2/databases/PLIIN/layouts/CodAPI/records/")
+    suspend fun registerGuideCod(
+        @Header("Authorization") bearer: String,
+        @Body query: RegisterGuideCodDto,
+    ): Response<ResponseRUDModel>
 
     //EndPoint para consulta una guia en un manifiesto de arrastre
     @POST("/fmi/data/v2/databases/PLIIN/layouts/APITestArratre/_find/")

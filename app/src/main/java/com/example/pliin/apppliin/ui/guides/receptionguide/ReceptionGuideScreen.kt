@@ -25,6 +25,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 import androidx.navigation.NavHostController
 import com.example.pliin.R
 import com.journeyapps.barcodescanner.ScanContract
@@ -45,11 +46,14 @@ fun ReceptionGuideScreen(
     val progressCircular: Float by rgViewModel.progressCircularLoad.observeAsState(0f)
     val countGuide: Int by rgViewModel.countGuides.observeAsState(0)
     val isSesionDialog: Boolean by rgViewModel.isSesionDialog.observeAsState(false)
+    val isGuideExistCod: Boolean by rgViewModel.isGuideExistCod.observeAsState(false)
+    val isFormCod: Boolean by rgViewModel.isFormCod.observeAsState(false)
     val isDialogLoadGuides: Boolean by rgViewModel.isDialogLoadEnable.observeAsState(false)
     val isLoadingDataGuide: Boolean by rgViewModel.isLoadingDataGuide.observeAsState(false)
     val isGuideRegisted: Boolean by rgViewModel.isGuideRegisted.observeAsState(false)
     val qrcontent: String by rgViewModel.contentQR.observeAsState("")
     val guia: String by rgViewModel.guia.observeAsState("")
+    val valueCod: String by rgViewModel.valueCod.observeAsState("")
     val messageGuideValidate: String by rgViewModel.messageGuideValidate.observeAsState("")
     val isSearchEnable: Boolean by rgViewModel.isSearchEnable.observeAsState(false)
     val isLoadBtnEnable: Boolean by rgViewModel.isisLoadBtnEnable.observeAsState(false)
@@ -74,7 +78,7 @@ fun ReceptionGuideScreen(
                 rgViewModel,
                 countGuide,
             )
-        } else {
+        } else{
             Header(
                 Modifier
                     .align(Alignment.TopCenter)
@@ -117,8 +121,70 @@ fun ReceptionGuideScreen(
                 rgViewModel,
                 messageGuideValidate, guia, navigationController
             )
+
+            AlertDialogExistCod(isGuideExistCod,rgViewModel)
+            AlertFormCod(isFormCod,rgViewModel,valueCod)
             //textqr(rdViewModel,Modifier.align(Alignment.BottomCenter),qrcontent)
         }
+    }
+}
+
+@Composable
+fun AlertFormCod(isFormCod: Boolean, rgViewModel: RGViewModel, valueCod: String) {
+    if (isFormCod){
+        Dialog(onDismissRequest = {}){
+            Column(horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier.height(200.dp).fillMaxWidth().background(Color.White)
+                    .padding(24.dp)
+                ) {
+                Text(text = "Valor del COD")
+                Spacer(modifier = Modifier.size(2.dp))
+                FormCod(valueCod){
+                    rgViewModel.onChangeCod(it)
+                }
+                Spacer(modifier = Modifier.size(6.dp))
+                TextButton(onClick = { rgViewModel.setCodGuide() }) {
+                    Text(text = "Continuar")
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun FormCod(valueCod:String,onChangedValueCod: (String) -> Unit){
+    OutlinedTextField(
+        value = valueCod,
+        onValueChange = { onChangedValueCod(it) },
+        shape = RoundedCornerShape(10),
+        colors = TextFieldDefaults.outlinedTextFieldColors(
+            focusedBorderColor = Color(96, 127, 243),
+            unfocusedBorderColor = Color(76, 81, 198),
+            backgroundColor = Color.White
+        ),
+        maxLines = 1,
+        singleLine = true,
+    )
+}
+
+@Composable
+fun AlertDialogExistCod(isGuideExistCod: Boolean, rgViewModel: RGViewModel) {
+    if (isGuideExistCod) {
+        AlertDialog(onDismissRequest = { },
+            title = { Text(text = "Advertencia") },
+            text = { Text(text = "¿EL Paquete tiene COD?") },
+            confirmButton = {
+                TextButton(onClick = { rgViewModel.onExistsCod("Si")}) {
+                    Text(text = "Si")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = {rgViewModel.onExistsCod("No") }) {
+                    Text(text = "No")
+                }
+
+            }
+        )
     }
 }
 
@@ -191,12 +257,12 @@ fun Header(
     navigationController: NavHostController,
     rdViewModel: RGViewModel,
     functionScreen: String
-) {
+){
     Box(
         modifier = modifier
             .fillMaxWidth()
             .padding(horizontal = 8.dp)
-    ) {
+    ){
         Row(modifier = modifier, verticalAlignment = Alignment.CenterVertically) {
             HeadButton(
                 modifier = modifier
@@ -219,7 +285,7 @@ fun HeadText(modifier: Modifier, functionScreen: String) {
     Text(
         modifier = modifier.padding(vertical = 16.dp),
         text = functionScreen,
-        fontSize = 30.sp,
+        fontSize = 18.sp,
         fontWeight = FontWeight.SemiBold,
         color = Color.White
     )
@@ -287,7 +353,7 @@ fun CardHead(modifier: Modifier) {
             Text(
                 text = "Lista de guias",
                 fontWeight = FontWeight.Bold,
-                fontSize = 24.sp
+                fontSize = 16.sp
             )
         }
         Divider(modifier = modifier.fillMaxWidth(), color = Color(0xFF4425a7))
@@ -507,14 +573,13 @@ fun GroupButton(
     scanLauncher: ManagedActivityResultLauncher<ScanOptions, ScanIntentResult>,
     isLoadBtnEnable: Boolean
 ) {
-
     Column(modifier = modifier.padding(top = 10.dp)) {
         val StyleBox = (Modifier
             // .weight(1f)
             .height(70.dp))
         ButtonScanner(StyleBox, rdViewModel, scanLauncher)
         Spacer(modifier = Modifier.size(8.dp))
-        ButtonLoadServer(StyleBox, isLoadBtnEnable, guia, rdViewModel, navigationController)
+//        ButtonLoadServer(StyleBox, isLoadBtnEnable, guia, rdViewModel, navigationController)
 
     }
 }
@@ -527,7 +592,6 @@ fun ButtonAddGuide(
     rdViewModel: RGViewModel,
     navigationController: NavHostController
 ) {
-
     Button(
         modifier = modifier,
         onClick = { rdViewModel.getContentQR(guia, navigationController) },

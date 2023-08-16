@@ -22,6 +22,22 @@ class GuideRepository @Inject constructor(private val apiguide: GuideService) {
     }
 
     //Opbtiene las guias de la API
+    suspend fun getGuideCod(guide: String): GetDataGuideRDItem {
+        val response = apiguide.getGuideCod(guide)
+        Log.i("response", "$response")
+        // tokenDao.insertToken(response.toDatabase())
+        return response.toDomain()
+    }
+
+    //Opbtiene las guias de la API
+    suspend fun registerGuideCod(guide: String, valueCod: Float, pago: String?): ResponseRUDItem {
+        val response = apiguide.registerGuideCod(guide,valueCod,pago)
+        Log.i("response", "$response")
+        // tokenDao.insertToken(response.toDatabase())
+        return response.toDomain()
+    }
+
+    //Opbtiene las guias de la API
     suspend fun validateGuideApi(guide: String): QueryGuidePliinItem {
         val response = apiguide.queryGuide(guide)
         Log.i("response", "$response")
@@ -62,8 +78,8 @@ class GuideRepository @Inject constructor(private val apiguide: GuideService) {
     }
 
     //Opbtiene las guias de la API
-    suspend fun InsertGuidetoApi(guide: String): ResponseRUDItem {
-        val response = apiguide.insertyGuide(guide)
+    suspend fun InsertGuidetoApi(guide: String, pago: String?): ResponseRUDItem {
+        val response = apiguide.insertyGuide(guide,pago)
         Log.i("response", "$response")
         // tokenDao.insertToken(response.toDatabase())
         return response.toDomain()
