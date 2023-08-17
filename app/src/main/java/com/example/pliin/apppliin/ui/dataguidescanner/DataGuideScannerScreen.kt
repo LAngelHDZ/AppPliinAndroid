@@ -14,6 +14,7 @@ import androidx.compose.material.icons.rounded.Camera
 import androidx.compose.material.icons.rounded.Cancel
 import androidx.compose.material.icons.rounded.LocalShipping
 import androidx.compose.material.icons.rounded.PhotoCamera
+import androidx.compose.material.icons.rounded.ReceiptLong
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
@@ -45,7 +46,6 @@ import java.util.*
 @Preview(showSystemUi = true)
 @Composable
 fun preview() {
-
 }
 
 fun obtenerHoraActual(): String {
@@ -103,6 +103,8 @@ fun DataGuideScannerScreen(
     val isAlertDialogConfirmation: Boolean by dgsViewModel.isAlertDialogConfirmation.observeAsState(
         false
     )
+    val onTypePago: Boolean by dgsViewModel.onTypePago.observeAsState(false)
+    val typePago: String by dgsViewModel.typePago.observeAsState(" ")
     val listStatusIntentos: List<String> by dgsViewModel.listStatusIntentos.observeAsState(listOf())
     val isDeliveryConfirmation: Boolean by dgsViewModel.isDeliveryConfirmation.observeAsState(false)
 
@@ -120,25 +122,7 @@ fun DataGuideScannerScreen(
 //    val  PERMISSION_REQUEST_CODE:Int = 200
     Box(modifier = Modifier.fillMaxSize()) {
         if (isShowCameraX) {
-//            val contexta = getApplication(Conte)
             CameraXview(dgsViewModel, Modifier,isBtnTakePhoto)
-
-//           dgsViewModel.requestExternalStoragePermission(context)
-         /*   val permisoHdd = ContextCompat.checkSelfPermission(contexta,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE)
-
-            if(permisoHdd == PackageManager.PERMISSION_GRANTED){
-                CameraXview(dgsViewModel, Modifier)
-                Toast.makeText(contexta,"Permiso concedido", Toast.LENGTH_SHORT).show()
-            }else{
-                requestPermissions(
-                    MainActivity(), arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
-                    PERMISSION_REQUEST_CODE
-                )
-            }*/
-
-
-
         } else {
             if (isDeliveryConfirmation) {
                 ScreenConfirmation(Modifier.align(Alignment.Center))
@@ -168,7 +152,7 @@ fun DataGuideScannerScreen(
                     data[0],
                     data[11],
                     data[14],
-                    text,
+                    data[5],
                     statu,
                     nameparents,
                     selectedOption,
@@ -178,7 +162,9 @@ fun DataGuideScannerScreen(
                     isBtnregisterStatus,
                     isEnabledFTCommentRecibe,
                     isBtnTakePhoto,
-                    data[1]
+                    data[1],
+                    onTypePago,
+                    typePago
                 )
             }
         }
@@ -902,7 +888,7 @@ fun AlertDialogexitScreen(
                         exitConfirmation = true,
                         navigationController
                     )
-                }) {
+                }){
                     Text(text = "Si")
                 }
             },
@@ -912,7 +898,7 @@ fun AlertDialogexitScreen(
                         exitConfirmation = false,
                         navigationController
                     )
-                }) {
+                }){
                     Text(text = "No")
                 }
             }
@@ -928,7 +914,7 @@ fun AlertDialogConfirmation(
     idGuia: String,
     recordId: String,
     statusIntento: String,
-    text: String,
+    cod: String,
     status: String,
     nameparents: String,
     selectedOption: String,
@@ -938,22 +924,23 @@ fun AlertDialogConfirmation(
     isBtnregisterStatus: Boolean,
     isEnabledFTCommentRecibe: Boolean,
     isBtnTakePhoto: Boolean,
-    idPreM: String
-) {
+    idPreM: String,
+    onTypePago: Boolean,
+    typePago: String
+){
     var expanded by remember { mutableStateOf(false) }
     var columnSize by remember { mutableStateOf(Size.Zero) }
 
-    if (show) {
-        Dialog(onDismissRequest = { dgsViewModel.reset() }) {
+    if (show){
+        Dialog(onDismissRequest = { dgsViewModel.reset() }){
             Column(
                 Modifier
                     .background(Color.White)
                     .padding(24.dp)
                     .fillMaxWidth()
                     .height(470.dp)
-            ) {
-
-                if (status.equals("ENTREGADO")) {
+            ){
+                if(status.equals("ENTREGADO")){
                     ConfirmarEntregaDialog(
                         dgsViewModel,
                         selectedOption,
@@ -962,10 +949,12 @@ fun AlertDialogConfirmation(
                         anotherParents,
                         isBtnTakePhoto,
                         isEnabledFTCommentRecibe,
-                        "ENTREGA"
+                        "ENTREGA",
+                        cod,
+                        typePago,
+                        onTypePago
                     )
-
-                } else {
+                }else{
                     ConfirmarDevueltoDialog(
                         dgsViewModel,
                         selectedOption,
@@ -975,13 +964,9 @@ fun AlertDialogConfirmation(
                         isEnabledFTCommentRecibe,
                         "FALLIDO"
                     )
-
-
-
                 }
-
                 Spacer(modifier = Modifier.size(4.dp))
-                ButtonsConfirmation(dgsViewModel, idGuia, recordId, navigationController,isBtnregisterStatus,idPreM)
+                ButtonsConfirmation(dgsViewModel, idGuia, recordId, navigationController,isBtnregisterStatus,idPreM,cod)
             }
         }
     }
@@ -995,9 +980,12 @@ fun ConfirmarEntregaDialog(
     isAnotherParent: Boolean,
     anotherParents: String,
     isBtnTakePhoto: Boolean,
-    isEnabledFTCommentRecibe:Boolean,
-    typeStatus: String
-) {
+    isEnabledFTCommentRecibe: Boolean,
+    typeStatus: String,
+    cod: String,
+    typePago: String,
+    onTypePago: Boolean
+){
     val options = listOf(
         "Titular",
         "Madre",
@@ -1010,8 +998,7 @@ fun ConfirmarEntregaDialog(
         "Primo(a)",
         "Otro"
     )
-
-    val items = remember {
+    val items = remember{
         mutableStateListOf(
             "Madre",
             "Padre",
@@ -1034,11 +1021,30 @@ fun ConfirmarEntregaDialog(
         color = Color(0xFF4425a7),
         text = "ENTREGA"
     )
-    Spacer(modifier = Modifier.size(16.dp))
+    Spacer(modifier = Modifier.size(6.dp))
+    if (cod.equals("SI")){
+        Row(verticalAlignment =Alignment.CenterVertically){
+            Text(text = "Transferencia")
+            RadioButton(
+                selected = onTypePago,
+                onClick = {dgsViewModel.onRadioSelectTransfer(!onTypePago)}
+            )
+            Spacer(modifier = Modifier.size(6.dp))
+            IconButton(onClick = { /*TODO*/ }){
+                Icon(
+                    imageVector = Icons.Rounded.ReceiptLong,
+                    contentDescription = null,
+                    modifier = Modifier.size(45.dp),
+                    tint = Color(0xFF4425a7)
+                )
+            }
+        }
+        Spacer(modifier = Modifier.size(6.dp))
+    }
     Text(text = "Parentesco")
     DromMenu(selectedOption, dgsViewModel, options) { dgsViewModel.onValueChanged(selected = it) }
     Spacer(modifier = Modifier.size(14.dp))
-    if (isAnotherParent) {
+    if (isAnotherParent){
         Text(text = "Escriba el parentesco")
         AnotherParent(anotherParents) { dgsViewModel.onValueChangedParents(otherparent = it) }
     }
@@ -1046,7 +1052,7 @@ fun ConfirmarEntregaDialog(
     RecibeOrComment(parents,isEnabledFTCommentRecibe) { dgsViewModel.onValueChangedRecibe(
         nameparent = it,
         typeStatus = typeStatus
-    ) }
+    )}
     Spacer(modifier = Modifier.size(14.dp))
     btnSHowCameraX(dgsViewModel,isBtnTakePhoto)
 }
@@ -1068,7 +1074,7 @@ fun btnSHowCameraX(dgsViewModel: DGSViewModel, isBtnTakePhoto: Boolean) {
                 modifier = Modifier.size(45.dp),
                 tint = Color.White
             )
-            Text(text = "Take Photo")
+            Text(text = "Firma")
         }
     }
 }
@@ -1127,7 +1133,39 @@ fun CameraXview(dgsViewModel: DGSViewModel, modifier: Modifier, isBtnTakePhoto: 
 
 @Composable
 fun AnotherParent(anotherParents: String, onTextChanged: (String) -> Unit) {
-    OutlinedTextField(
+
+    BasicTextField(
+        value = anotherParents,
+        onValueChange = {
+            onTextChanged(it)
+        },
+        textStyle = TextStyle(
+            fontSize = 14.sp,
+            fontWeight = FontWeight.Normal,
+            color = Color.DarkGray
+        ),
+        decorationBox = { innerTextField ->
+            Row(
+                modifier = Modifier
+                    // .padding(horizontal = 64.dp) // margin left and right
+                    .fillMaxWidth()
+                    .background(color = Color.White, shape = RoundedCornerShape(size = 6.dp))
+                    .border(
+                        width = 1.dp,
+                        color = Color(0xFF4425a7),
+                        shape = RoundedCornerShape(size = 6.dp)
+                    )
+                    .padding(horizontal = 2.dp, vertical = 8.dp), // inner padding,
+                verticalAlignment = Alignment.CenterVertically,
+//                horizontalArrangement = Arrangement.Center
+            ) {
+                Spacer(modifier = Modifier.width(width = 8.dp))
+                innerTextField()
+            }
+        }
+    )
+
+  /*  OutlinedTextField(
         value = anotherParents,
         onValueChange = { onTextChanged(it) },
         shape = RoundedCornerShape(10),
@@ -1138,13 +1176,44 @@ fun AnotherParent(anotherParents: String, onTextChanged: (String) -> Unit) {
         ),
         maxLines = 1,
         singleLine = true,
-    )
+    )*/
     Spacer(modifier = Modifier.size(14.dp))
 }
 
 @Composable
 fun RecibeOrComment(parents: String,isEnabledFTCommentRecibe:Boolean, onTextChanged: (String) -> Unit) {
-    OutlinedTextField(
+
+    BasicTextField(
+        value = parents,
+        enabled = isEnabledFTCommentRecibe,
+        onValueChange = { onTextChanged(it) },
+        textStyle = TextStyle(
+            fontSize = 14.sp,
+            fontWeight = FontWeight.Normal,
+            color = Color.DarkGray
+        ),
+        decorationBox = { innerTextField ->
+            Row(
+                modifier = Modifier
+                    // .padding(horizontal = 64.dp) // margin left and right
+                    .fillMaxWidth()
+                    .background(color = Color.White, shape = RoundedCornerShape(size = 6.dp))
+                    .border(
+                        width = 1.dp,
+                        color = Color(0xFF4425a7),
+                        shape = RoundedCornerShape(size = 6.dp)
+                    )
+                    .padding(horizontal = 2.dp, vertical = 8.dp), // inner padding,
+                verticalAlignment = Alignment.CenterVertically,
+//                horizontalArrangement = Arrangement.Center
+            ) {
+                Spacer(modifier = Modifier.width(width = 8.dp))
+                innerTextField()
+            }
+        }
+    )
+
+   /* OutlinedTextField(
         value = parents,
         enabled = isEnabledFTCommentRecibe,
         onValueChange = { onTextChanged(it) },
@@ -1156,7 +1225,7 @@ fun RecibeOrComment(parents: String,isEnabledFTCommentRecibe:Boolean, onTextChan
         ),
         maxLines = 1,
         singleLine = true,
-    )
+    )*/
 }
 
 @Composable
@@ -1168,6 +1237,45 @@ fun DromMenu(
 ) {
     var expand by remember { mutableStateOf(false) }
     var textFiledSize by remember { mutableStateOf(Size.Zero) }
+
+    BasicTextField(
+        modifier = Modifier
+            .clickable { expand = true }
+            .fillMaxWidth()
+            .onGloballyPositioned { coordinates ->
+                textFiledSize = coordinates.size.toSize()
+            },
+        value = selectedOption,
+        enabled = false,
+        readOnly = true,
+        onValueChange = {
+        },
+        textStyle = TextStyle(
+            fontSize = 14.sp,
+            fontWeight = FontWeight.Normal,
+            color = Color.DarkGray
+        ),
+        decorationBox = { innerTextField ->
+            Row(
+                modifier = Modifier
+                    // .padding(horizontal = 64.dp) // margin left and right
+                    .fillMaxWidth()
+                    .background(color = Color.White, shape = RoundedCornerShape(size = 6.dp))
+                    .border(
+                        width = 1.dp,
+                        color = Color(0xFF4425a7),
+                        shape = RoundedCornerShape(size = 6.dp)
+                    )
+                    .padding(vertical = 8.dp, horizontal = 2.dp), // inner padding,
+                verticalAlignment = Alignment.CenterVertically,
+//                    horizontalArrangement = Arrangement.Center
+            ) {
+                Spacer(modifier = Modifier.width(width = 8.dp))
+                innerTextField()
+            }
+        }
+    )
+/*
     OutlinedTextField(
         value = selectedOption,
         onValueChange = { },
@@ -1187,7 +1295,7 @@ fun DromMenu(
         ),
         maxLines = 1,
         singleLine = true,
-    )
+    )*/
     Box() {
         DropdownMenu(
             expanded = expand,
@@ -1196,25 +1304,6 @@ fun DromMenu(
                 .height(200.dp)
                 .width(with(LocalDensity.current) { textFiledSize.width.toDp() })
         ) {
-            /*  LazyColumn(
-                  modifier = Modifier.fillMaxWidth(),
-                  contentPadding = PaddingValues(8.dp)
-              ) {
-                  items(items) { item ->
-                      Text(
-                          text = item,
-                          modifier = Modifier
-                              .fillMaxWidth()
-                              .clickable {
-                                  // Acción al hacer clic en el elemento
-                                  println("Elemento clicado: $item")
-                                  onTextChanged(item)
-                                  expand = false
-                              }
-                      )
-                  }
-              }*/
-
             Log.i("lista dedevoluciones", listStatusIntentos.toString())
             listStatusIntentos.forEach { option ->
                 DropdownMenuItem(
@@ -1299,13 +1388,14 @@ fun ButtonsConfirmation(
     recordId: String,
     navigationController: NavHostController,
     isBtnregisterStatus: Boolean,
-    idPreM:String
+    idPreM: String,
+    cod: String
 ) {
     Row() {
         TextButton(onClick = { dgsViewModel.reset() }) {
             Text(text = "Cancelar")
         }
-        TextButton(onClick = { dgsViewModel.setDelivery(idGuia, recordId, navigationController,idPreM) },
+        TextButton(onClick = { dgsViewModel.setDelivery(idGuia, recordId, navigationController,idPreM,cod) },
         enabled = isBtnregisterStatus) {
             Text(text = "Continuar")
         }

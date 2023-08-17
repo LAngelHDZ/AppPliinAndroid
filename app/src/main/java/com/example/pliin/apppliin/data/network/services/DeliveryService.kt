@@ -10,10 +10,7 @@ import com.example.pliin.apppliin.data.network.response.clients.DataGuideClient
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.MediaType.Companion.toMediaType
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
-import okhttp3.OkHttpClient
-import okhttp3.Request
 import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.asRequestBody
 import java.io.File
@@ -28,10 +25,12 @@ class DeliveryService @Inject constructor(
     suspend fun setDelivery(
         guide: String,
         recibe: String?,
-        parent: String?
+        parent: String?,
+        typePago: String?,
+        pago: String
     ): ResponseRegisterDeliveryModel {
         val bearer = daotoken.getToken()?.token
-        val query = RegisterDeliveryDto(FieldData(guide, parent, recibe))
+        val query = RegisterDeliveryDto(FieldData(guide, parent, recibe,pago,typePago))
 
         return withContext(Dispatchers.IO) {
             try {

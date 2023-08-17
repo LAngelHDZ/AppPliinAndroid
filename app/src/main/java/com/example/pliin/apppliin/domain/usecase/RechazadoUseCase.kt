@@ -30,7 +30,7 @@ class RechazadoUseCase @Inject constructor(
         if (user.equals("opabril")) {
 
             val responseDelivery =
-                deliveryR.setDelivery(guide!!, "No recibido", parentOrFailDelivery)
+                deliveryR.setDelivery(guide!!, "No recibido", parentOrFailDelivery, "pago", "pago")
             messageDelivery = responseDelivery.messages!![0]!!.code!!
         } else {
             messageDelivery = "0"

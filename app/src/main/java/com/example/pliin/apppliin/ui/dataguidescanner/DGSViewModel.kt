@@ -80,6 +80,12 @@ class DGSViewModel @Inject() constructor(
     private val _status = MutableLiveData<String>()
     var status: LiveData<String> = _status
 
+    private val _typePago = MutableLiveData<String>()
+    var typePago: LiveData<String> = _typePago
+
+    private val _onTypePago = MutableLiveData<Boolean>()
+    var onTypePago: LiveData<Boolean> = _onTypePago
+
     private val _listStatusIntentos = MutableLiveData<List<String>>()
     var listStatusIntentos: LiveData<List<String>> = _listStatusIntentos
 
@@ -125,6 +131,15 @@ class DGSViewModel @Inject() constructor(
         _isShowCameraX.value = true
     }
 
+    fun onRadioSelectTransfer(option:Boolean){
+        if(option){
+            _typePago.value=  "TRANSFERENCIA"
+            _onTypePago.value=true
+        }else {
+            _onTypePago.value=false
+            _typePago.value=   "EFECTIVO"
+        }
+    }
 
     fun onAlertDialogexit(exitConfirmation: Boolean, navigationController: NavHostController) {
         _isAlertDialogexit.value = false
@@ -320,7 +335,8 @@ class DGSViewModel @Inject() constructor(
         guide: String,
         recordId: String,
         navigationController: NavHostController,
-        idPreM: String
+        idPreM: String,
+        cod: String
     ) {
         var responseOK: Boolean
         _isDeliveryConfirmation.value = true
@@ -333,6 +349,23 @@ class DGSViewModel @Inject() constructor(
             // Log.i("recibe",nameRecibe.value!!)
             //  Log.i("seleted", selectedOption.value!!)
 
+            var typePago=""
+            var pago=""
+
+            if (cod.equals("SI")){
+                typePago= _typePago.value!!
+                pago = if (typePago.equals("EFECTIVO")){
+                    "NO CONFIRMADO"
+                }else{
+                    "CONFIRMADO"
+                }
+            }else{
+                typePago= "NO APLICA"
+                pago="NO APLICA"
+            }
+
+
+
             if (status.value.equals("ENTREGADO")) {
                 responseOK = setDeliveryUseCase.invoke(
                     guide,
@@ -341,7 +374,10 @@ class DGSViewModel @Inject() constructor(
                     generalMethodsGuide.toUpperLetter(status.value!!),
                     textfieldvacio(nameRecibe.value),
                     textfieldvacio(parentOrFailDelivery.value),
-                    directoryPhoto.value!!
+                    directoryPhoto.value!!,
+                    pago,
+                    typePago
+
                 )
 
             }
