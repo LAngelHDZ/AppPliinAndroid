@@ -20,8 +20,8 @@ class SetDeliveryUseCase @Inject constructor(
         recibe: String?,
         parentOrFailDelivery: String?,
         url: String,
-        typePago: String?,
-        pago: String
+        pago: String,
+        typePago: String
     ): Boolean {
         Log.i("status intento entrega", parentOrFailDelivery!!)
         Log.i("quien recibe", recibe!!)
