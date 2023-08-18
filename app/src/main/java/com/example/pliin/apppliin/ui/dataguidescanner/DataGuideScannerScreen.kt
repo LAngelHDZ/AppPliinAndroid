@@ -1030,14 +1030,14 @@ fun ConfirmarEntregaDialog(
                 onClick = {dgsViewModel.onRadioSelectTransfer(!onTypePago)}
             )
             Spacer(modifier = Modifier.size(6.dp))
-            IconButton(onClick = { /*TODO*/ }){
+           /* IconButton(onClick = { *//*TODO*//* }){
                 Icon(
                     imageVector = Icons.Rounded.ReceiptLong,
                     contentDescription = null,
                     modifier = Modifier.size(45.dp),
                     tint = Color(0xFF4425a7)
                 )
-            }
+            }*/
         }
         Spacer(modifier = Modifier.size(6.dp))
     }
