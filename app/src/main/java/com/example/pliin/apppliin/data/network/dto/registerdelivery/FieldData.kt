@@ -9,6 +9,10 @@ data class FieldData(
     @SerializedName("parentesco")
     val parentesco: String?,
     @SerializedName("nombre_recibe")
-    val recibio: String?
+    val recibio: String?,
+    @SerializedName("pago")
+    val pago: String?,
+    @SerializedName("tipoPago")
+    val tipoPago: String?
 
 )

@@ -5,5 +5,7 @@ import com.google.gson.annotations.SerializedName
 
 data class FieldData(
     @SerializedName("guia")
-    val guia: String?
+    val guia: String?,
+    @SerializedName("pago")
+    val pago: String?=""
 )

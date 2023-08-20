@@ -14,25 +14,26 @@ class SetDeliveryUseCase @Inject constructor(
 
     suspend operator fun invoke(
         guide: String?,
-        idPreM:String,
+        idPreM: String,
         recordId: String?,
         status: String?,
         recibe: String?,
         parentOrFailDelivery: String?,
-        url:String
+        url: String,
+        pago: String,
+        typePago: String
     ): Boolean {
         Log.i("status intento entrega", parentOrFailDelivery!!)
         Log.i("quien recibe", recibe!!)
 
         val userData = usersRepository.getAllUserDatabase()
         val user = userData.user!!
-
-        val responseDelivery = deliveryR.setDelivery(guide!!, recibe, parentOrFailDelivery)
+        val responseDelivery = deliveryR.setDelivery(guide!!, recibe, parentOrFailDelivery,typePago,pago)
         val messageDelivery = responseDelivery.messages!![0].code
         val recordIdDelivery= responseDelivery.response?.recordId
         val setPhoto = deliveryR.setDeliveryPhoto(recordIdDelivery!!,url)
         val messageResponsePhoto = setPhoto.messages
-        Log.i("COde set photo",messageResponsePhoto.toString())
+        Log.i("Code set photo",messageResponsePhoto.toString())
 
         val responseUpdateStaus = deliveryR.setUpdateStatus(status, recordId!!,"manifiestoPaquetes")
         val messageUpdateStatus = responseUpdateStaus.messages!![0].code
