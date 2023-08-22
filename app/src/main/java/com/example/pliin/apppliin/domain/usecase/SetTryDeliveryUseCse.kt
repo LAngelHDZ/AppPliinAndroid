@@ -33,7 +33,7 @@ class SetTryDeliveryUseCse @Inject constructor(
             )
             val messageDelivery = responseDelivery.messages!![0]!!.code
         }
-        val responseUpdateStaus = deliveryR.setUpdateStatus(status, recordId!!,"manifieestoPaquetes")
+        val responseUpdateStaus = deliveryR.setUpdateStatus(status, recordId!!,"manifiestoPaquetes")
         val messageUpdateStatus = responseUpdateStaus.messages!![0]!!.code
         val responseCreateStatus = deliveryR.setCreateStatus(guide!!, status!!)
         val messageCreateStatus = responseCreateStatus.messages!![0]!!.code

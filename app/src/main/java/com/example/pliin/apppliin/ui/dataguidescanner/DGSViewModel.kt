@@ -393,8 +393,10 @@ class DGSViewModel @Inject() constructor(
             }*/
             else {
                 responseOK = setTryDeliveryUseCse.invoke(
-                    guide, recordId,
-                    textfieldvacio(status.value), textfieldvacio(parentOrFailDelivery.value),
+                    guide,
+                    recordId,
+                    textfieldvacio(status.value),
+                    textfieldvacio(parentOrFailDelivery.value),
                     textfieldvacio(nameRecibe.value)
                 )
             }
