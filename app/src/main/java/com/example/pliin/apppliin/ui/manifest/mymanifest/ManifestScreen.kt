@@ -88,7 +88,8 @@ fun Header(modifier: Modifier, navigationController: NavHostController, mfViewMo
                     modifier = Modifier.size(30.dp),
                 )
             }
-        })
+        }
+    )
 }
 
 @Composable

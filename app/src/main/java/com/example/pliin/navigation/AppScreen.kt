@@ -37,6 +37,7 @@ sealed class AppScreen(val route:String){
     object ReasignacionGuideScreen : AppScreen("ReasignacionGuideScreen")
     object ManifestScreen : AppScreen("ManifestScreen")
     object MenuGuideScreen : AppScreen("MenuGuideScreen")
+    object PlaneationDayScreen : AppScreen("PlaneationDayScreen")
     object CreateManifestScreen : AppScreen("CreateManifestScreen/{area}") {
         fun createRoute(
             area: String

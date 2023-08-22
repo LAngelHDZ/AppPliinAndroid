@@ -1,7 +1,6 @@
 package com.example.pliin
 
 import android.Manifest
-import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.widget.Toast
@@ -15,7 +14,6 @@ import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
-import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -45,6 +43,8 @@ import com.example.pliin.apppliin.ui.manifest.editmanifest.EditManifestScreen
 import com.example.pliin.apppliin.ui.manifest.mymanifest.MFViewModel
 import com.example.pliin.apppliin.ui.manifest.mymanifest.ManifestScreen
 import com.example.pliin.apppliin.ui.manifest.reasignacionguide.ReasignacionGuideScreen
+import com.example.pliin.apppliin.ui.planeationday.PDViewModel
+import com.example.pliin.apppliin.ui.planeationday.PlaneationDayScreen
 import com.example.pliin.apppliin.ui.registerdelivery.RDViewModel
 import com.example.pliin.apppliin.ui.registerdelivery.RegisterDeliveryScreen
 import com.example.pliin.navigation.AppScreen
@@ -63,6 +63,7 @@ class MainActivity : ComponentActivity() {
     private val vaViewModel: VAViewModel by viewModels()
     private val cmViewModel: CMViewModel by viewModels()
     private val mfViewModel: MFViewModel by viewModels()
+    private val pdViewModel: PDViewModel by viewModels()
     private lateinit var connectionLiveData: NetworkConectivity
 
     private val requestPermissionLauncher =
@@ -153,6 +154,14 @@ class MainActivity : ComponentActivity() {
             ) {
                 ManifiestoMainScreen(navigationController)
             }
+
+            //Ruta de Screeen de la planeaciones del dia
+            composable(
+                route = AppScreen.PlaneationDayScreen.route,
+            ) {
+                PlaneationDayScreen(navigationController,pdViewModel)
+            }
+
             //Ruta de Screen de meenu principal de guias
             composable(route = AppScreen.MenuGuideScreen.route) {
                 MenuGuideScreen(navigationController)

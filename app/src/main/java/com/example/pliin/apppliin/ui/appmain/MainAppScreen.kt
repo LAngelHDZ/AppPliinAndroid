@@ -20,7 +20,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.*
 import androidx.compose.ui.unit.*
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import com.example.pliin.R
@@ -189,7 +188,7 @@ fun GroupButton(modifier: Modifier, navigationController: NavHostController, are
     //boton registra las guias al sistema
     ButtonGuides(modifier, navigationController)
     Spacer(modifier = spaces)
-    ButtonConsultDelivery(modifier)
+    ButtonPlaneation(modifier,navigationController)
 
 }
 
@@ -266,11 +265,11 @@ fun ButtonGuides(modifier: Modifier, navigationController: NavHostController) {
 }
 
 @Composable
-fun ButtonConsultDelivery(modifier: Modifier) {
+fun ButtonPlaneation(modifier: Modifier, navigationController: NavHostController) {
     Button(
         modifier = modifier,
-        onClick = { },
-        enabled = false,
+        onClick = { navigationController.navigate(AppScreen.PlaneationDayScreen.route)},
+        enabled = true,
         colors = ButtonDefaults.buttonColors(
             backgroundColor = Color.White,
             contentColor = Color.Black
@@ -284,7 +283,7 @@ fun ButtonConsultDelivery(modifier: Modifier) {
         )
         Spacer(Modifier.size(5.dp))
         Text(
-            text = "Consultas",
+            text = "Planeación",
             fontSize = 18.sp,
             modifier = Modifier.padding(0.dp, 0.dp, 13.dp, 0.dp)
         )
