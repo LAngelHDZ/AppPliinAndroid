@@ -31,4 +31,8 @@ object RoomModule {
     @Singleton
     @Provides
     fun provideDataEmployeeDao(db: PliinDatabase) = db.getDataEmployeeDao()
+
+    @Singleton
+    @Provides
+    fun provideManifestDao(db: PliinDatabase) = db.getDataManifestDao()
 }

@@ -26,6 +26,12 @@ class LoginUseCase @Inject constructor(
         var employeeActive: String = ""
         val access: Boolean = if (userexiste) {
 //            val token: String = Loginrepository.getTokenDB()?.token.toString()
+            val sessionAPi = Loginrepository.dologin(user, password)
+            if (sessionAPi.token.isNullOrBlank()){
+                Loginrepository.clearToken()
+                Loginrepository.insertToken(sessionAPi.toDatabase())
+            }
+
             Loginrepository.CreateSession(user, password, "")
             true
         }else{
@@ -39,7 +45,7 @@ class LoginUseCase @Inject constructor(
                 val dataUser = usersRepository.SetUserItem(user, password)
                 usersRepository.insertUsers(dataUser.map { it.toDatabase() })
                 val existeEmployee = employeeRepository.queryDataEmployee(generalMethodsGuide.toLowerLetter(user))
-                if (!existeEmployee) {
+                if (!existeEmployee){
                     val data = employeeRepository.getEmployeeApi(user)
                     employeeRepository.saveDataEmployee(data)
                 }

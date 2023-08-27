@@ -1,6 +1,7 @@
 package com.example.pliin.apppliin.domain.model.consecutivomanifestitem
 
 
+import com.example.pliin.apppliin.data.database.entities.ManifestEntity
 import com.example.pliin.apppliin.data.model.consecutivomanifestmodel.FieldDataConsecutivoM
 import com.google.gson.annotations.SerializedName
 
@@ -40,6 +41,26 @@ data class FieldData(
 )
 
 fun FieldDataConsecutivoM.toDomain() =
+    FieldData(
+        consecutivoFolio,
+        fecha,
+        clavePrincipal,
+        hora,
+        aux,
+        auxPrivilegios,
+        creadoPor,
+        empresa,
+        idEmpleado,
+        nombreOperador,
+        ruta,
+        statusPreM,
+        statusRuta,
+        tipoMan,
+        totalpqt,
+        totaolGuias
+    )
+
+fun ManifestEntity.toDomain() =
     FieldData(
         consecutivoFolio,
         fecha,

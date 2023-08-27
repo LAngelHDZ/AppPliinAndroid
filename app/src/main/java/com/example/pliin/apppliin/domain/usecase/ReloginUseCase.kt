@@ -10,7 +10,6 @@ class ReloginUseCase @Inject constructor(
     private val usersRepository: UsersRepository,
     private val loginRepository: LoginRepository
 ){
-    @SuppressLint("SuspiciousIndentation")
     suspend operator fun invoke(): Boolean{
         val userData = loginRepository.getSession()
         return loginUseCase.invoke(userData.username!!, userData.password!!)

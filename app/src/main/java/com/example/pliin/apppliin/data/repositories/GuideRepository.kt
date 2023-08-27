@@ -1,8 +1,12 @@
 package com.example.pliin.apppliin.data.repositories
 
 import android.util.Log
+import com.example.pliin.apppliin.data.database.dao.GuideDao
+import com.example.pliin.apppliin.data.database.entities.toDatabase
+
 import com.example.pliin.apppliin.data.network.dto.datospqt.DatosPqtDto
 import com.example.pliin.apppliin.data.network.services.GuideService
+import com.example.pliin.apppliin.domain.model.GuideItem
 import com.example.pliin.apppliin.domain.model.deliveryItem.GetDataGuideRDItem
 import com.example.pliin.apppliin.domain.model.deliveryItem.toDomain
 import com.example.pliin.apppliin.domain.model.queryguideitem.QueryGuidePliinItem
@@ -11,7 +15,10 @@ import com.example.pliin.apppliin.domain.model.responseruditem.ResponseRUDItem
 import com.example.pliin.apppliin.domain.model.responseruditem.toDomain
 import javax.inject.Inject
 
-class GuideRepository @Inject constructor(private val apiguide: GuideService) {
+class GuideRepository @Inject constructor(
+    private val apiguide: GuideService,
+    private val guideDao: GuideDao
+) {
 
     //Opbtiene las guias de la API
     suspend fun getGuideQueryApi(guide: String, observation: String, IdPreM: String): GetDataGuideRDItem {
@@ -99,5 +106,12 @@ class GuideRepository @Inject constructor(private val apiguide: GuideService) {
         Log.i("response", "$response")
         // tokenDao.insertToken(response.toDatabase())
         return response.toDomain()
+    }
+
+
+//    Gregar guias a DB Local
+    suspend fun RegisterGuidesDB(guide:GuideItem){
+        val response=guideDao.insertGuide(guide.toDatabase())
+
     }
 }
