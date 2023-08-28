@@ -17,6 +17,7 @@ import com.example.pliin.apppliin.data.network.dto.intentoentrega.TryingDelivery
 import com.example.pliin.apppliin.data.network.dto.queryguidescanner.QueryGuideDto
 import com.example.pliin.apppliin.data.network.dto.queyguidereception.QueryGuidePliinDto
 import com.example.pliin.apppliin.data.network.dto.registerdelivery.RegisterDeliveryDto
+import com.example.pliin.apppliin.data.network.dto.updatepago.UpdatePagoDto
 import com.example.pliin.apppliin.data.network.dto.updatestatus.UpdatStatusDto
 import okhttp3.MultipartBody
 import okhttp3.Request
@@ -90,11 +91,12 @@ interface DataGuideClient {
     //ENdPoint para subir una foto en el contenedro de la entrega registrada
 
    @Multipart
-    @POST("/fmi/data/v2/databases/PLIIN/layouts/relacionEntrega/records/{recordId}/containers/contenedorFoto/1")
+    @POST("/fmi/data/v2/databases/PLIIN/layouts/relacionEntrega/records/{recordId}/containers/{contenedorName}/1")
     suspend fun setDeliveryGuidePhoto(
        @Header("Authorization") bearer: String,
        @Path("recordId") recordId: String,
        @Part upload: MultipartBody.Part,
+       @Path("contenedorName")campo: String,
     ): Response<ResponseRegisterDeliveryModel>
 
     @POST
@@ -137,7 +139,16 @@ interface DataGuideClient {
         @Header("Authorization") bearer: String,
         @Path("recordId") recordId: String,
         @Path("presentacion") presentation: String,
-        @Body Guide: UpdatStatusDto
+        @Body status: UpdatStatusDto
+    ): Response<ResponseUpdateStatusModel>
+
+    //Enpoint para actualizar el status de una guia
+    @PATCH("/fmi/data/v2/databases/PLIIN/layouts/{presentacion}/records/{recordId}/")
+    suspend fun updatePago(
+        @Header("Authorization") bearer: String,
+        @Path("recordId") recordId: String,
+        @Path("presentacion") presentation: String,
+        @Body pago: UpdatePagoDto
     ): Response<ResponseUpdateStatusModel>
 
     //Enpoint para crear un nuevo status de la guia

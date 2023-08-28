@@ -95,6 +95,14 @@ class DGSViewModel @Inject() constructor(
     private val _directoryPhoto = MutableLiveData<String>()
     var directoryPhoto: LiveData<String> = _directoryPhoto
 
+    private val _directoryPhotoList = MutableLiveData<MutableList<String>>()
+    var directoryPhotoList: LiveData<MutableList<String>> = _directoryPhotoList
+
+    private val _directoryPhotoPago = MutableLiveData<String>()
+    var directoryPhotoPago: LiveData<String> = _directoryPhotoPago
+
+    private val _typedirectoryPhoto = MutableLiveData<String>()
+    var typedirectoryPhoto: LiveData<String> = _typedirectoryPhoto
 
     private val permissionRequestChannel = Channel<Boolean>()
     val permissionRequestFlow = permissionRequestChannel.receiveAsFlow()
@@ -113,21 +121,41 @@ class DGSViewModel @Inject() constructor(
         }
     }
 
-    fun captureAndSave(context: Context) {
+    fun captureAndSave(context: Context, typeDirectoryPhoto: String) {
+        viewModelScope.launch {
+            repo.captureAndSaveImage(context)
+            delay(1500)
+
+            delay(1500)
+            _isShowCameraX.value = false
+
+            if (typeDirectoryPhoto.equals("Trf")){
+                _directoryPhotoPago.value = repo.getDirectoryPhoto()
+                Log.d("Directorio de la photo en DSGVIewmodelpago", directoryPhotoPago.value!!)
+            }else{
+                _directoryPhoto.value = repo.getDirectoryPhoto()
+                Log.d("Directorio de la photo en DSGVIewmodelfirma", directoryPhoto.value!!)
+                _isBtnRegisterStatus.value = btnContinueRegisterStu(directoryPhoto.value!!)
+            }
+        }
+    }
+
+    fun captureAndSaveBoucher(context: Context) {
         viewModelScope.launch {
             repo.captureAndSaveImage(context)
             delay(1500)
             _directoryPhoto.value = repo.getDirectoryPhoto()
             delay(1500)
             _isShowCameraX.value = false
-            Log.d("Directorio de la photo en DSGVIewmodel", directoryPhoto.value!!)
-            _isBtnRegisterStatus.value = btnContinueRegisterStu(directoryPhoto.value!!)
+            Log.d("Directorio de la photo en DSGVIewmodel", directoryPhotoPago.value!!)
+            _isBtnRegisterStatus.value = btnContinueRegisterStu(directoryPhotoPago.value!!)
         }
     }
 
     fun onPhotoCaptured(directoryPhoto:String) = directoryPhoto.isNotEmpty()
 
-    fun onShowCameraX() {
+    fun onShowCameraX(typePhoto:String){
+        _typedirectoryPhoto.value=typePhoto
         _isShowCameraX.value = true
     }
 
@@ -375,6 +403,7 @@ class DGSViewModel @Inject() constructor(
                     textfieldvacio(nameRecibe.value),
                     textfieldvacio(parentOrFailDelivery.value),
                     directoryPhoto.value!!,
+                    directoryPhotoPago.value!!,
                     pago,
                     typePago
 

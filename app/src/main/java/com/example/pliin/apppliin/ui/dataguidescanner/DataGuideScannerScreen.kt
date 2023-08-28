@@ -112,7 +112,7 @@ fun DataGuideScannerScreen(
     val isBtnTakePhoto: Boolean by dgsViewModel.isBtnTakePhoto.observeAsState(false)
     val isEnabledFTCommentRecibe: Boolean by dgsViewModel.isEnabledTFCommentRecibe.observeAsState(false)
     val isAnotherParent: Boolean by dgsViewModel.isAnotherParent.observeAsState(false)
-    val title: String by dgsViewModel.titleAlertDialog.observeAsState(" ")
+    val typeDirectoryPhoto: String by dgsViewModel.typedirectoryPhoto.observeAsState(" ")
     val text: String by dgsViewModel.textAlertDialog.observeAsState(" ")
     val statu: String by dgsViewModel.status.observeAsState("")
     val nameparents: String by dgsViewModel.nameRecibe.observeAsState(" ")
@@ -122,7 +122,7 @@ fun DataGuideScannerScreen(
 //    val  PERMISSION_REQUEST_CODE:Int = 200
     Box(modifier = Modifier.fillMaxSize()) {
         if (isShowCameraX) {
-            CameraXview(dgsViewModel, Modifier,isBtnTakePhoto)
+            CameraXview(dgsViewModel, Modifier,isBtnTakePhoto,typeDirectoryPhoto)
         } else {
             if (isDeliveryConfirmation) {
                 ScreenConfirmation(Modifier.align(Alignment.Center))
@@ -1030,14 +1030,9 @@ fun ConfirmarEntregaDialog(
                 onClick = {dgsViewModel.onRadioSelectTransfer(!onTypePago)}
             )
             Spacer(modifier = Modifier.size(6.dp))
-           /* IconButton(onClick = { *//*TODO*//* }){
-                Icon(
-                    imageVector = Icons.Rounded.ReceiptLong,
-                    contentDescription = null,
-                    modifier = Modifier.size(45.dp),
-                    tint = Color(0xFF4425a7)
-                )
-            }*/
+            if (onTypePago){
+                btnShowCameraXTrf(dgsViewModel)
+            }
         }
         Spacer(modifier = Modifier.size(6.dp))
     }
@@ -1054,13 +1049,15 @@ fun ConfirmarEntregaDialog(
         typeStatus = typeStatus
     )}
     Spacer(modifier = Modifier.size(14.dp))
-    btnSHowCameraX(dgsViewModel,isBtnTakePhoto)
+    btnShowCameraXSign(dgsViewModel,isBtnTakePhoto)
 }
 
 @Composable
-fun btnSHowCameraX(dgsViewModel: DGSViewModel, isBtnTakePhoto: Boolean) {
+fun btnShowCameraXSign(dgsViewModel: DGSViewModel, isBtnTakePhoto: Boolean) {
+
+
     Button(
-        onClick = { dgsViewModel.onShowCameraX() },
+        onClick = { dgsViewModel.onShowCameraX("Sign") },
         enabled = isBtnTakePhoto,
         modifier = Modifier.fillMaxWidth()
     ) {
@@ -1080,7 +1077,44 @@ fun btnSHowCameraX(dgsViewModel: DGSViewModel, isBtnTakePhoto: Boolean) {
 }
 
 @Composable
-fun CameraXview(dgsViewModel: DGSViewModel, modifier: Modifier, isBtnTakePhoto: Boolean) {
+fun btnShowCameraXTrf(dgsViewModel: DGSViewModel) {
+
+    IconButton(onClick = {dgsViewModel.onShowCameraX("Trf") }){
+        Icon(
+            imageVector = Icons.Rounded.ReceiptLong,
+            contentDescription = null,
+            modifier = Modifier.size(45.dp),
+            tint = Color(0xFF4425a7)
+        )
+    }
+
+//    Button(
+//        onClick = {  },
+//        enabled = true,
+//        modifier = Modifier.fillMaxWidth()
+//    ) {
+//        Row(
+//            verticalAlignment = Alignment.CenterVertically,
+//            horizontalArrangement = Arrangement.Center
+//        ) {
+//            Icon(
+//                imageVector = Icons.Rounded.PhotoCamera,
+//                contentDescription = null,
+//                modifier = Modifier.size(45.dp),
+//                tint = Color.White
+//            )
+//            Text(text = "Firma")
+//        }
+//    }
+}
+
+@Composable
+fun CameraXview(
+    dgsViewModel: DGSViewModel,
+    modifier: Modifier,
+    isBtnTakePhoto: Boolean,
+    typeDirectoryPhoto: String
+) {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
     val configuration = LocalConfiguration.current
@@ -1118,7 +1152,7 @@ fun CameraXview(dgsViewModel: DGSViewModel, modifier: Modifier, isBtnTakePhoto: 
             contentAlignment = Alignment.Center
         ) {
             IconButton(onClick = {
-                dgsViewModel.captureAndSave(context)
+                dgsViewModel.captureAndSave(context,typeDirectoryPhoto)
             }) {
                 Icon(
                     imageVector = Icons.Rounded.Camera,

@@ -8,8 +8,9 @@ import com.example.pliin.apppliin.data.network.dto.intentoentrega.FieldDataTryD
 import com.example.pliin.apppliin.data.network.dto.intentoentrega.TryingDeliveryDto
 import com.example.pliin.apppliin.data.network.dto.queryguidescanner.createstatus.CreateStatusGuideDto
 import com.example.pliin.apppliin.data.network.dto.queryguidescanner.createstatus.FieldDataCreateS
+import com.example.pliin.apppliin.data.network.dto.updatepago.FieldDataPago
+import com.example.pliin.apppliin.data.network.dto.updatepago.UpdatePagoDto
 import com.example.pliin.apppliin.data.network.dto.updatestatus.*
-import com.example.pliin.apppliin.data.network.dto.updatestatus.FieldData
 import com.example.pliin.apppliin.data.network.response.clients.DataGuideClient
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -33,6 +34,56 @@ class UpdateStatusGuideService @Inject constructor(
         return withContext(Dispatchers.IO) {
             try {
                 val response = apiclient.updateStatus("Bearer $bearer", recordId,presentacion, query)
+                val data = if (response.isSuccessful) {
+                    response.body()!!
+                } else {
+                    when (response.code()) {
+                        500 -> {
+                            ResponseUpdateStatusModel(
+                                listOf(Message("500", "No records match the request")),
+                                response.body()?.response
+                            )
+                        }
+                        401 -> {
+                            ResponseUpdateStatusModel(
+                                listOf(Message("952", "Invalid FileMaker Data API token (*)")),
+                                response.body()?.response
+                            )
+                        }
+
+                        else -> {
+                            ResponseUpdateStatusModel(
+                                listOf(Message("500", "No records match the request")),
+                                response.body()?.response
+                            )
+                        }
+                    }
+                }
+                data
+
+            } catch (e: IOException) {
+                // Error de red, como falta de conexión
+                e.printStackTrace()
+                // Manejar el error de desconexión
+                ResponseUpdateStatusModel(
+                    listOf(Message("500", "Error de red")),
+                    ResponseUpdate("", "")
+                )
+            }
+        }
+    }
+
+    suspend fun setUpdatePago(pago: String?, recordId: String,presentacion:String): ResponseUpdateStatusModel {
+        val bearer = daotoken.getToken()?.token
+        val query = UpdatePagoDto(
+            FieldDataPago(
+                pago
+            )
+        )
+        
+        return withContext(Dispatchers.IO) {
+            try {
+                val response = apiclient.updatePago("Bearer $bearer", recordId,presentacion,query)
                 val data = if (response.isSuccessful) {
                     response.body()!!
                 } else {
