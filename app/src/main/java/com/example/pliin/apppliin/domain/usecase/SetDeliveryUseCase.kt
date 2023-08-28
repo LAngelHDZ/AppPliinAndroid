@@ -38,7 +38,6 @@ class SetDeliveryUseCase @Inject constructor(
 
         val recordIdDelivery= responseDelivery.response?.recordId
 
-
         if (pago.equals("CONFIRMADO")){
            val setPhoto = deliveryR.setDeliveryPhoto(recordIdDelivery!!,urlPago,"pagoContenedor")
 

@@ -377,18 +377,21 @@ class DGSViewModel @Inject() constructor(
             // Log.i("recibe",nameRecibe.value!!)
             //  Log.i("seleted", selectedOption.value!!)
 
-            var typePago=""
+            var tipoPago:String?=""
             var pago=""
+            if (typePago.value.isNullOrEmpty()){
+                _typePago.value ="EFECTIVO"
+            }
 
             if (cod.equals("SI")){
-                typePago= _typePago.value!!
-                pago = if (typePago.equals("EFECTIVO")){
+                tipoPago= typePago.value!!
+                pago = if (tipoPago.equals("EFECTIVO")){
                     "NO CONFIRMADO"
                 }else{
                     "CONFIRMADO"
                 }
             }else{
-                typePago= "NO APLICA"
+                tipoPago= "NO APLICA"
                 pago="NO APLICA"
             }
 
@@ -405,7 +408,7 @@ class DGSViewModel @Inject() constructor(
                     directoryPhoto.value!!,
                     directoryPhotoPago.value!!,
                     pago,
-                    typePago
+                    tipoPago
 
                 )
 

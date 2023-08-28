@@ -104,7 +104,7 @@ fun DataGuideScannerScreen(
         false
     )
     val onTypePago: Boolean by dgsViewModel.onTypePago.observeAsState(false)
-    val typePago: String by dgsViewModel.typePago.observeAsState(" ")
+    val typePago: String by dgsViewModel.typePago.observeAsState( "EFECTIVO")
     val listStatusIntentos: List<String> by dgsViewModel.listStatusIntentos.observeAsState(listOf())
     val isDeliveryConfirmation: Boolean by dgsViewModel.isDeliveryConfirmation.observeAsState(false)
 
