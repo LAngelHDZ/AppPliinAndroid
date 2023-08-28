@@ -21,7 +21,7 @@ class SetDeliveryUseCase @Inject constructor(
         recibe: String?,
         parentOrFailDelivery: String?,
         url: String,
-        urlPago: String,
+        urlPago: String?,
         pago: String,
         typePago: String
     ): Boolean {
@@ -39,7 +39,7 @@ class SetDeliveryUseCase @Inject constructor(
         val recordIdDelivery= responseDelivery.response?.recordId
 
         if (pago.equals("CONFIRMADO")){
-           val setPhoto = deliveryR.setDeliveryPhoto(recordIdDelivery!!,urlPago,"pagoContenedor")
+           val setPhoto = deliveryR.setDeliveryPhoto(recordIdDelivery!!,urlPago!!,"pagoContenedor")
 
             val guideCod=getGuideCodUseCase.invoke(guide)
 

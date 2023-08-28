@@ -377,27 +377,30 @@ class DGSViewModel @Inject() constructor(
             // Log.i("recibe",nameRecibe.value!!)
             //  Log.i("seleted", selectedOption.value!!)
 
-            var tipoPago:String?=""
-            var pago=""
-            if (typePago.value.isNullOrEmpty()){
-                _typePago.value ="EFECTIVO"
-            }
-
-            if (cod.equals("SI")){
-                tipoPago= typePago.value!!
-                pago = if (tipoPago.equals("EFECTIVO")){
-                    "NO CONFIRMADO"
-                }else{
-                    "CONFIRMADO"
-                }
-            }else{
-                tipoPago= "NO APLICA"
-                pago="NO APLICA"
-            }
 
 
 
             if (status.value.equals("ENTREGADO")) {
+
+                var tipoPago:String?=""
+                var pago=""
+                if (typePago.value.isNullOrEmpty()){
+                    _typePago.value ="EFECTIVO"
+                }
+
+                if (cod.equals("SI")){
+                    tipoPago= typePago.value!!
+                    pago = if (tipoPago.equals("EFECTIVO")){
+                        "NO CONFIRMADO"
+                    }else{
+                        "CONFIRMADO"
+                    }
+                }else{
+                    tipoPago= "NO APLICA"
+                    pago="NO APLICA"
+                }
+
+
                 responseOK = setDeliveryUseCase.invoke(
                     guide,
                     idPreM,
@@ -426,6 +429,7 @@ class DGSViewModel @Inject() constructor(
             else {
                 responseOK = setTryDeliveryUseCse.invoke(
                     guide,
+                    idPreM,
                     recordId,
                     textfieldvacio(status.value),
                     textfieldvacio(parentOrFailDelivery.value),
