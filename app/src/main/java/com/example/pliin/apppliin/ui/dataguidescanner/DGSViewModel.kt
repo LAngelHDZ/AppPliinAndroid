@@ -368,7 +368,7 @@ class DGSViewModel @Inject() constructor(
     ) {
         var responseOK: Boolean
         _isDeliveryConfirmation.value = true
-        
+
         viewModelScope.launch() {
             delay(1700)
             Log.i("Guide", guide)
@@ -377,10 +377,12 @@ class DGSViewModel @Inject() constructor(
             // Log.i("recibe",nameRecibe.value!!)
             //  Log.i("seleted", selectedOption.value!!)
 
-
-
-
             if (status.value.equals("ENTREGADO")) {
+
+              _directoryPhotoPago.value =  if (directoryPhotoPago.value.isNullOrEmpty()){
+                  ""
+              }else{directoryPhotoPago.value}
+
 
                 var tipoPago:String?=""
                 var pago=""
@@ -399,8 +401,6 @@ class DGSViewModel @Inject() constructor(
                     tipoPago= "NO APLICA"
                     pago="NO APLICA"
                 }
-
-
                 responseOK = setDeliveryUseCase.invoke(
                     guide,
                     idPreM,
@@ -412,9 +412,7 @@ class DGSViewModel @Inject() constructor(
                     directoryPhotoPago.value!!,
                     pago,
                     tipoPago
-
                 )
-
             }
             /*else if(parentOrFailDelivery.value!!.equals("Rechazado")){
                 responseOK = rechazadoUseCase.invoke(
