@@ -2,15 +2,18 @@ package com.example.pliin.apppliin.domain.usecase
 
 import android.util.Log
 import com.example.pliin.apppliin.data.repositories.DeliveryRepository
+import com.example.pliin.apppliin.data.repositories.GuideRepository
 import com.example.pliin.apppliin.data.repositories.UsersRepository
 import javax.inject.Inject
 
 class SetTryDeliveryUseCse @Inject constructor(
     private val deliveryR: DeliveryRepository,
-    private val usersRepository: UsersRepository
+    private val usersRepository: UsersRepository,
+    private val guiderepository: GuideRepository,
 ) {
     suspend operator fun invoke(
         guide: String?,
+        idPreM: String,
         recordId: String?,
         status: String?,
         parentOrFailDelivery: String,
@@ -39,6 +42,12 @@ class SetTryDeliveryUseCse @Inject constructor(
         val messageCreateStatus = responseCreateStatus.messages!![0]!!.code
         val responseTryDelivery = deliveryR.setTryDelivery(guide!!, parentOrFailDelivery, comment)
         val messageTryDelivery = responseTryDelivery.messages!![0]!!.code
+
+        val responseGuide = guiderepository.getGuideQueryApi(guide,"Asignado",idPreM)
+        val recordIdGuide = responseGuide.response?.data?.get(0)?.recordId
+
+        val updateRGuiasManifest = deliveryR.setUpdateStatus(status, recordIdGuide!!,"GuiasAPI")
+        val messageUpdateGuide = updateRGuiasManifest.messages?.get(0)?.code
 
         //  return false
         return messageUpdateStatus.equals("0") and messageCreateStatus.equals("0") and messageTryDelivery.equals(

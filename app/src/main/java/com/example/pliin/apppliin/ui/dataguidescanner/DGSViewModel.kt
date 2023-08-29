@@ -95,6 +95,14 @@ class DGSViewModel @Inject() constructor(
     private val _directoryPhoto = MutableLiveData<String>()
     var directoryPhoto: LiveData<String> = _directoryPhoto
 
+    private val _directoryPhotoList = MutableLiveData<MutableList<String>>()
+    var directoryPhotoList: LiveData<MutableList<String>> = _directoryPhotoList
+
+    private val _directoryPhotoPago = MutableLiveData<String>()
+    var directoryPhotoPago: LiveData<String> = _directoryPhotoPago
+
+    private val _typedirectoryPhoto = MutableLiveData<String>()
+    var typedirectoryPhoto: LiveData<String> = _typedirectoryPhoto
 
     private val permissionRequestChannel = Channel<Boolean>()
     val permissionRequestFlow = permissionRequestChannel.receiveAsFlow()
@@ -113,21 +121,41 @@ class DGSViewModel @Inject() constructor(
         }
     }
 
-    fun captureAndSave(context: Context) {
+    fun captureAndSave(context: Context, typeDirectoryPhoto: String) {
+        viewModelScope.launch {
+            repo.captureAndSaveImage(context)
+            delay(1500)
+
+            delay(1500)
+            _isShowCameraX.value = false
+
+            if (typeDirectoryPhoto.equals("Trf")){
+                _directoryPhotoPago.value = repo.getDirectoryPhoto()
+                Log.d("Directorio de la photo en DSGVIewmodelpago", directoryPhotoPago.value!!)
+            }else{
+                _directoryPhoto.value = repo.getDirectoryPhoto()
+                Log.d("Directorio de la photo en DSGVIewmodelfirma", directoryPhoto.value!!)
+                _isBtnRegisterStatus.value = btnContinueRegisterStu(directoryPhoto.value!!)
+            }
+        }
+    }
+
+    fun captureAndSaveBoucher(context: Context) {
         viewModelScope.launch {
             repo.captureAndSaveImage(context)
             delay(1500)
             _directoryPhoto.value = repo.getDirectoryPhoto()
             delay(1500)
             _isShowCameraX.value = false
-            Log.d("Directorio de la photo en DSGVIewmodel", directoryPhoto.value!!)
-            _isBtnRegisterStatus.value = btnContinueRegisterStu(directoryPhoto.value!!)
+            Log.d("Directorio de la photo en DSGVIewmodel", directoryPhotoPago.value!!)
+            _isBtnRegisterStatus.value = btnContinueRegisterStu(directoryPhotoPago.value!!)
         }
     }
 
     fun onPhotoCaptured(directoryPhoto:String) = directoryPhoto.isNotEmpty()
 
-    fun onShowCameraX() {
+    fun onShowCameraX(typePhoto:String){
+        _typedirectoryPhoto.value=typePhoto
         _isShowCameraX.value = true
     }
 
@@ -340,7 +368,7 @@ class DGSViewModel @Inject() constructor(
     ) {
         var responseOK: Boolean
         _isDeliveryConfirmation.value = true
-        
+
         viewModelScope.launch() {
             delay(1700)
             Log.i("Guide", guide)
@@ -349,24 +377,30 @@ class DGSViewModel @Inject() constructor(
             // Log.i("recibe",nameRecibe.value!!)
             //  Log.i("seleted", selectedOption.value!!)
 
-            var typePago=""
-            var pago=""
-
-            if (cod.equals("SI")){
-                typePago= _typePago.value!!
-                pago = if (typePago.equals("EFECTIVO")){
-                    "NO CONFIRMADO"
-                }else{
-                    "CONFIRMADO"
-                }
-            }else{
-                typePago= "NO APLICA"
-                pago="NO APLICA"
-            }
-
-
-
             if (status.value.equals("ENTREGADO")) {
+
+              _directoryPhotoPago.value =  if (directoryPhotoPago.value.isNullOrEmpty()){
+                  ""
+              }else{directoryPhotoPago.value}
+
+
+                var tipoPago:String?=""
+                var pago=""
+                if (typePago.value.isNullOrEmpty()){
+                    _typePago.value ="EFECTIVO"
+                }
+
+                if (cod.equals("SI")){
+                    tipoPago= typePago.value!!
+                    pago = if (tipoPago.equals("EFECTIVO")){
+                        "NO CONFIRMADO"
+                    }else{
+                        "CONFIRMADO"
+                    }
+                }else{
+                    tipoPago= "NO APLICA"
+                    pago="NO APLICA"
+                }
                 responseOK = setDeliveryUseCase.invoke(
                     guide,
                     idPreM,
@@ -375,11 +409,10 @@ class DGSViewModel @Inject() constructor(
                     textfieldvacio(nameRecibe.value),
                     textfieldvacio(parentOrFailDelivery.value),
                     directoryPhoto.value!!,
+                    directoryPhotoPago.value!!,
                     pago,
-                    typePago
-
+                    tipoPago
                 )
-
             }
             /*else if(parentOrFailDelivery.value!!.equals("Rechazado")){
                 responseOK = rechazadoUseCase.invoke(
@@ -394,6 +427,7 @@ class DGSViewModel @Inject() constructor(
             else {
                 responseOK = setTryDeliveryUseCse.invoke(
                     guide,
+                    idPreM,
                     recordId,
                     textfieldvacio(status.value),
                     textfieldvacio(parentOrFailDelivery.value),

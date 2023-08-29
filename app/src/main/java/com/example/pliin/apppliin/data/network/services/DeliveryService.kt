@@ -69,6 +69,7 @@ class DeliveryService @Inject constructor(
     suspend fun setDeliveryPhoto(
         url: String,
         recordId: String,
+        campo:String
     ): ResponseRegisterDeliveryModel {
 
         val bearer = daotoken.getToken().token
@@ -82,7 +83,7 @@ class DeliveryService @Inject constructor(
 
         return withContext(Dispatchers.IO) {
             try {
-                val response = apiclient.setDeliveryGuidePhoto("Bearer $bearer",recordId,imagenPart)
+                val response = apiclient.setDeliveryGuidePhoto("Bearer $bearer",recordId,imagenPart,campo)
 
                 val data = if (response.isSuccessful) {
                     response.body()
