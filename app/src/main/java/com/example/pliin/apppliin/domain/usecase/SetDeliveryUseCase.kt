@@ -10,6 +10,7 @@ class SetDeliveryUseCase @Inject constructor(
     private val deliveryR: DeliveryRepository,
     private val usersRepository: UsersRepository,
     private val guiderepository: GuideRepository,
+    private val getGuideCodUseCase: GetGuideCodUseCase
 ){
 
     suspend operator fun invoke(
@@ -20,30 +21,52 @@ class SetDeliveryUseCase @Inject constructor(
         recibe: String?,
         parentOrFailDelivery: String?,
         url: String,
+        urlPago: String?,
         pago: String,
         typePago: String
     ): Boolean {
-        Log.i("status intento entrega", parentOrFailDelivery!!)
-        Log.i("quien recibe", recibe!!)
+//        Log.i("status intento entrega", parentOrFailDelivery!!)
+//        Log.i("quien recibe", recibe!!)
 
-        val userData = usersRepository.getAllUserDatabase()
-        val user = userData.user!!
+//        val userData = usersRepository.getAllUserDatabase()
+//
+//        val user = userData.user!!{
+
         val responseDelivery = deliveryR.setDelivery(guide!!, recibe, parentOrFailDelivery,typePago,pago)
+
         val messageDelivery = responseDelivery.messages!![0].code
+
         val recordIdDelivery= responseDelivery.response?.recordId
-        val setPhoto = deliveryR.setDeliveryPhoto(recordIdDelivery!!,url)
+
+        if (pago.equals("CONFIRMADO")){
+           val setPhoto = deliveryR.setDeliveryPhoto(recordIdDelivery!!,urlPago!!,"pagoContenedor")
+
+            val guideCod=getGuideCodUseCase.invoke(guide)
+
+            val recordid=guideCod.response?.data?.get(0)?.recordId
+
+            val responseUpdatePago = deliveryR.setUpdatePago(pago, recordId!!,"manifiestoPaquetes")
+
+            val responseUpdateCod = deliveryR.setUpdatePago(pago, recordid!!,"CodAPI")
+
+        }
+
+        val setPhoto = deliveryR.setDeliveryPhoto(recordIdDelivery!!,url,"contenedorFoto")
         val messageResponsePhoto = setPhoto.messages
-        Log.i("Code set photo",messageResponsePhoto.toString())
+
 
         val responseUpdateStaus = deliveryR.setUpdateStatus(status, recordId!!,"manifiestoPaquetes")
         val messageUpdateStatus = responseUpdateStaus.messages!![0].code
+
         val responseCreateStatus = deliveryR.setCreateStatus(guide, status!!)
         val messageCreateStatus = responseCreateStatus.messages!![0].code
+
         val responseTryDelivery = deliveryR.setTryDelivery(guide, status, "Exitoso")
         val messageTryDelivery = responseTryDelivery.messages!![0].code
 
         val responseGuide = guiderepository.getGuideQueryApi(guide,"Asignado",idPreM)
         val recordIdGuide = responseGuide.response?.data?.get(0)?.recordId
+
         val updateRGuiasManifest = deliveryR.setUpdateStatus(status, recordIdGuide!!,"GuiasAPI")
         val messageUpdateGuide = updateRGuiasManifest.messages?.get(0)?.code
         

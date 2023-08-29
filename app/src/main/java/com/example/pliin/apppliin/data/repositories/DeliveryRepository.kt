@@ -26,8 +26,8 @@ class DeliveryRepository @Inject constructor(
         return response.toDomain()
     }
 
-    suspend fun setDeliveryPhoto(recordId: String,url:String):ResponseRegisterDeliveryItem{
-        val response = apidelivery.setDeliveryPhoto(url,recordId)
+    suspend fun setDeliveryPhoto(recordId: String,url:String,campo:String):ResponseRegisterDeliveryItem{
+        val response = apidelivery.setDeliveryPhoto(url,recordId,campo)
         Log.i("response", "$response")
         return response.toDomain()
     }
@@ -39,6 +39,15 @@ class DeliveryRepository @Inject constructor(
         // tokenDao.insertToken(response.toDatabase())
         return response.toDomain()
     }
+
+    //Actualiza el status del pago del cod
+    suspend fun setUpdatePago(pago: String?, recordId: String,presentacion:String): ResponseRegisterDeliveryItem {
+        val response = apiupdate.setUpdatePago(pago, recordId,presentacion)
+        Log.i("response", "$response")
+        // tokenDao.insertToken(response.toDatabase())
+        return response.toDomain()
+    }
+
 
     //Opbtiene las response de la actualizacion del status de la guia
     suspend fun setCreateStatus(guide: String, status: String): ResponseRegisterDeliveryItem {

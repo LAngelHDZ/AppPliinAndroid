@@ -11,7 +11,7 @@ class SetDeliveryPhotoUseCase @Inject constructor(
 
     suspend operator fun invoke(recordId:String,url:String){
 
-        val response = deliveryRepository.setDeliveryPhoto(recordId, url)
+        val response = deliveryRepository.setDeliveryPhoto(recordId, url,"contenedorFoto")
         
     }
 }
