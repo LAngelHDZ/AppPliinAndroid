@@ -8,13 +8,12 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
-import com.example.pliin.apppliin.domain.usecase.GetGuideUseCase
+import com.example.pliin.apppliin.domain.usecase.guides.GetGuideUseCase
 import com.example.pliin.apppliin.generals.GeneralMethodsGuide
 import com.example.pliin.navigation.AppScreen
 import com.journeyapps.barcodescanner.ScanIntentResult
 import com.journeyapps.barcodescanner.ScanOptions
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 

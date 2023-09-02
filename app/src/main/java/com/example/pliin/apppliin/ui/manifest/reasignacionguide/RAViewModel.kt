@@ -7,10 +7,10 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
-import com.example.pliin.apppliin.domain.usecase.GetGuideUseCase
-import com.example.pliin.apppliin.domain.usecase.GetOneManifestUseCase
-import com.example.pliin.apppliin.domain.usecase.ReasignarGuideUseCase
-import com.example.pliin.apppliin.domain.usecase.UpdateManifestUseCase
+import com.example.pliin.apppliin.domain.usecase.guides.GetGuideUseCase
+import com.example.pliin.apppliin.domain.usecase.manifest.GetOneManifestUseCase
+import com.example.pliin.apppliin.domain.usecase.guides.ReasignarGuideUseCase
+import com.example.pliin.apppliin.domain.usecase.manifest.UpdateManifestUseCase
 import com.example.pliin.apppliin.generals.GeneralMethodsGuide
 import com.example.pliin.navigation.AppScreen
 import com.journeyapps.barcodescanner.ScanIntentResult

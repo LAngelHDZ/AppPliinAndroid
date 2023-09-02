@@ -1,15 +1,20 @@
 package com.example.pliin.apppliin.ui.planeationday
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
@@ -21,8 +26,10 @@ import androidx.compose.material.IconButton
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.ArrowRight
 import androidx.compose.material.icons.rounded.Cancel
 import androidx.compose.material.icons.rounded.CloudDownload
+import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material.icons.rounded.Done
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -36,6 +43,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import com.example.pliin.apppliin.domain.model.GuideItem
+import com.example.pliin.apppliin.ui.manifest.editmanifest.EMViewModel
+import com.example.pliin.apppliin.ui.manifest.editmanifest.HeadTable
 import kotlinx.coroutines.delay
 
 //@Preview(showSystemUi = true)
@@ -47,6 +57,8 @@ fun PlaneationDayScreen(navigationController: NavHostController, pdViewModel: PD
     val rutaManifest: String by pdViewModel.rutaManifest.observeAsState("")
     val totalGuides: String by pdViewModel.totalGuides.observeAsState("")
     val statusManifest: String by pdViewModel.statusManifest.observeAsState("")
+
+    val listGuides:List<GuideItem> by pdViewModel.listGuide.observeAsState(emptyList())
 
     Box() {
         Column {
@@ -85,7 +97,8 @@ fun PlaneationDayScreen(navigationController: NavHostController, pdViewModel: PD
                         folioManifest,
                         rutaManifest,
                         totalGuides,
-                        statusManifest
+                        statusManifest,
+                        listGuides
                     )
                     Footer(
                         Modifier
@@ -156,26 +169,127 @@ fun Body(
     folioManifest: String,
     rutaManifest: String,
     totalGuides: String,
-    statusManifest: String
+    statusManifest: String,
+    listGuides: List<GuideItem>
 ) {
     Box(modifier = modifier.fillMaxWidth()) {
-        Card(
-            modifier
-                .fillMaxWidth()
-                .padding(vertical = 4.dp),
-            border = BorderStroke(2.dp, Color.White),
-        ) {
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                FolioManifest(folioManifest)
-                Spacer(modifier = Modifier.size(8.dp))
-                RutaManifest(rutaManifest)
-                Spacer(modifier = Modifier.size(8.dp))
-                InfoManifest(totalGuides)
-                Spacer(modifier = Modifier.size(8.dp))
-                /*StatusManifest()
-                Spacer(modifier = Modifier.size(8.dp))*/
+
+        Column {
+            Card(
+                modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 4.dp),
+                border = BorderStroke(2.dp, Color.White),
+            ) {
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    FolioManifest(folioManifest)
+                    Spacer(modifier = Modifier.size(8.dp))
+                    RutaManifest(rutaManifest)
+                    Spacer(modifier = Modifier.size(8.dp))
+                    InfoManifest(totalGuides)
+                    Spacer(modifier = Modifier.size(8.dp))
+                    /*StatusManifest()
+                    Spacer(modifier = Modifier.size(8.dp))*/
+                }
+            }
+            ListGuide( Modifier
+                .weight(3f) )
+        }
+    }
+}
+
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+fun ListGuide(
+    modifier: Modifier,
+//    EMViewModel: EMViewModel,
+//    mapListGuide: Map<String, String>,
+//    countGuide: Int,
+//    qrcontent: String
+) {
+    val ListGuide = listOf(
+        "1Z0437452832J899771",
+        "1Z0437452832J899772",
+        "1Z0437452832J899773",
+        "1Z0437452832J899774",
+        "1Z0437452832J899775",
+        "1Z0437452832J899776",
+        "1Z0437452832J899777",
+        "1Z0437452832J899778",
+        "1Z0437452832J899779",
+        "1Z0437452832J899710",
+        "1Z0437452832J899711",
+        "1Z0437452832J899712",
+        "1Z0437452832J899713",
+        "1Z0437452832J899714",
+        "1Z0437452832J899715",
+        "1Z0437452832J899716",
+        "1Z0437452832J899717",
+    )
+    LazyColumn(
+        modifier = modifier
+            .fillMaxWidth()
+            .fillMaxHeight(),
+        //contentPadding = PaddingValues(4.dp),
+        verticalArrangement = Arrangement.spacedBy(2.dp)
+    ) {
+        stickyHeader {
+            HeadTable()
+
+        }
+        items(ListGuide) { item ->
+            Card(
+                modifier.fillMaxWidth(),
+                // border = BorderStroke(1.dp, Color(0xFF4425a7))
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = modifier.padding(horizontal = 4.dp)
+                ) {
+                    Box(modifier = Modifier.weight(2f)) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(
+                                imageVector = Icons.Rounded.ArrowRight,
+                                contentDescription = null,
+                                modifier = modifier
+                                    .size(30.dp)
+                                    .padding(0.dp),
+                                tint = Color(0xFF4425a7)
+                            )
+                            Text(
+                                text = item,
+                                //modifier =modifier.padding(horizontal = 4.dp),
+                                fontWeight = FontWeight.Normal,
+                                fontSize = 12.sp
+                            )
+                        }
+                    }
+                    Box(
+                        Modifier
+                            .fillMaxWidth()
+                            .weight(1.5f)
+//                            .padding(start = 8.dp)
+                        ,
+                        contentAlignment = Alignment.Center
+                    ) {
+                        IconButton(
+                            onClick = {
+//                                EMViewModel.onRemoveguideList(it.first, it.second)
+                            },
+                            modifier = modifier
+                        ) {
+                            Icon(
+                                imageVector = Icons.Rounded.Delete,
+                                contentDescription = null,
+                                modifier = modifier.size(30.dp),
+                                tint = Color.Red
+                            )
+                        }
+                    }
+                }
             }
         }
+
     }
 }
 
@@ -305,16 +419,16 @@ fun Footer(modifier: Modifier, pdViewModel: PDViewModel) {
         contentAlignment = Alignment.BottomCenter
     ) {
         Column {
-            BtnAplicarManifest(styleBoxBtn)
+            BtnAplicarManifest(styleBoxBtn,pdViewModel)
             Spacer(modifier = Modifier.size(4.dp))
-            BtnFinalizarManifest(styleBoxBtn)
+            BtnFinalizarManifest(styleBoxBtn,pdViewModel)
         }
     }
 }
 
 
 @Composable
-fun BtnFinalizarManifest(modifier: Modifier) {
+fun BtnFinalizarManifest(modifier: Modifier, pdViewModel: PDViewModel) {
     Button(
         modifier = modifier.fillMaxWidth(),
         onClick = { },
@@ -349,10 +463,10 @@ fun BtnFinalizarManifest(modifier: Modifier) {
 }
 
 @Composable
-fun BtnAplicarManifest(modifier: Modifier) {
+fun BtnAplicarManifest(modifier: Modifier, pdViewModel: PDViewModel) {
     Button(
         modifier = modifier.fillMaxWidth(),
-        onClick = { },
+        onClick = {pdViewModel.downloadManifest() },
         enabled = true,
         shape = RoundedCornerShape(10),
         colors = ButtonDefaults.buttonColors(

@@ -13,6 +13,7 @@ import com.example.pliin.apppliin.domain.model.queryguideitem.QueryGuidePliinIte
 import com.example.pliin.apppliin.domain.model.queryguideitem.toDomain
 import com.example.pliin.apppliin.domain.model.responseruditem.ResponseRUDItem
 import com.example.pliin.apppliin.domain.model.responseruditem.toDomain
+import com.example.pliin.apppliin.domain.model.toDomain
 import javax.inject.Inject
 
 class GuideRepository @Inject constructor(
@@ -108,10 +109,16 @@ class GuideRepository @Inject constructor(
         return response.toDomain()
     }
 
+//Metodos para consultas Locales
 
-//    Gregar guias a DB Local
+    //Gregar guias a DB Local
     suspend fun RegisterGuidesDB(guide:GuideItem){
         val response=guideDao.insertGuide(guide.toDatabase())
+    }
 
+    //Gregar guias a DB Local
+    suspend fun getGuidesDB():List<GuideItem>{
+        val response=guideDao.getGuidesDB()
+        return response.map{it.toDomain()}
     }
 }

@@ -5,11 +5,14 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
-import com.example.pliin.apppliin.domain.model.consecutivomanifestitem.Data
-import com.example.pliin.apppliin.domain.usecase.GetAllManifestUseCase
-import com.example.pliin.apppliin.domain.usecase.GetGuidesManifestUseCase
-import com.example.pliin.apppliin.domain.usecase.GetManifestDBUseCase
-import com.example.pliin.apppliin.domain.usecase.RegisterGuidesManDBUseCase
+import com.example.pliin.apppliin.domain.model.GuideItem
+import com.example.pliin.apppliin.domain.model.consecutivomanifestitem.FieldData
+import com.example.pliin.apppliin.domain.usecase.dblocal.GetGuidesManifestDBUseCase
+import com.example.pliin.apppliin.domain.usecase.manifest.GetAllManifestUseCase
+import com.example.pliin.apppliin.domain.usecase.manifest.GetGuidesManifestUseCase
+import com.example.pliin.apppliin.domain.usecase.dblocal.GetManifestDBUseCase
+import com.example.pliin.apppliin.domain.usecase.dblocal.SaveGuidesManDBUseCase
+import com.example.pliin.apppliin.domain.usecase.dblocal.SaveManifestDBUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import java.time.LocalDate
@@ -20,18 +23,22 @@ class PDViewModel @Inject constructor(
     private val getManifestUseCase: GetAllManifestUseCase,
     private val getManifestDBUseCase: GetManifestDBUseCase,
     private val getGuidesManifestUseCase: GetGuidesManifestUseCase,
-    private val registerGuidesManDBUseCase: RegisterGuidesManDBUseCase
+    private val saveGuidesManDBUseCase: SaveGuidesManDBUseCase,
+    private val saveManifestDBUseCase: SaveManifestDBUseCase,
+    private val getGuidesManifestDBUseCase: GetGuidesManifestDBUseCase
 
 ):ViewModel(){
-
    private val _isLoadingPlaneation = MutableLiveData<String>()
     val isLoadingPlaneation:LiveData<String> = _isLoadingPlaneation
 
-    private val _dataManifest = MutableLiveData< List<Data?>?>()
-    val dataManifest:LiveData< List<Data?>?> = _dataManifest
+    private val _dataManifest = MutableLiveData<FieldData>()
+    val dataManifest:LiveData<FieldData> = _dataManifest
 
     private val _folioManifest = MutableLiveData<String>()
     val folioManifest:LiveData<String> = _folioManifest
+
+    private val _listGuide = MutableLiveData<List<GuideItem>>()
+    val listGuide:LiveData<List<GuideItem>> = _listGuide
 
     private val _rutaManifest = MutableLiveData<String>()
     val rutaManifest:LiveData<String> = _rutaManifest
@@ -42,7 +49,7 @@ class PDViewModel @Inject constructor(
     private val _statusManifest = MutableLiveData<String>()
     val statusManifest:LiveData<String> = _statusManifest
 
-
+    private var btncountAplication:Int = 0
 
     fun LoadManifestPlaneation(){
         viewModelScope.launch{
@@ -53,7 +60,7 @@ class PDViewModel @Inject constructor(
                  if (response.isNullOrEmpty()){
                      _isLoadingPlaneation.value ="NoFound"
                  }else{
-                     _dataManifest.value = response
+                     _dataManifest.value = response[0]?.fieldData
                      _folioManifest.value = response[0]?.fieldData?.clavePrincipal
                      _rutaManifest.value = response[0]?.fieldData?.ruta
                      _totalGuides.value = response[0]?.fieldData?.totaolGuias?.toString()
@@ -61,7 +68,6 @@ class PDViewModel @Inject constructor(
                      _isLoadingPlaneation.value ="Founded"
                  }
              }else{
-
                  _folioManifest.value = responsedb?.clavePrincipal
                  _rutaManifest.value = responsedb?.ruta
                  _totalGuides.value = responsedb?.toString()
@@ -72,12 +78,15 @@ class PDViewModel @Inject constructor(
     }
 
     fun downloadManifest(){
-        viewModelScope.launch {
-            
-
-            val response = getGuidesManifestUseCase.invoke(folioManifest.value!!)
-            val ok = registerGuidesManDBUseCase.invoke(response)
-
+        viewModelScope.launch{
+            if (btncountAplication <= 0){
+                val responseSManifest = saveManifestDBUseCase.invoke(dataManifest.value!!)
+                val responseSGuides = getGuidesManifestUseCase.invoke(folioManifest.value!!)
+                val ok = saveGuidesManDBUseCase.invoke(responseSGuides)
+                val list = getGuidesManifestDBUseCase.invoke()
+                _listGuide.value = list
+                btncountAplication.plus(1)
+            }
         }
     }
 
@@ -88,10 +97,10 @@ class PDViewModel @Inject constructor(
         return "$month/$day/$year"
     }
 
-    private fun addZeroDate(dayOrMonth: Int): String {
-        return if (dayOrMonth < 10) {
+    private fun addZeroDate(dayOrMonth: Int): String{
+        return if (dayOrMonth < 10){
             "0$dayOrMonth"
-        } else {
+        }else{
             dayOrMonth.toString()
         }
     }
@@ -99,9 +108,8 @@ class PDViewModel @Inject constructor(
         _isLoadingPlaneation.value="Loading"
     }
 
-    fun navigation(navigationController: NavHostController) {
+    fun navigation(navigationController: NavHostController){
         navigationController.popBackStack()
         reset()
     }
-
 }

@@ -11,9 +11,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
 import com.example.pliin.apppliin.domain.repository.CustomCameraX
-import com.example.pliin.apppliin.domain.usecase.RechazadoUseCase
-import com.example.pliin.apppliin.domain.usecase.SetDeliveryUseCase
-import com.example.pliin.apppliin.domain.usecase.SetTryDeliveryUseCse
+import com.example.pliin.apppliin.domain.usecase.delivery.RechazadoUseCase
+import com.example.pliin.apppliin.domain.usecase.delivery.SetDeliveryUseCase
+import com.example.pliin.apppliin.domain.usecase.delivery.SetTryDeliveryUseCse
 import com.example.pliin.apppliin.generals.GeneralMethodsGuide
 import com.example.pliin.navigation.AppScreen
 import dagger.hilt.android.lifecycle.HiltViewModel

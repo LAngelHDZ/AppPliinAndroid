@@ -5,8 +5,8 @@ import android.util.Log
 import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.lifecycle.*
 import androidx.navigation.NavHostController
-import com.example.pliin.apppliin.domain.usecase.QueryGuideValidateUseCase
-import com.example.pliin.apppliin.domain.usecase.RegisterGuideUseCase
+import com.example.pliin.apppliin.domain.usecase.guides.QueryGuideValidateUseCase
+import com.example.pliin.apppliin.domain.usecase.guides.RegisterGuideUseCase
 import com.example.pliin.apppliin.generals.GeneralMethodsGuide
 import com.example.pliin.navigation.AppScreen
 import com.journeyapps.barcodescanner.ScanIntentResult

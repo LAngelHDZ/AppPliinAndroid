@@ -1354,7 +1354,6 @@ fun ListGuide(
                             )
                         }
                     }
-
                     Box(
                         Modifier
                             .fillMaxWidth()

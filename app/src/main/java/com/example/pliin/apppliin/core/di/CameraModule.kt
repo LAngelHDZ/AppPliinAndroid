@@ -10,7 +10,7 @@ import androidx.camera.core.ImageCapture.FLASH_MODE_ON
 import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import com.example.pliin.apppliin.domain.repository.CustomCameraX
-import com.example.pliin.apppliin.domain.usecase.CustomCameraImplement
+import com.example.pliin.apppliin.domain.usecase.camerax.CustomCameraImplement
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

@@ -2,6 +2,7 @@ package com.example.pliin.apppliin.data.repositories
 
 import android.util.Log
 import com.example.pliin.apppliin.data.database.dao.ManifestDao
+import com.example.pliin.apppliin.data.database.entities.toDatabase
 import com.example.pliin.apppliin.data.model.deliverymodel.GetDataGuideDRModel
 import com.example.pliin.apppliin.data.model.responserudmodel.ResponseRUDModel
 import com.example.pliin.apppliin.data.network.services.ManifestService
@@ -72,5 +73,11 @@ class ManifestRepository @Inject constructor(
     suspend fun getDBManifest(): FieldData? {
         val response = daoMaifest.getManifest()
         return response?.toDomain()
+    }
+
+    //Funcion para recuperar la informacion del manifiesto de la DB
+    suspend fun saveManifestDB(dataManifest:FieldData){
+        val response = daoMaifest.insertManifest(dataManifest.toDatabase())
+
     }
 }

@@ -7,8 +7,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
 import com.example.pliin.apppliin.domain.model.consecutivomanifestitem.Data
-import com.example.pliin.apppliin.domain.usecase.GetAllManifestUseCase
-import com.example.pliin.apppliin.domain.usecase.LoadEmployeeUseCase
+import com.example.pliin.apppliin.domain.usecase.manifest.GetAllManifestUseCase
+import com.example.pliin.apppliin.domain.usecase.user.LoadEmployeeUseCase
 import com.example.pliin.navigation.AppScreen
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
