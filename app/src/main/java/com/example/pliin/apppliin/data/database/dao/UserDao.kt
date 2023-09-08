@@ -51,7 +51,7 @@ interface UserDao {
     @Query("DELETE FROM guide_table")
     suspend fun deleteAllGuide()
 
-    @Transaction
-    @Query("SELECT * FROM user_table")
-    fun getUsersWithManifest():List<UserWithManifest>
+//    @Transaction
+//    @Query("SELECT * FROM user_table")
+//    fun getUsersWithManifest():List<UserWithManifest>
 }

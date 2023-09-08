@@ -27,7 +27,7 @@ class LoginUseCase @Inject constructor(
         val access: Boolean = if (userexiste) {
 //            val token: String = Loginrepository.getTokenDB()?.token.toString()
             val sessionAPi = Loginrepository.dologin(user, password)
-            if (sessionAPi.token.isNullOrBlank()){
+            if (!sessionAPi.token.isNullOrEmpty()){
                 Loginrepository.clearToken()
                 Loginrepository.insertToken(sessionAPi.toDatabase())
             }

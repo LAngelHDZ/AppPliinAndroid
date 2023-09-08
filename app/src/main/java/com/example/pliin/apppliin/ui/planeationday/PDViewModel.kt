@@ -68,9 +68,11 @@ class PDViewModel @Inject constructor(
                      _isLoadingPlaneation.value ="Founded"
                  }
              }else{
+                 val list = getGuidesManifestDBUseCase.invoke()
+                 _listGuide.value = list
                  _folioManifest.value = responsedb?.clavePrincipal
                  _rutaManifest.value = responsedb?.ruta
-                 _totalGuides.value = responsedb?.toString()
+                 _totalGuides.value = responsedb?.totaolGuias.toString()
                  _statusManifest.value = responsedb?.statusPreM
                  _isLoadingPlaneation.value ="Founded"
              }

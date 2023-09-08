@@ -44,7 +44,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.pliin.apppliin.domain.model.GuideItem
-import com.example.pliin.apppliin.ui.manifest.editmanifest.EMViewModel
 import com.example.pliin.apppliin.ui.manifest.editmanifest.HeadTable
 import kotlinx.coroutines.delay
 
@@ -193,7 +192,8 @@ fun Body(
                 }
             }
             ListGuide( Modifier
-                .weight(3f) )
+                .weight(3f),
+                listGuides)
         }
     }
 }
@@ -202,6 +202,7 @@ fun Body(
 @Composable
 fun ListGuide(
     modifier: Modifier,
+    listGuides: List<GuideItem>,
 //    EMViewModel: EMViewModel,
 //    mapListGuide: Map<String, String>,
 //    countGuide: Int,
@@ -237,55 +238,54 @@ fun ListGuide(
             HeadTable()
 
         }
-        items(ListGuide) { item ->
+        items(listGuides) { item ->
             Card(
                 modifier.fillMaxWidth(),
                 // border = BorderStroke(1.dp, Color(0xFF4425a7))
-            ) {
+            ){
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = modifier.padding(horizontal = 4.dp)
-                ) {
-                    Box(modifier = Modifier.weight(2f)) {
+                ){
+                    Box(modifier = Modifier.weight(1f)) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
-                            Icon(
-                                imageVector = Icons.Rounded.ArrowRight,
-                                contentDescription = null,
-                                modifier = modifier
-                                    .size(30.dp)
-                                    .padding(0.dp),
-                                tint = Color(0xFF4425a7)
-                            )
+//                            Icon(
+//                                imageVector = Icons.Rounded.ArrowRight,
+//                                contentDescription = null,
+//                                modifier = modifier
+//                                    .size(15.dp),
+//                                tint = Color(0xFF4425a7)
+//                            )
                             Text(
-                                text = item,
+                                text = "${item.idGuia}",
                                 //modifier =modifier.padding(horizontal = 4.dp),
                                 fontWeight = FontWeight.Normal,
                                 fontSize = 12.sp
                             )
                         }
                     }
-                    Box(
-                        Modifier
-                            .fillMaxWidth()
-                            .weight(1.5f)
-//                            .padding(start = 8.dp)
-                        ,
-                        contentAlignment = Alignment.Center
-                    ) {
-                        IconButton(
-                            onClick = {
-//                                EMViewModel.onRemoveguideList(it.first, it.second)
-                            },
-                            modifier = modifier
-                        ) {
-                            Icon(
-                                imageVector = Icons.Rounded.Delete,
-                                contentDescription = null,
-                                modifier = modifier.size(30.dp),
-                                tint = Color.Red
-                            )
-                        }
-                    }
+//                    Box(
+//                        Modifier
+//                            .fillMaxWidth()
+//                            .weight(1.5f)
+////                            .padding(start = 8.dp)
+//                        ,
+//                        contentAlignment = Alignment.Center
+//                    ) {
+//                        IconButton(
+//                            onClick = {
+////                                EMViewModel.onRemoveguideList(it.first, it.second)
+//                            },
+//                            modifier = modifier
+//                        ) {
+//                            Icon(
+//                                imageVector = Icons.Rounded.Delete,
+//                                contentDescription = null,
+//                                modifier = modifier.size(30.dp),
+//                                tint = Color.Red
+//                            )
+//                        }
+//                    }
                 }
             }
         }

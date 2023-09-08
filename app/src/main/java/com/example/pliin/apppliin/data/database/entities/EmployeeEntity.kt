@@ -10,49 +10,49 @@ import com.google.gson.annotations.SerializedName
 data class EmployeeEntity(
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "id") val id: Int = 0,
-    @SerializedName("a_materno")
+    @ColumnInfo("a_materno")
     val aMaterno: String?,
-    @SerializedName("a_paterno")
+    @ColumnInfo("a_paterno")
     val aPaterno: String?,
-    @SerializedName("Area")
+    @ColumnInfo("Area")
     val area: String?,
-    @SerializedName("CP")
+    @ColumnInfo("CP")
     val cP: String?,
-    @SerializedName("CURP")
+    @ColumnInfo("CURP")
     val cURP: String?,
-    @SerializedName("Calle")
+    @ColumnInfo("Calle")
     val calle: String?,
-    @SerializedName("Ciudad")
+    @ColumnInfo("Ciudad")
     val ciudad: String?,
-    @SerializedName("codigoEmpleado")
+    @ColumnInfo("codigoEmpleado")
     val codigoEmpleado: String?,
-    @SerializedName("Colonia")
+    @ColumnInfo("Colonia")
     val colonia: String?,
-    @SerializedName("Estado")
+    @ColumnInfo("Estado")
     val estado: String?,
-    @SerializedName("fechaNacimiento")
+    @ColumnInfo("fechaNacimiento")
     val fechaNacimiento: String?,
-    @SerializedName("fotografia")
+    @ColumnInfo("fotografia")
     val fotografia: String?,
-    @SerializedName("municipio")
+    @ColumnInfo("municipio")
     val municipio: String?,
-    @SerializedName("nombre")
+    @ColumnInfo("nombre")
     val nombre: String?,
-    @SerializedName("numInt")
+    @ColumnInfo("numInt")
     val numInt: String?,
-    @SerializedName("privilegios")
+    @ColumnInfo("privilegios")
     val privilegios: String?,
-    @SerializedName("RFC")
+    @ColumnInfo("RFC")
     val rFC: String?,
-    @SerializedName("sexo")
+    @ColumnInfo("sexo")
     val sexo: String?,
-    @SerializedName("StatusLaboral")
+    @ColumnInfo("StatusLaboral")
     val statusLaboral: String?,
-    @SerializedName("SueldoComisionista")
+    @ColumnInfo("SueldoComisionista")
     val sueldoComisionista: Int?,
-    @SerializedName("SueldoOperativo")
+    @ColumnInfo("SueldoOperativo")
     val sueldoOperativo: Int?,
-    @SerializedName("username")
+    @ColumnInfo("username")
     val username: String?
 )
 

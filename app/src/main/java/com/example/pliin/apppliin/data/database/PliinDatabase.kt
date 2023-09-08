@@ -4,6 +4,7 @@ import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import com.example.pliin.apppliin.data.database.dao.EmployeeDao
+import com.example.pliin.apppliin.data.database.dao.GuideDao
 import com.example.pliin.apppliin.data.database.dao.ManifestDao
 import com.example.pliin.apppliin.data.database.dao.TokenDao
 import com.example.pliin.apppliin.data.database.dao.UserDao
@@ -24,6 +25,8 @@ import com.example.pliin.apppliin.data.database.entities.*
 abstract class PliinDatabase : RoomDatabase() {
 
     abstract fun getUserDao(): UserDao
+
+    abstract fun getGuideDao(): GuideDao
 
     abstract fun getTokenDao(): TokenDao
 
