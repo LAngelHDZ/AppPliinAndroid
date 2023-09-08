@@ -1355,28 +1355,28 @@ fun ListGuide(
                         }
                     }
 
-                    Box(
-                        Modifier
-                            .fillMaxWidth()
-                            .weight(1.5f)
-//                            .padding(start = 8.dp)
-                        ,
-                        contentAlignment = Alignment.Center
-                    ) {
-                        IconButton(
-                            onClick = {
-                                EMViewModel.onRemoveguideList(it.first, it.second)
-                            },
-                            modifier = modifier
-                        ) {
-                            Icon(
-                                imageVector = Icons.Rounded.Delete,
-                                contentDescription = null,
-                                modifier = modifier.size(30.dp),
-                                tint = Color.Red
-                            )
-                        }
-                    }
+//                    Box(
+//                        Modifier
+//                            .fillMaxWidth()
+//                            .weight(1.5f)
+////                            .padding(start = 8.dp)
+//                        ,
+//                        contentAlignment = Alignment.Center
+//                    ) {
+//                        IconButton(
+//                            onClick = {
+//                                EMViewModel.onRemoveguideList(it.first, it.second)
+//                            },
+//                            modifier = modifier
+//                        ) {
+//                            Icon(
+//                                imageVector = Icons.Rounded.Delete,
+//                                contentDescription = null,
+//                                modifier = modifier.size(30.dp),
+//                                tint = Color.Red
+//                            )
+//                        }
+//                    }
                 }
             }
         }
