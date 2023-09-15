@@ -1334,49 +1334,54 @@ fun ListGuide(
             ) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
+
                     modifier = modifier.padding(horizontal = 4.dp)
                 ) {
                     Box(modifier = Modifier.weight(2f)) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Icon(
-                                imageVector = Icons.Rounded.ArrowRight,
-                                contentDescription = null,
-                                modifier = modifier
-                                    .size(30.dp)
-                                    .padding(0.dp),
-                                tint = Color(0xFF4425a7)
-                            )
-                            Text(
-                                text = it.first,
-                                //modifier =modifier.padding(horizontal = 4.dp),
-                                fontWeight = FontWeight.Normal,
-                                fontSize = 12.sp
-                            )
+                        Row(horizontalArrangement = Arrangement.Start) {
+                            Box(modifier  = Modifier.weight(0.1f)){
+                                Icon(
+                                    imageVector = Icons.Rounded.ArrowRight,
+                                    contentDescription = null,
+                                    modifier = modifier
+                                        .size(25.dp)
+                                        .padding(0.dp),
+                                    tint = Color(0xFF4425a7)
+                                )
+                            }
+                            Box(modifier = Modifier.weight(1f)) {
+                                Text(
+                                    text = it.first,
+                                    //modifier =modifier.padding(horizontal = 4.dp),
+                                    fontWeight = FontWeight.Normal,
+                                    fontSize = 12.sp
+                                )
+                            }
                         }
                     }
 
-                    Box(
-                        Modifier
-                            .fillMaxWidth()
-                            .weight(1.5f)
-//                            .padding(start = 8.dp)
-                        ,
-                        contentAlignment = Alignment.Center
-                    ) {
-                        IconButton(
-                            onClick = {
-                                EMViewModel.onRemoveguideList(it.first, it.second)
-                            },
-                            modifier = modifier
-                        ) {
-                            Icon(
-                                imageVector = Icons.Rounded.Delete,
-                                contentDescription = null,
-                                modifier = modifier.size(30.dp),
-                                tint = Color.Red
-                            )
-                        }
-                    }
+//                    Box(
+//                        Modifier
+//                            .fillMaxWidth()
+//                            .weight(1.5f)
+////                            .padding(start = 8.dp)
+//                        ,
+//                        contentAlignment = Alignment.Center
+//                    ) {
+//                        IconButton(
+//                            onClick = {
+//                                EMViewModel.onRemoveguideList(it.first, it.second)
+//                            },
+//                            modifier = modifier
+//                        ) {
+//                            Icon(
+//                                imageVector = Icons.Rounded.Delete,
+//                                contentDescription = null,
+//                                modifier = modifier.size(30.dp),
+//                                tint = Color.Red
+//                            )
+//                        }
+//                    }
                 }
             }
         }
