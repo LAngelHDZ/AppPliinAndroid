@@ -1,4 +1,4 @@
-package com.example.pliin.apppliin.ui.planeationday
+package com.example.pliin.apppliin.ui.planeation.planetionday
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -46,8 +46,15 @@ class PDViewModel @Inject constructor(
     private val _totalGuides = MutableLiveData<String>()
     val totalGuides:LiveData<String> = _totalGuides
 
+    private val _idRecord = MutableLiveData<String>()
+    val idRecord:LiveData<String> = _idRecord
+
     private val _statusManifest = MutableLiveData<String>()
     val statusManifest:LiveData<String> = _statusManifest
+
+    private val _manifestAplicado = MutableLiveData<Boolean>()
+    val manifestAplicado:LiveData<Boolean> = _manifestAplicado
+
 
     private var btncountAplication:Int = 0
 
@@ -68,7 +75,7 @@ class PDViewModel @Inject constructor(
                      _isLoadingPlaneation.value ="Founded"
                  }
              }else{
-                 val list = getGuidesManifestDBUseCase.invoke()
+                 val list = getGuidesManifestDBUseCase.invoke(responsedb?.clavePrincipal!!)
                  _listGuide.value = list
                  _folioManifest.value = responsedb?.clavePrincipal
                  _rutaManifest.value = responsedb?.ruta
@@ -79,13 +86,34 @@ class PDViewModel @Inject constructor(
         }
     }
 
+    fun setDataManifest(
+        folioManifest: String,
+        ruta: String,
+        totalGuides: String,
+        idrecord: String
+    ) {
+        viewModelScope.launch {
+            _folioManifest.value = folioManifest
+            _rutaManifest.value = ruta
+            _totalGuides.value = totalGuides
+            _idRecord.value =idrecord
+            val responseSGuides = getGuidesManifestUseCase.invoke(folioManifest)
+
+            if (responseSGuides.isNullOrEmpty()){
+                _isLoadingPlaneation.value ="NoFound"
+            }else{
+                _isLoadingPlaneation.value ="Founded"
+            }
+        }
+    }
+
     fun downloadManifest(){
         viewModelScope.launch{
             if (btncountAplication <= 0){
                 val responseSManifest = saveManifestDBUseCase.invoke(dataManifest.value!!)
                 val responseSGuides = getGuidesManifestUseCase.invoke(folioManifest.value!!)
                 val ok = saveGuidesManDBUseCase.invoke(responseSGuides)
-                val list = getGuidesManifestDBUseCase.invoke()
+                val list = getGuidesManifestDBUseCase.invoke(folioManifest.value!!)
                 _listGuide.value = list
                 btncountAplication.plus(1)
             }

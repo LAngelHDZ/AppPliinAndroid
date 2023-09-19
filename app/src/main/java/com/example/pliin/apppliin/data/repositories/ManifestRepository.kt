@@ -70,9 +70,15 @@ class ManifestRepository @Inject constructor(
 
 
 //    Funcion para recuperar la informacion de la BD local
-    suspend fun getDBManifest(): FieldData? {
-        val response = daoMaifest.getManifest()
+    suspend fun getDBManifest(folioManifest: String): FieldData? {
+        val response = daoMaifest.getManifest(folioManifest)
         return response?.toDomain()
+    }
+
+    //    Funcion para recuperar la informacion de la BD local
+    suspend fun getAllDBManifest():List<FieldData?>  {
+        val response = daoMaifest.getAllManifest()
+        return response.map { it?.toDomain() }
     }
 
     //Funcion para recuperar la informacion del manifiesto de la DB

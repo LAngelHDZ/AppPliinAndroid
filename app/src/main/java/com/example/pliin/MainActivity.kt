@@ -43,8 +43,10 @@ import com.example.pliin.apppliin.ui.manifest.editmanifest.EditManifestScreen
 import com.example.pliin.apppliin.ui.manifest.mymanifest.MFViewModel
 import com.example.pliin.apppliin.ui.manifest.mymanifest.ManifestScreen
 import com.example.pliin.apppliin.ui.manifest.reasignacionguide.ReasignacionGuideScreen
-import com.example.pliin.apppliin.ui.planeationday.PDViewModel
-import com.example.pliin.apppliin.ui.planeationday.PlaneationDayScreen
+import com.example.pliin.apppliin.ui.planeation.planetionday.PDViewModel
+import com.example.pliin.apppliin.ui.planeation.planetionday.PlaneationDayScreen
+import com.example.pliin.apppliin.ui.planeation.viewmanifestplaneation.VMFViewModel
+import com.example.pliin.apppliin.ui.planeation.viewmanifestplaneation.ViewManifestScreen
 import com.example.pliin.apppliin.ui.registerdelivery.RDViewModel
 import com.example.pliin.apppliin.ui.registerdelivery.RegisterDeliveryScreen
 import com.example.pliin.navigation.AppScreen
@@ -64,6 +66,7 @@ class MainActivity : ComponentActivity() {
     private val cmViewModel: CMViewModel by viewModels()
     private val mfViewModel: MFViewModel by viewModels()
     private val pdViewModel: PDViewModel by viewModels()
+    private val vmfViewModel: VMFViewModel by viewModels()
     private lateinit var connectionLiveData: NetworkConectivity
 
     private val requestPermissionLauncher =
@@ -158,13 +161,29 @@ class MainActivity : ComponentActivity() {
             //Ruta de Screeen de la planeaciones del dia
             composable(
                 route = AppScreen.PlaneationDayScreen.route,
-            ) {
-                PlaneationDayScreen(navigationController,pdViewModel)
+                arguments = listOf(
+                    navArgument("folioManifest") { type = NavType.StringType },
+                    navArgument("route") { type = NavType.StringType },
+                    navArgument("totaguides") { type = NavType.StringType },
+                    navArgument("idRecord") { type = NavType.StringType },
+                    )
+            ) { backStackEntry ->
+                PlaneationDayScreen(navigationController,pdViewModel,
+                    backStackEntry.arguments?.getString("folioManifest") ?: "",
+                    backStackEntry.arguments?.getString("ruta") ?: "",
+                    backStackEntry.arguments?.getString("totalguides") ?: "",
+                    backStackEntry.arguments?.getString("idrecord") ?: ""
+                    )
             }
 
             //Ruta de Screen de meenu principal de guias
             composable(route = AppScreen.MenuGuideScreen.route) {
                 MenuGuideScreen(navigationController)
+            }
+
+            //Ruta de Screen de meenu principal de guias
+            composable(route = AppScreen.ViewManifiestoScreen.route) {
+                ViewManifestScreen(navigationController,vmfViewModel)
             }
 
             //Ruta para redirigirse a la screen de reasignación de guias

@@ -34,10 +34,19 @@ sealed class AppScreen(val route:String){
       }*/
 
     object ManifiestoMainScreen : AppScreen("ManifiestoMainScreen")
+
+    object ViewManifiestoScreen : AppScreen("ViewManifiestoScreen")
     object ReasignacionGuideScreen : AppScreen("ReasignacionGuideScreen")
     object ManifestScreen : AppScreen("ManifestScreen")
     object MenuGuideScreen : AppScreen("MenuGuideScreen")
-    object PlaneationDayScreen : AppScreen("PlaneationDayScreen")
+    object PlaneationDayScreen : AppScreen("PlaneationDayScreen/{folioManifest}/{ruta}/{totalguides}/{idRecord}"){
+        fun createRoute(
+            folioManifest: String,
+            ruta: String,
+            totalguides:String,
+            idRecord:String
+        )="PlaneationDayScreen/$folioManifest/$ruta/$totalguides/$idRecord"
+    }
     object CreateManifestScreen : AppScreen("CreateManifestScreen/{area}") {
         fun createRoute(
             area: String

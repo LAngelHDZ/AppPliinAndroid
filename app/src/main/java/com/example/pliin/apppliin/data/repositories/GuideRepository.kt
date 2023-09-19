@@ -117,8 +117,8 @@ class GuideRepository @Inject constructor(
     }
 
     //Gregar guias a DB Local
-    suspend fun getGuidesDB():List<GuideItem>{
-        val response=guideDao.getGuidesDB()
+    suspend fun getGuidesDB(folioManifest: String):List<GuideItem>{
+        val response=guideDao.getGuidesDB(folioManifest)
         return response.map{it.toDomain()}
     }
 }

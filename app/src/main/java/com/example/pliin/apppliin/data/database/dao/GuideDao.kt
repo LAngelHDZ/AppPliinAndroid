@@ -4,10 +4,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import com.example.pliin.apppliin.data.database.entities.EmployeeEntity
 import com.example.pliin.apppliin.data.database.entities.GuideEntity
-import com.example.pliin.apppliin.data.database.entities.TokenEntity
-import com.example.pliin.apppliin.domain.model.GuideItem
 
 @Dao
 interface GuideDao {
@@ -18,8 +15,8 @@ interface GuideDao {
 
 
     //Comsulta la informacion de las guias del manifiesto
-    @Query("SELECT * FROM guide_table")
-    suspend fun getGuidesDB():List<GuideEntity>
+    @Query("SELECT * FROM guide_table WHERE idPreM = :folioManifest")
+    suspend fun getGuidesDB(folioManifest: String):List<GuideEntity>
 
     @Query("DELETE FROM guide_table")
     suspend fun deleteAllGuide()

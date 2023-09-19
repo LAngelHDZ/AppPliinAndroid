@@ -1,4 +1,4 @@
-package com.example.pliin.apppliin.ui.planeationday
+package com.example.pliin.apppliin.ui.planeation.planetionday
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -26,10 +26,8 @@ import androidx.compose.material.IconButton
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.ArrowRight
 import androidx.compose.material.icons.rounded.Cancel
 import androidx.compose.material.icons.rounded.CloudDownload
-import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material.icons.rounded.Done
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -49,7 +47,14 @@ import kotlinx.coroutines.delay
 
 //@Preview(showSystemUi = true)
 @Composable
-fun PlaneationDayScreen(navigationController: NavHostController, pdViewModel: PDViewModel) {
+fun PlaneationDayScreen(
+    navigationController: NavHostController,
+    pdViewModel: PDViewModel,
+    foliomanifest: String,
+    ruta: String,
+    totalguides: String,
+    idrecord: String
+) {
     val isLoadingP: String by pdViewModel.isLoadingPlaneation.observeAsState("Loading")
 
     val folioManifest: String by pdViewModel.folioManifest.observeAsState("")
@@ -57,7 +62,7 @@ fun PlaneationDayScreen(navigationController: NavHostController, pdViewModel: PD
     val totalGuides: String by pdViewModel.totalGuides.observeAsState("")
     val statusManifest: String by pdViewModel.statusManifest.observeAsState("")
 
-    val listGuides:List<GuideItem> by pdViewModel.listGuide.observeAsState(emptyList())
+    val listGuides: List<GuideItem> by pdViewModel.listGuide.observeAsState(emptyList())
 
     Box() {
         Column {
@@ -78,7 +83,7 @@ fun PlaneationDayScreen(navigationController: NavHostController, pdViewModel: PD
                     )
                     LaunchedEffect(key1 = true) {
                         delay(2000)
-                        pdViewModel.LoadManifestPlaneation()
+                        pdViewModel.setDataManifest(folioManifest, ruta, totalGuides, idrecord)
                     }
                 }
 
@@ -88,6 +93,7 @@ fun PlaneationDayScreen(navigationController: NavHostController, pdViewModel: PD
                             .weight(2.8f)
                     )
                 }
+
                 else -> {
                     Body(
                         Modifier
@@ -133,7 +139,8 @@ fun NoFoundPlaneation(modifier: Modifier) {
         contentAlignment = Alignment.Center
     ) {
         Column {
-            Text(text = "No se ha encontrado una planeacion ",
+            Text(
+                text = "No se ha encontrado una planeacion ",
                 fontSize = 18.sp,
                 fontWeight = FontWeight.SemiBold,
                 color = Color(96, 127, 243),
@@ -151,7 +158,7 @@ fun Header(modifier: Modifier, navigationController: NavHostController, pdViewMo
         contentColor = Color.White,
         elevation = 4.dp,
         navigationIcon = {
-            IconButton(onClick = { pdViewModel.navigation(navigationController)}) {
+            IconButton(onClick = { pdViewModel.navigation(navigationController) }) {
                 Icon(
                     imageVector = Icons.Rounded.Cancel,
                     contentDescription = null,
@@ -191,9 +198,11 @@ fun Body(
                     Spacer(modifier = Modifier.size(8.dp))*/
                 }
             }
-            ListGuide( Modifier
-                .weight(3f),
-                listGuides)
+            ListGuide(
+                Modifier
+                    .weight(3f),
+                listGuides
+            )
         }
     }
 }
@@ -242,11 +251,11 @@ fun ListGuide(
             Card(
                 modifier.fillMaxWidth(),
                 // border = BorderStroke(1.dp, Color(0xFF4425a7))
-            ){
+            ) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = modifier.padding(horizontal = 4.dp)
-                ){
+                ) {
                     Box(modifier = Modifier.weight(1f)) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
 //                            Icon(
@@ -419,9 +428,9 @@ fun Footer(modifier: Modifier, pdViewModel: PDViewModel) {
         contentAlignment = Alignment.BottomCenter
     ) {
         Column {
-            BtnAplicarManifest(styleBoxBtn,pdViewModel)
+            BtnAplicarManifest(styleBoxBtn, pdViewModel)
             Spacer(modifier = Modifier.size(4.dp))
-            BtnFinalizarManifest(styleBoxBtn,pdViewModel)
+            BtnFinalizarManifest(styleBoxBtn, pdViewModel)
         }
     }
 }
@@ -466,7 +475,7 @@ fun BtnFinalizarManifest(modifier: Modifier, pdViewModel: PDViewModel) {
 fun BtnAplicarManifest(modifier: Modifier, pdViewModel: PDViewModel) {
     Button(
         modifier = modifier.fillMaxWidth(),
-        onClick = {pdViewModel.downloadManifest() },
+        onClick = { pdViewModel.downloadManifest() },
         enabled = true,
         shape = RoundedCornerShape(10),
         colors = ButtonDefaults.buttonColors(

@@ -33,7 +33,7 @@ class GetAllManifestUseCase @Inject constructor(
             }
 
             val  limit = if(employee.area.equals("Operador Logistico")){
-                "5"
+                "10"
             }else{
                 "50"
             }
