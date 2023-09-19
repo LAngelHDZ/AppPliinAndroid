@@ -932,7 +932,7 @@ fun AlertDialogConfirmation(
     var columnSize by remember { mutableStateOf(Size.Zero) }
 
     if (show){
-        Dialog(onDismissRequest = { dgsViewModel.reset() }){
+        Dialog(onDismissRequest = {}){
             Column(
                 Modifier
                     .background(Color.White)
