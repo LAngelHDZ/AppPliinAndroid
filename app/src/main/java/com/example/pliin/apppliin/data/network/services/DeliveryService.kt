@@ -27,10 +27,11 @@ class DeliveryService @Inject constructor(
         recibe: String?,
         parent: String?,
         typePago: String?,
-        pago: String
+        pago: String,
+        idPrem: String
     ): ResponseRegisterDeliveryModel {
         val bearer = daotoken.getToken()?.token
-        val query = RegisterDeliveryDto(FieldData(guide, parent, recibe,pago,typePago))
+        val query = RegisterDeliveryDto(FieldData(guide, parent, recibe,pago,typePago,idPrem))
 
         return withContext(Dispatchers.IO) {
             try {

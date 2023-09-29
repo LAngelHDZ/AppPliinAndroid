@@ -13,6 +13,8 @@ data class FieldData(
     @SerializedName("pago")
     val pago: String?,
     @SerializedName("tipoPago")
-    val tipoPago: String?
+    val tipoPago: String?,
+    @SerializedName("manifiesto")
+    val manifiesto: String?
 
 )
