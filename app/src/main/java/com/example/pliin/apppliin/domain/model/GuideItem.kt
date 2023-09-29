@@ -32,7 +32,10 @@ data class GuideItem(
     @SerializedName("valor_guia")
     val valorGuia: Double?,
     @SerializedName("IntentosEntregasRE::observacion")
-    val statusIntento: String?
+    val statusIntento: String?,
+    @SerializedName("loadSytem")
+    val loadSytem: Boolean? = false,
+
 )
 
 fun GuideModel.toDomain() = GuideItem(
@@ -48,7 +51,8 @@ fun GuideModel.toDomain() = GuideItem(
     preManifiestosEmpresa=preManifiestosEmpresa,
     preManifiestosRuta=preManifiestosRuta,
     valorGuia=valorGuia,
-    statusIntento= statusIntento
+    statusIntento= statusIntento,
+    loadSytem=loadSytem
 )
 
 fun FieldDataItem.toDomain() = GuideItem(
@@ -64,7 +68,8 @@ fun FieldDataItem.toDomain() = GuideItem(
     preManifiestosEmpresa=preManifiestosEmpresa,
     preManifiestosRuta=preManifiestosRuta,
     valorGuia=valorGuia,
-    statusIntento= statusIntento
+    statusIntento= statusIntento,
+    loadSytem=loadSytem
 )
 
 
@@ -81,5 +86,6 @@ fun GuideEntity.toDomain() = GuideItem(
     preManifiestosEmpresa=preManifiestosEmpresa,
     preManifiestosRuta=preManifiestosRuta,
     valorGuia=valorGuia,
-    statusIntento= statusIntento
+    statusIntento= statusIntento,
+    loadSytem=loadSytem
 )

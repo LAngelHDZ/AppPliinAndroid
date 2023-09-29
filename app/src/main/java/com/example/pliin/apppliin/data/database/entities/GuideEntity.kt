@@ -23,6 +23,7 @@ data class GuideEntity(
     @ColumnInfo("ruta") val preManifiestosRuta: String?,
     @ColumnInfo("valorGuia") val valorGuia: Double?,
     @ColumnInfo("observacionIntento") val statusIntento: String?,
+    @ColumnInfo("loadSytem") val loadSytem: Boolean? = false,
 )
 
 fun GuideItem.toDatabase() = GuideEntity(
@@ -38,5 +39,6 @@ fun GuideItem.toDatabase() = GuideEntity(
     preManifiestosEmpresa=preManifiestosEmpresa,
     preManifiestosRuta=preManifiestosRuta,
     valorGuia=valorGuia,
-    statusIntento= statusIntento
+    statusIntento= statusIntento,
+    loadSytem = loadSytem
 )

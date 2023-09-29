@@ -43,10 +43,11 @@ import com.example.pliin.apppliin.ui.manifest.editmanifest.EditManifestScreen
 import com.example.pliin.apppliin.ui.manifest.mymanifest.MFViewModel
 import com.example.pliin.apppliin.ui.manifest.mymanifest.ManifestScreen
 import com.example.pliin.apppliin.ui.manifest.reasignacionguide.ReasignacionGuideScreen
+import com.example.pliin.apppliin.ui.manifest.viewmanifest.ViewManifestScreen
 import com.example.pliin.apppliin.ui.planeation.planetionday.PDViewModel
 import com.example.pliin.apppliin.ui.planeation.planetionday.PlaneationDayScreen
 import com.example.pliin.apppliin.ui.planeation.viewmanifestplaneation.VMFViewModel
-import com.example.pliin.apppliin.ui.planeation.viewmanifestplaneation.ViewManifestScreen
+import com.example.pliin.apppliin.ui.planeation.viewmanifestplaneation.ViewManifestPlaneationScreen
 import com.example.pliin.apppliin.ui.registerdelivery.RDViewModel
 import com.example.pliin.apppliin.ui.registerdelivery.RegisterDeliveryScreen
 import com.example.pliin.navigation.AppScreen
@@ -158,32 +159,53 @@ class MainActivity : ComponentActivity() {
                 ManifiestoMainScreen(navigationController)
             }
 
-            //Ruta de Screeen de la planeaciones del dia
+            //Ruta de Screeen de Listado de manifiestos planificados
             composable(
-                route = AppScreen.PlaneationDayScreen.route,
-                arguments = listOf(
-                    navArgument("folioManifest") { type = NavType.StringType },
-                    navArgument("route") { type = NavType.StringType },
-                    navArgument("totaguides") { type = NavType.StringType },
-                    navArgument("idRecord") { type = NavType.StringType },
-                    )
-            ) { backStackEntry ->
-                PlaneationDayScreen(navigationController,pdViewModel,
-                    backStackEntry.arguments?.getString("folioManifest") ?: "",
-                    backStackEntry.arguments?.getString("ruta") ?: "",
-                    backStackEntry.arguments?.getString("totalguides") ?: "",
-                    backStackEntry.arguments?.getString("idrecord") ?: ""
-                    )
+                route = AppScreen. ViewManifestPlaneationScreen.route,
+            ) {
+                ViewManifestPlaneationScreen(navigationController,vmfViewModel)
             }
+
+
+
 
             //Ruta de Screen de meenu principal de guias
             composable(route = AppScreen.MenuGuideScreen.route) {
                 MenuGuideScreen(navigationController)
             }
 
-            //Ruta de Screen de meenu principal de guias
-            composable(route = AppScreen.ViewManifiestoScreen.route) {
-                ViewManifestScreen(navigationController,vmfViewModel)
+            //Ruta de Screen de vista del manifiesto para iniciar planeacion
+            composable(route = AppScreen.ViewManifestScreen.route,
+                arguments = listOf(
+                    navArgument("nameEmployee") { type = NavType.StringType },
+                    navArgument("idRecord") { type = NavType.StringType },
+                    navArgument("route") { type = NavType.StringType },
+                    navArgument("claveManifest") { type = NavType.StringType },
+                )
+                ) {backStackEntry ->
+                ViewManifestScreen(
+                    navigationController,
+                    backStackEntry.arguments?.getString("nameEmployee") ?: "",
+                    backStackEntry.arguments?.getString("idRecord") ?: "",
+                    backStackEntry.arguments?.getString("route") ?: "",
+                    backStackEntry.arguments?.getString("claveManifest") ?: ""
+                )
+            }
+
+            //Ruta de Screeen de la planeaciones del dia
+            composable(
+                route = AppScreen.PlaneationDayScreen.route,
+                arguments = listOf(
+                    navArgument("foliomanifest") { type = NavType.StringType },
+                    navArgument("ruta") { type = NavType.StringType },
+                    navArgument("totalguides") { type = NavType.StringType }
+                )
+            ) { backStackEntry ->
+                PlaneationDayScreen(navigationController,pdViewModel,
+                    backStackEntry.arguments?.getString("foliomanifest") ?: "",
+                    backStackEntry.arguments?.getString("ruta") ?: "",
+                    backStackEntry.arguments?.getString("totalguides") ?: ""
+                )
             }
 
             //Ruta para redirigirse a la screen de reasignación de guias

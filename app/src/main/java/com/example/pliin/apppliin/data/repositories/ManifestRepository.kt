@@ -81,9 +81,20 @@ class ManifestRepository @Inject constructor(
         return response.map { it?.toDomain() }
     }
 
+    //    Funcion para recuperar la informacion de la BD local
+    suspend fun getAllDBManifestAplicado():List<FieldData?>  {
+        val response = daoMaifest.getAllManifestAplicado()
+        return response.map { it?.toDomain() }
+    }
+
     //Funcion para recuperar la informacion del manifiesto de la DB
     suspend fun saveManifestDB(dataManifest:FieldData){
         val response = daoMaifest.insertManifest(dataManifest.toDatabase())
+    }
 
+
+    //Actualiza el status del manifiesto local para llevar el control de los manifiestos
+    suspend fun updateStatusManifestDB(claveManifest: String, status: String) {
+        return daoMaifest.updateStatusManifest(claveManifest,status)
     }
 }

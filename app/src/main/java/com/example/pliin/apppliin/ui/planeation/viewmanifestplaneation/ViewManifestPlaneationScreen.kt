@@ -38,10 +38,10 @@ import kotlinx.coroutines.delay
 
 
 @Composable
-fun ViewManifestScreen(navigationController: NavHostController, vmfViewModel: VMFViewModel) {
+fun ViewManifestPlaneationScreen(navigationController: NavHostController, vmfViewModel: VMFViewModel) {
 
     val isLoadingP: String by vmfViewModel.isLoadingPlaneation.observeAsState("Loading")
-    val listManifest: List<Data> by vmfViewModel.listManifest.observeAsState(listOf())
+    val listManifest: List<FieldData?> by vmfViewModel.listManifest.observeAsState(listOf())
     val claveManifest:String by vmfViewModel.claveManifest.observeAsState("")
     val enableLoadManifest: Boolean by vmfViewModel.enableLoadManifest.observeAsState(true)
     val optionsDialog: Boolean by vmfViewModel.optionsDialog.observeAsState(false)
@@ -66,7 +66,7 @@ fun ViewManifestScreen(navigationController: NavHostController, vmfViewModel: VM
                         vmfViewModel
                     )
                     LaunchedEffect(key1 = true) {
-                        delay(2000)
+                       delay(2000)
                         vmfViewModel.loadManifest()
                     }
                 }
@@ -93,34 +93,32 @@ fun ViewManifestScreen(navigationController: NavHostController, vmfViewModel: VM
             }
         }
     }
-
     dialogOptions(optionsDialog,vmfViewModel,claveManifest,navigationController)
-
 }
 
 @Composable
-fun LoadingPlaneation(modifier: Modifier, vmfViewModel: VMFViewModel) {
+fun LoadingPlaneation(modifier: Modifier, vmfViewModel: VMFViewModel){
     Box(
         modifier = modifier
             .fillMaxWidth()
             .background(Color.LightGray),
         contentAlignment = Alignment.Center
-    ) {
+    ){
         CircularProgressIndicator()
 
     }
 }
 
 @Composable
-fun NoFoundPlaneation(modifier: Modifier) {
+fun NoFoundPlaneation(modifier: Modifier){
     Box(
         modifier = modifier
             .fillMaxWidth()
             .background(Color.White),
         contentAlignment = Alignment.Center
-    ) {
+    ){
         Column {
-            Text(text = "No se ha encontrado una planeacion ",
+            Text(text = "No tiene planeaciones creadas ",
                 fontSize = 18.sp,
                 fontWeight = FontWeight.SemiBold,
                 color = Color(96, 127, 243),
@@ -150,21 +148,23 @@ fun Header(modifier: Modifier, navigationController: NavHostController, mfViewMo
 }
 
 @Composable
-fun Body(modifier: Modifier, listManifest: List<Data>, mfViewModel: VMFViewModel) {
-    Box(modifier = modifier.fillMaxWidth()) {
+fun Body(modifier: Modifier, listManifest: List<FieldData?>, mfViewModel: VMFViewModel){
+    Box(modifier = modifier.fillMaxWidth()){
         Column() {
-            manifestList(modifier.weight(3f), listManifest,mfViewModel)
+//            Box(){
+//         butonsHead()
+//            }
+            Box(modifier.weight(3f)){
+                manifestList(listManifest,mfViewModel)
+            }
         }
     }
-
 }
-
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun manifestList(
-    modifier: Modifier,
-    listManifest: List<Data>,
+    listManifest: List<FieldData?>,
     mfViewModel: VMFViewModel,
     //cmViewModel: CMViewModel,
     // mapListGuide: Map<String, String>,
@@ -178,7 +178,7 @@ fun manifestList(
 
         )
     LazyColumn(
-        modifier = modifier
+        modifier = Modifier
             .fillMaxWidth()
             .fillMaxHeight(),
         //contentPadding = PaddingValues(4.dp),
@@ -188,25 +188,24 @@ fun manifestList(
             HeadTable()
         }
         items(listManifest) {
-            itemManifest(modifier = modifier, manifest = it.fieldData!!,mfViewModel,it)
+            itemManifest(modifier = Modifier, manifest = it,mfViewModel)
         }
     }
 }
 
 @Composable
-fun itemManifest(modifier: Modifier, manifest: FieldData, mfViewModel: VMFViewModel, data: Data) {
+fun itemManifest(modifier: Modifier, manifest: FieldData?, mfViewModel: VMFViewModel) {
     Card(
         Modifier
             .fillMaxWidth()
             .clickable {
                 mfViewModel.clickManifest(
-                    "${manifest.clavePrincipal}",
-                    "${data.recordId}",
-                    "${manifest.nombreOperador}",
-                    "${manifest.ruta}",
-                    "${manifest.totaolGuias}"
+                    "${manifest?.clavePrincipal}",
+                    "${manifest?.nombreOperador}",
+                    "${manifest?.ruta}",
+                    "${manifest?.totaolGuias}"
                 )
-                Log.i("Clic", "Le di clic al texto  ${manifest.clavePrincipal}")
+                Log.i("Clic", "Le di clic al texto  ${manifest?.clavePrincipal}")
             },
         // border = BorderStroke(1.dp, Color(0xFF4425a7))
     ) {
@@ -252,7 +251,7 @@ fun itemManifest(modifier: Modifier, manifest: FieldData, mfViewModel: VMFViewMo
                             tint = Color(0xFF4425a7)
                         )*/
                         Text(
-                            text = "${manifest.clavePrincipal}",
+                            text = "${manifest?.clavePrincipal}",
                             //modifier =modifier.padding(horizontal = 4.dp),
                             fontWeight = FontWeight.Normal, fontSize = 16.sp
                         )
@@ -264,7 +263,7 @@ fun itemManifest(modifier: Modifier, manifest: FieldData, mfViewModel: VMFViewMo
                         , contentAlignment = Alignment.Center
                     ) {
                         Text(
-                            text = "${manifest.ruta}",
+                            text = "${manifest?.ruta}",
                             //modifier =modifier.padding(horizontal = 4.dp),
                             fontWeight = FontWeight.Normal, fontSize = 16.sp
                         )
@@ -276,7 +275,7 @@ fun itemManifest(modifier: Modifier, manifest: FieldData, mfViewModel: VMFViewMo
                         , contentAlignment = Alignment.Center
                     ) {
                         Text(
-                            text = "${manifest.fecha}",
+                            text = "${manifest?.fecha}",
                             //modifier =modifier.padding(horizontal = 4.dp),
                             fontWeight = FontWeight.Normal, fontSize = 16.sp
                         )
@@ -292,7 +291,7 @@ fun itemManifest(modifier: Modifier, manifest: FieldData, mfViewModel: VMFViewMo
                 , contentAlignment = Alignment.Center
             ) {
                 Text(
-                    text = "${manifest.totalpqt}",
+                    text = "${manifest?.totalpqt}",
                     //modifier =modifier.padding(horizontal = 4.dp),
                     fontWeight = FontWeight.Normal, fontSize = 16.sp
                 )
@@ -346,12 +345,12 @@ fun HeadTable() {
 @Composable
 fun dialogOptions(
     optionsDialog: Boolean,
-    mfViewModel: VMFViewModel,
+    vmfViewModel: VMFViewModel,
     claveManifest: String,
     navigationController: NavHostController
 ) {
     if (optionsDialog){
-        Dialog(onDismissRequest = { mfViewModel.onOptionDialog()}) {
+        Dialog(onDismissRequest = {}) {
             Column(modifier= Modifier
                 .background(Color.White)
                 .padding(20.dp)
@@ -371,7 +370,7 @@ fun dialogOptions(
                     Text(text = "Ver")
                 }*/
                 Spacer(modifier =Modifier.size(2.dp))
-                Button(onClick = { mfViewModel.viewEditManifest(navigationController)},
+                Button(onClick = { vmfViewModel.viewManifest(navigationController)},
                     modifier = Modifier.width(100.dp)
                 ) {
                     Text(text = "Ver")
@@ -379,7 +378,7 @@ fun dialogOptions(
                 Spacer(modifier =Modifier.size(8.dp))
                 Box(modifier = Modifier.align(Alignment.CenterHorizontally),
                 contentAlignment = Alignment.BottomEnd) {
-                    TextButton(onClick = { mfViewModel.onOptionDialog()},
+                    TextButton(onClick = { vmfViewModel.onOptionDialog()},
                     ) {
                         Text(text = "Cerrar")
                     }

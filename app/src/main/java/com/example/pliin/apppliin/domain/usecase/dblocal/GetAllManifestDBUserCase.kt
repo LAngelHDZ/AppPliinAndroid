@@ -8,7 +8,7 @@ class GetAllManifestDBUserCase @Inject constructor(
     private val manifestRepository: ManifestRepository
 ) {
     suspend operator fun invoke():List<FieldData?>{
-        val response = manifestRepository.getAllDBManifest()
+        val response = manifestRepository.getAllDBManifestAplicado()
         return response
     }
 }

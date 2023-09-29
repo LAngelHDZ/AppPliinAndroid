@@ -29,5 +29,7 @@ data class GuideModel(
     @SerializedName("manifiestoPaquetes::estatus")
     val manifiestoPaquetesEstatus: String?,
     @SerializedName("IntentosEntregasRE::observacion")
-    val statusIntento: String?
+    val statusIntento: String?,
+    @SerializedName("loadSytem")
+    val loadSytem: Boolean?=false
 )

@@ -268,7 +268,7 @@ fun ButtonGuides(modifier: Modifier, navigationController: NavHostController) {
 fun ButtonPlaneation(modifier: Modifier, navigationController: NavHostController) {
     Button(
         modifier = modifier,
-        onClick = { navigationController.navigate(AppScreen.ViewManifiestoScreen.route)},
+        onClick = { navigationController.navigate(AppScreen.ViewManifestPlaneationScreen.route)},
         enabled = true,
         colors = ButtonDefaults.buttonColors(
             backgroundColor = Color.White,

@@ -20,6 +20,24 @@ sealed class AppScreen(val route:String){
             claveManifest:String,
         )= "EditManifestScreen/$nameEmployee/$idRecord/$route/$claveManifest"
     }
+
+    object ViewManifestScreen : AppScreen("ViewManifestScreen/{nameEmployee}/{idRecord}/{route}/{claveManifest}"){
+        fun createRoute(
+            nameEmployee: String,
+            idRecord:String,
+            route:String,
+            claveManifest:String,
+        )= "ViewManifestScreen/$nameEmployee/$idRecord/$route/$claveManifest"
+    }
+
+    object PlaneationDayScreen : AppScreen("PlaneationDayScreen/{foliomanifest}/{ruta}/{totalguides}"){
+        fun createRoute(
+            foliomanifest: String,
+            ruta: String,
+            totalguides:String
+        )="PlaneationDayScreen/$foliomanifest/$ruta/$totalguides"
+    }
+
     object ValidationArrastreScreen : AppScreen("ValidationArrastreScreen")
     object ReceptionGuideScreen : AppScreen("ReceptionGuideScreen/{function}") {
         fun createRoute(
@@ -35,18 +53,13 @@ sealed class AppScreen(val route:String){
 
     object ManifiestoMainScreen : AppScreen("ManifiestoMainScreen")
 
-    object ViewManifiestoScreen : AppScreen("ViewManifiestoScreen")
+//    object ViewManifesScreen : AppScreen("ViewManifesScreen")
     object ReasignacionGuideScreen : AppScreen("ReasignacionGuideScreen")
     object ManifestScreen : AppScreen("ManifestScreen")
     object MenuGuideScreen : AppScreen("MenuGuideScreen")
-    object PlaneationDayScreen : AppScreen("PlaneationDayScreen/{folioManifest}/{ruta}/{totalguides}/{idRecord}"){
-        fun createRoute(
-            folioManifest: String,
-            ruta: String,
-            totalguides:String,
-            idRecord:String
-        )="PlaneationDayScreen/$folioManifest/$ruta/$totalguides/$idRecord"
-    }
+
+    object ViewManifestPlaneationScreen : AppScreen("ViewManifestPlaneationScreen")
+
     object CreateManifestScreen : AppScreen("CreateManifestScreen/{area}") {
         fun createRoute(
             area: String

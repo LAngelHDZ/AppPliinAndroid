@@ -10,7 +10,7 @@ class SaveGuidesManDBUseCase @Inject constructor(
 )
 {
     suspend operator fun invoke(response: List<DataItem?>?) {
-        if (response != null) {
+        if (response != null){
             for (response in response){
                 guideRepository.RegisterGuidesDB(response?.fieldData!!.toDomain())
             }

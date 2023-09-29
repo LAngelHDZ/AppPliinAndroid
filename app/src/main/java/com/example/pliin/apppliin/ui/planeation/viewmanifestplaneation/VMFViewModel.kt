@@ -7,6 +7,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
 import com.example.pliin.apppliin.domain.model.consecutivomanifestitem.Data
+import com.example.pliin.apppliin.domain.model.consecutivomanifestitem.FieldData
+import com.example.pliin.apppliin.domain.usecase.dblocal.GetAllManifestDBUserCase
 import com.example.pliin.apppliin.domain.usecase.manifest.GetAllManifestUseCase
 import com.example.pliin.apppliin.domain.usecase.user.LoadEmployeeUseCase
 import com.example.pliin.navigation.AppScreen
@@ -18,10 +20,12 @@ import javax.inject.Inject
 @HiltViewModel
 class VMFViewModel @Inject constructor(
     private val getAllManifestUseCase: GetAllManifestUseCase,
-    private val loadEmployeeUseCase: LoadEmployeeUseCase
+    private val loadEmployeeUseCase: LoadEmployeeUseCase,
+    private val allManifestDBUseCase: GetAllManifestDBUserCase
+
 ) : ViewModel() {
-    private val _listManifest = MutableLiveData<List<Data>>()
-    var listManifest: LiveData<List<Data>> = _listManifest
+    private val _listManifest = MutableLiveData<List<FieldData?>>()
+    var listManifest: LiveData<List<FieldData?>> = _listManifest
 
     private val _isLoadingPlaneation = MutableLiveData<String>()
     val isLoadingPlaneation:LiveData<String> = _isLoadingPlaneation
@@ -59,49 +63,36 @@ class VMFViewModel @Inject constructor(
         val day = addZeroDate(LocalDate.now().dayOfMonth)
         val dateDTO = "<=$month/$day/$year"
         viewModelScope.launch{
+            val manifestDB = allManifestDBUseCase.invoke()
 
-
-            val result = getAllManifestUseCase.invoke(dateDTO,)
-            if (result.isNullOrEmpty()){
+            if(manifestDB.isNullOrEmpty()){
                 _isLoadingPlaneation.value="NoFound"
             }else{
                 _isLoadingPlaneation.value="Founded"
-                _listManifest.value = result as List<Data>?
-                _enableLoadManifest.value = false
+                _listManifest.value = manifestDB
             }
-
         }
-
     }
 
     fun onOptionDialog(){
         _optionsDialog.value=false
     }
 
-    fun clickManifest(claveManifest: String, idRecord: String, nameEmployee: String, ruta: String,totaguides:String){
-        var employee= if (nameEmployee.isNullOrEmpty()){
-            "-"
-        }else{
-            nameEmployee
-        }
+    fun clickManifest(clavemanifest: String, nameEmployee: String, ruta: String,totalguides:String){
         viewModelScope.launch{
             val employe = loadEmployeeUseCase()
-            if(employe.area.equals("Operador Logistico")){
-                Log.i("Soy operador", "dirigeme a la vista")
-            }else{
-                _nameEmployee.value=employee
-                _ruta.value=ruta
-                _idRecord.value=idRecord
-                _claveManifest.value = claveManifest
-                _totalguides.value= totaguides
-                _optionsDialog.value = true
-            }
+            _nameEmployee.value=nameEmployee
+            _ruta.value=ruta
+//                _idRecord.value=idRecord
+            _claveManifest.value = clavemanifest
+            _totalguides.value= totalguides
+            _optionsDialog.value = true
         }
     }
 
-    fun viewEditManifest(navigationController: NavHostController){
+    fun viewManifest(navigationController: NavHostController){
         _optionsDialog.value=false
-        navigationController.navigate(AppScreen.PlaneationDayScreen.createRoute(claveManifest.value!!,ruta.value!!,totalguides.value!!,idRecord.value!!))
+        navigationController.navigate(AppScreen.PlaneationDayScreen.createRoute(claveManifest.value!!,ruta.value!!,totalguides.value!!))
         _enableLoadManifest.value = true
     }
 

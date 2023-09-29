@@ -72,19 +72,29 @@ class MFViewModel @Inject constructor(
             val employe = loadEmployeeUseCase()
             if(employe.area.equals("Operador Logistico")){
                 Log.i("Soy operador", "dirigeme a la vista")
+                _nameEmployee.value=employee
+                _ruta.value=ruta
+                _idRecord.value=idRecord
+                _claveManifest.value = claveManifest
             }else{
                 _nameEmployee.value=employee
                 _ruta.value=ruta
                 _idRecord.value=idRecord
                 _claveManifest.value = claveManifest
-                _optionsDialog.value = true
             }
+            _optionsDialog.value = true
         }
     }
 
     fun viewEditManifest(navigationController: NavHostController){
         _optionsDialog.value=false
         navigationController.navigate(AppScreen.EditManifestScreen.createRoute(nameEmployee.value!!,idRecord.value!!,ruta.value!!,claveManifest.value!!))
+        _enableLoadManifest.value = true
+    }
+
+    fun viewManifest(navigationController: NavHostController){
+        _optionsDialog.value=false
+        navigationController.navigate(AppScreen.ViewManifestScreen.createRoute(nameEmployee.value!!,idRecord.value!!,ruta.value!!,claveManifest.value!!))
         _enableLoadManifest.value = true
     }
 

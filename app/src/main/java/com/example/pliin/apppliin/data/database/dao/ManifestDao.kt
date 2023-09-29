@@ -16,6 +16,12 @@ interface ManifestDao{
     @Query("SELECT * FROM manifest_table")
     suspend fun getAllManifest(): List<ManifestEntity?>
 
+    @Query("SELECT * FROM manifest_table WHERE statusPreM = :status")
+    suspend fun getAllManifestAplicado(status:String ="APLICADO"): List<ManifestEntity?>
+
+    @Query("UPDATE manifest_table SET statusPreM = :status WHERE clavePrincipal = :claveManifest")
+    suspend fun updateStatusManifest(claveManifest:String,status:String)
+
     //Inserta la informaciòn del empleado
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertManifest(manifest: ManifestEntity)

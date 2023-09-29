@@ -307,11 +307,11 @@ fun dialogOptions(
                 )
                 Divider()
                 Spacer(modifier = Modifier.size(8.dp))
-               /* Button(onClick = { *//*TODO*//* },
+               Button(onClick = {mfViewModel.viewManifest(navigationController) },
                     modifier = Modifier.width(100.dp)
                 ) {
                     Text(text = "Ver")
-                }*/
+                }
                 Spacer(modifier =Modifier.size(2.dp))
                 Button(onClick = { mfViewModel.viewEditManifest(navigationController)},
                     modifier = Modifier.width(100.dp)
@@ -326,7 +326,6 @@ fun dialogOptions(
                         Text(text = "Cerrar")
                     }
                 }
-
             }
         }
     }

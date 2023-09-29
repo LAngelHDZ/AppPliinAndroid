@@ -31,7 +31,9 @@ data class FieldDataItem(
     @SerializedName("valor_guia")
     val valorGuia: Double?,
     @SerializedName("IntentosEntregasRE::observacion")
-    val statusIntento: String?
+    val statusIntento: String?,
+    @SerializedName("loadSytem")
+    val loadSytem: Boolean? = false
 )
 
 fun FieldDataModel.toDomain() =
@@ -49,7 +51,8 @@ fun FieldDataModel.toDomain() =
         preManifiestosEmpresa,
         preManifiestosRuta,
         valorGuia,
-        statusIntento
+        statusIntento,
+        loadSytem
     )
 
 fun GuideItem.toDomain() =
@@ -67,5 +70,6 @@ fun GuideItem.toDomain() =
         preManifiestosEmpresa,
         preManifiestosRuta,
         valorGuia,
-        statusIntento
+        statusIntento,
+        loadSytem
     )
