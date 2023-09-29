@@ -18,9 +18,10 @@ class DeliveryRepository @Inject constructor(
         recibe: String?,
         parent: String?,
         typePago: String?,
-        pago: String
+        pago: String,
+        idPrem:String
     ): ResponseRegisterDeliveryItem {
-        val response = apidelivery.setDelivery(guide, recibe, parent,typePago,pago)
+        val response = apidelivery.setDelivery(guide, recibe, parent,typePago,pago,idPrem)
         Log.i("response", "$response")
         // tokenDao.insertToken(response.toDatabase())
         return response.toDomain()

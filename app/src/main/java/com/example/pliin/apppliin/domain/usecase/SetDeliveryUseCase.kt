@@ -32,7 +32,7 @@ class SetDeliveryUseCase @Inject constructor(
 //
 //        val user = userData.user!!{
 
-        val responseDelivery = deliveryR.setDelivery(guide!!, recibe, parentOrFailDelivery,typePago,pago)
+        val responseDelivery = deliveryR.setDelivery(guide!!, recibe, parentOrFailDelivery,typePago,pago,idPreM)
 
         val messageDelivery = responseDelivery.messages!![0].code
 
