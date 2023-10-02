@@ -39,7 +39,7 @@ import kotlinx.coroutines.launch
 import java.text.NumberFormat
 import java.time.LocalDate
 import java.time.LocalTime
-import java.util.*
+import java.util.Locale
 import javax.inject.Inject
 
 @HiltViewModel
@@ -158,7 +158,7 @@ class EMViewModel @Inject constructor(
 
     private val _municipio = MutableLiveData<String>()
     var municipio: LiveData<String> = _municipio
-//=======================================================
+    //=======================================================
     //Variables para agregar las medidas del paquete y el peso si es necesario
     private val _isAlertDialogHighValue = MutableLiveData<Boolean>()
     var isAlertDialogHighValue: LiveData<Boolean> = _isAlertDialogHighValue
@@ -277,7 +277,7 @@ class EMViewModel @Inject constructor(
     fun loadGuidesManifest(claveManifest: String){
         val currentmap = _mapListGuide.value?.toMutableMap() ?: mutableMapOf()
         viewModelScope.launch{
-           val response= getGuidesManifestUseCase.invoke(claveManifest)
+            val response= getGuidesManifestUseCase.invoke(claveManifest)
             if (response != null) {
                 for (value in response){
                     val guia = value?.fieldData?.idGuia.toString()
@@ -394,7 +394,7 @@ class EMViewModel @Inject constructor(
         _nameEmployye.value = "${name.nombre} ${name.aPaterno} ${name.aMaterno}"
 
         val nameEM = "${name.nombre} ${name.aPaterno} ${name.aMaterno}"
-       _isLoadBtnEnable.value = enableLoadBtn(countGuides.value!!, nameEM)
+        _isLoadBtnEnable.value = enableLoadBtn(countGuides.value!!, nameEM)
     }
 
     fun onValueChangedRuta(selected: String) {
