@@ -9,6 +9,7 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.CheckCircle
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -17,6 +18,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.pliin.navigation.AppScreen
+import kotlinx.coroutines.delay
 
 
 @Composable
@@ -31,7 +33,8 @@ fun LoadingDeliveryScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 50.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
         ) {
             Icon(
                 imageVector = Icons.Rounded.CheckCircle,
@@ -40,11 +43,20 @@ fun LoadingDeliveryScreen(
                 tint = Color(0xFF4c51c6)
             )
             Spacer(modifier = Modifier.size(20.dp))
-            Text(text = "Registro creado exitosamente")
+            Box(modifier = Modifier.fillMaxWidth(),
+                contentAlignment = Alignment.Center){
+                Text(text = "Completado")
+            }
+
+
+            LaunchedEffect(key1 =1){
+                delay(2000)
+                navigationController.navigate(AppScreen.AppMainScreen.route)
+            }
 
             Spacer(modifier = Modifier.size(20.dp))
 
-            Button(
+           /* Button(
                 onClick = { navigationController.navigate(AppScreen.RegisterDeliveryScreen.route) },
                 modifier = Modifier.fillMaxWidth(),
                 colors = ButtonDefaults.buttonColors(
@@ -57,7 +69,8 @@ fun LoadingDeliveryScreen(
                     text = "Nueva entrega",
                     fontSize = 18.sp,
                 )
-            }
+            }*/
+            /*
             Spacer(modifier = Modifier.size(8.dp))
             Button(
                 onClick = {
@@ -75,7 +88,7 @@ fun LoadingDeliveryScreen(
                     text = "Menu principal",
                     fontSize = 18.sp,
                 )
-            }
+            }*/
         }
     }
 }
