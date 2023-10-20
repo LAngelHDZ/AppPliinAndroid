@@ -208,9 +208,9 @@ class RGViewModel @Inject constructor(
                 val guiarepeted = currentmap.get(guia)
                 if (guiarepeted.isNullOrEmpty()) {
                     val existsCOd = GetGuideCodUseCase.invoke(guia)
-                    if (!existsCOd.messages?.get(0)?.code.equals("0")) {
+                  //  if (!existsCOd.messages?.get(0)?.code.equals("0")) {
                         _isGuideExistCod.value = true
-                    }
+                   // }
 
                     var key = currentmap.size + keyGuide
                     currentmap[guia] = guia

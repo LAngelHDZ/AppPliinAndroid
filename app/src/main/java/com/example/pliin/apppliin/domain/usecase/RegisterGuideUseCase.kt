@@ -16,15 +16,18 @@ class RegisterGuideUseCase @Inject constructor(
         pago: String?
     ): Boolean {
         reloginUseCase()
-        val code = validateGuide(guide)
-        val messageInsertGuide = if (code.component1() == "401") {
-            insertGuideUseCase.invoke(guide, pago)
-        } else {
-            updateStatusUseCase("EN ALMACEN", code.component2(),"manifiestoPaquetes")
-        }
+        //val code = validateGuide(guide)
+        //val messageInsertGuide = if (code.component1() == "401") {
+
+       // } else {
+        //    updateStatusUseCase("EN ALMACEN", code.component2(),"manifiestoPaquetes")
+       // }
+        insertGuideUseCase.invoke(guide, pago)
         val messageCreateStatus = createStatusUSeCase(guide, "EN ALMACEN")
 
-        return ((messageCreateStatus == "0") and (messageInsertGuide == "0"))
+       // return ((messageCreateStatus == "0") and (messageInsertGuide == "0"))
+        return ((messageCreateStatus == "0"))
+
     }
 
     //Valida que la guia exista en el sistema para tomar una decision de ingresaerla o solo actualizar su status de seguimiento
