@@ -712,13 +712,13 @@ class EMViewModel @Inject constructor(
         var typeManifest = ""
         when (selectedOptionTM.value) {
             "Local" -> {
-                typeManifest = "LCA"
+                typeManifest = "1"
             }
             "Traslado" -> {
-                typeManifest = "TRF"
+                typeManifest = "2"
             }
             else -> {
-                typeManifest = "LCA"
+                typeManifest = "1"
             }
         }
         /* val typeManifest = if (selectedOptionTM.value.equals("Local")) {
@@ -727,7 +727,7 @@ class EMViewModel @Inject constructor(
              "TRF"
          }*/
         _typePreManifest.value = typeManifest
-        _clavePreManifest.value = typeManifest + getdatenow() + "UPS"
+        _clavePreManifest.value = typeManifest + getdatenow() + "1"
         val clave = clavePreManifest.value
         Log.i("", "$clave")
     }

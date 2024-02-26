@@ -642,7 +642,6 @@ private val _isAlertDialogHighValue = MutableLiveData<Boolean>()
                 }
             } else {
                 mesageValidateGuide("El formato de la guia $guia no es valido")
-
             }
         }
     }
@@ -687,16 +686,16 @@ private val _isAlertDialogHighValue = MutableLiveData<Boolean>()
         var typeManifest = ""
         when (selectedOptionTM.value) {
             "Local" -> {
-                typeManifest = "LCA"
+                typeManifest = "1"
 
             }
 
             "Traslado" -> {
-                typeManifest = "TRF"
+                typeManifest = "2"
             }
 
             else -> {
-                typeManifest = "LCA"
+                typeManifest = "1"
             }
 
         }
@@ -706,7 +705,7 @@ private val _isAlertDialogHighValue = MutableLiveData<Boolean>()
              "TRF"
          }*/
         _typePreManifest.value = typeManifest
-        _clavePreManifest.value = typeManifest + getdatenow() + "UPS"
+        _clavePreManifest.value = typeManifest + getdatenow() + "1"
         val clave = clavePreManifest.value
         Log.i("", "$clave")
     }
