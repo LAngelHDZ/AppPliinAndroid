@@ -927,7 +927,7 @@ fun Header(modifier: Modifier, cmViewModel: CMViewModel, navigationController: N
         contentColor = Color.White,
         elevation = 4.dp,
         navigationIcon = {
-            IconButton(onClick = { cmViewModel.backScreen(navigationController) }
+            IconButton(onClick = { cmViewModel.backScreen(navigationController,"btnBack") }
             ) {
                 Icon(
                     imageVector = Icons.Rounded.Cancel,
@@ -1939,7 +1939,7 @@ fun ButtonsConfirmation(
     area: String,
 ) {
     Row() {
-        TextButton(onClick = { cmViewModel.backScreen(navigationController) }) {
+        TextButton(onClick = { cmViewModel.backScreen(navigationController,"SelectRuta") }) {
             Text(text = "Cancelar")
         }
         TextButton(

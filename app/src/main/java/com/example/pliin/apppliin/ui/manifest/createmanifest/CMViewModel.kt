@@ -372,8 +372,12 @@ private val _isAlertDialogHighValue = MutableLiveData<Boolean>()
         reset()
     }
 
-    fun backScreen(navigationController: NavHostController) {
-        _isDialogExitScreen.value=true
+    fun backScreen(navigationController: NavHostController,modal:String) {
+        if(modal.equals("SelectRuta")){
+            navigationController.popBackStack()
+        }else{
+            _isDialogExitScreen.value=true
+        }
     }
 
     fun onAlertDialogexit(exit:Boolean, navigationController: NavHostController){
