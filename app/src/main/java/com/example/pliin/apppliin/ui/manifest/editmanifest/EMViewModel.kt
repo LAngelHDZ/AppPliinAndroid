@@ -345,7 +345,7 @@ class EMViewModel @Inject constructor(
         dir3: String,
         cp: String,
         municipio: String
-    ) = ((nombre.length >= 3 && telefono.length >= 7 && cp.length >= 5 && municipio.length >= 4) && (dir1.length >= 5 || dir2.length >= 5 || dir3.length >= 5))
+    ) = ((nombre.length >= 1 && telefono.length >= 1 && cp.length >= 1 && municipio.length >= 1) && (dir1.length >= 1 || dir2.length >= 1 || dir3.length >= 1))
 
     fun onRadioBtnSeleted(value: String) {
         if (value != "Chico") {

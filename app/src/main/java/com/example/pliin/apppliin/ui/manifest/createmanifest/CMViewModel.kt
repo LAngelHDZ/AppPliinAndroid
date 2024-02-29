@@ -302,7 +302,7 @@ private val _isAlertDialogHighValue = MutableLiveData<Boolean>()
         cp: String,
         municipio: String
     ) =
-        ((nombre.length > 5 && telefono.length >= 7 && cp.length > 4 && municipio.length > 4) && (dir1.length > 7 || dir2.length > 7 || dir3.length > 7))
+        ((nombre.length > 1 && telefono.length >= 1 && cp.length > 1 && municipio.length > 1) && (dir1.length > 1 || dir2.length > 1 || dir3.length > 1))
 
     fun onRadioBtnSeleted(value: String) {
         if (value != "Chico") {
