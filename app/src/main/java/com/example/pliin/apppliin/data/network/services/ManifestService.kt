@@ -40,7 +40,7 @@ class ManifestService @Inject constructor(
 
         val query = GetConsecutivoManifestDto(
             listOf(Query("<=$date")),
-            listOf(Sort("Fecha"), Sort("hora"))
+            listOf(Sort("Fecha", "descend"), Sort("hora", "descend"))
         )
         return withContext(Dispatchers.IO) {
 

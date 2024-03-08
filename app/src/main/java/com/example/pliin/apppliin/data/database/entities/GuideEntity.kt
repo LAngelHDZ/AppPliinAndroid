@@ -12,4 +12,4 @@ data class GuideEntity(
     @ColumnInfo(name = "idGuia") val idGuia: String?
 )
 
-fun GuideItem.toDatabase() = GuideEntity( idGuia = idGuia)
+//fun GuideItem.toDatabase() = GuideEntity( idGuia = idGuia)

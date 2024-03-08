@@ -41,18 +41,22 @@ class MFViewModel @Inject constructor(
     private val _optionsDialog = MutableLiveData<Boolean>()
     var optionsDialog: LiveData<Boolean> = _optionsDialog
 
+    private val _validarManifest = MutableLiveData<Boolean>()
+    var validarManifest: LiveData<Boolean> = _validarManifest
+
     fun reset(){
         _listManifest.value= emptyList()
         _enableLoadManifest.value = true
     }
 
-    fun loadManifest(){
+    fun loadManifest(status:String){
+//        _listManifest.value= emptyList()
         val year: String = LocalDate.now().year.toString()
         val month = addZeroDate(LocalDate.now().monthValue)
         val day = addZeroDate(LocalDate.now().dayOfMonth)
         val dateDTO = "<=$month/$day/$year"
         viewModelScope.launch{
-            val result = getAllManifestUseCase.invoke(dateDTO,)
+            val result = getAllManifestUseCase.invoke(dateDTO,status)
             _listManifest.value = result as List<Data>?
         }
         _enableLoadManifest.value = false
@@ -62,8 +66,14 @@ class MFViewModel @Inject constructor(
         _optionsDialog.value=false
     }
 
-    fun clickManifest(claveManifest: String, idRecord: String, nameEmployee: String, ruta: String){
-        var employee= if (nameEmployee.isNullOrEmpty()){
+    fun clickManifest(
+        claveManifest: String,
+        idRecord: String,
+        nameEmployee: String,
+        ruta: String,
+        status: String
+    ){
+        val employee= if (nameEmployee.isNullOrEmpty()){
             "-"
         }else{
             nameEmployee
@@ -73,6 +83,12 @@ class MFViewModel @Inject constructor(
             if(employe.area.equals("Operador Logistico")){
                 Log.i("Soy operador", "dirigeme a la vista")
             }else{
+
+              _validarManifest.value =  if (status.equals("APLICADO")){
+                  true
+              }else{
+                  false
+              }
                 _nameEmployee.value=employee
                 _ruta.value=ruta
                 _idRecord.value=idRecord
@@ -87,6 +103,14 @@ class MFViewModel @Inject constructor(
         navigationController.navigate(AppScreen.EditManifestScreen.createRoute(nameEmployee.value!!,idRecord.value!!,ruta.value!!,claveManifest.value!!))
         _enableLoadManifest.value = true
     }
+
+    fun validateManifest(navigationController: NavHostController){
+        _optionsDialog.value=false
+        navigationController.navigate(AppScreen.ValidateManifestScreen.createRoute(nameEmployee.value!!,idRecord.value!!,ruta.value!!,claveManifest.value!!))
+        _enableLoadManifest.value = true
+    }
+
+
 
     fun navigate(navigationController: NavHostController){
         navigationController.popBackStack()

@@ -45,6 +45,8 @@ import com.example.pliin.apppliin.ui.manifest.editmanifest.EditManifestScreen
 import com.example.pliin.apppliin.ui.manifest.mymanifest.MFViewModel
 import com.example.pliin.apppliin.ui.manifest.mymanifest.ManifestScreen
 import com.example.pliin.apppliin.ui.manifest.reasignacionguide.ReasignacionGuideScreen
+import com.example.pliin.apppliin.ui.manifest.validatemanifest.VMViewModel
+import com.example.pliin.apppliin.ui.manifest.validatemanifest.ValidateManifestScreen
 import com.example.pliin.apppliin.ui.registerdelivery.RDViewModel
 import com.example.pliin.apppliin.ui.registerdelivery.RegisterDeliveryScreen
 import com.example.pliin.navigation.AppScreen
@@ -63,6 +65,8 @@ class MainActivity : ComponentActivity() {
     private val vaViewModel: VAViewModel by viewModels()
     private val cmViewModel: CMViewModel by viewModels()
     private val mfViewModel: MFViewModel by viewModels()
+    private val vmViewModel: VMViewModel by viewModels()
+
     private lateinit var connectionLiveData: NetworkConectivity
 
     private val requestPermissionLauncher =
@@ -189,6 +193,25 @@ class MainActivity : ComponentActivity() {
                 )
             ) { backStackEntry ->
                 EditManifestScreen(
+                    navigationController,
+                    backStackEntry.arguments?.getString("nameEmployee") ?: "",
+                    backStackEntry.arguments?.getString("idRecord") ?: "",
+                    backStackEntry.arguments?.getString("route") ?: "",
+                    backStackEntry.arguments?.getString("claveManifest") ?: ""
+                )
+            }
+
+            //Ruta de Screen para editar un manifiesto
+            composable(
+                route = AppScreen.ValidateManifestScreen.route,
+                arguments = listOf(
+                    navArgument("nameEmployee") { type = NavType.StringType },
+                    navArgument("idRecord") { type = NavType.StringType },
+                    navArgument("route") { type = NavType.StringType },
+                    navArgument("claveManifest") { type = NavType.StringType },
+                )
+            ) { backStackEntry ->
+                ValidateManifestScreen(
                     navigationController,
                     backStackEntry.arguments?.getString("nameEmployee") ?: "",
                     backStackEntry.arguments?.getString("idRecord") ?: "",

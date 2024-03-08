@@ -11,7 +11,7 @@ class GetAllManifestUseCase @Inject constructor(
     private val loadEmployeeUseCase: LoadEmployeeUseCase
 ) {
 
-    suspend operator fun invoke(date: String): List<Data?>? {
+    suspend operator fun invoke(date: String,status:String): List<Data?>? {
         reloginUseCase()
         val employee = loadEmployeeUseCase.invoke()
 
@@ -22,9 +22,9 @@ class GetAllManifestUseCase @Inject constructor(
         }
 
         val  statusPreM = if(employee.area.equals("Operador Logistico")){
-            "APLICADO"
+            "==APLICADO"
         }else{
-            "NO APLICADO"
+           "==$status"
         }
 
         val  limit = if(employee.area.equals("Operador Logistico")){

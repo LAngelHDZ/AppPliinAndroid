@@ -20,6 +20,15 @@ sealed class AppScreen(val route:String){
             claveManifest:String,
         )= "EditManifestScreen/$nameEmployee/$idRecord/$route/$claveManifest"
     }
+
+    object ValidateManifestScreen : AppScreen("ValidateManifestScreen/{nameEmployee}/{idRecord}/{route}/{claveManifest}"){
+        fun createRoute(
+            nameEmployee: String,
+            idRecord:String,
+            route:String,
+            claveManifest:String,
+        )= "ValidateManifestScreen/$nameEmployee/$idRecord/$route/$claveManifest"
+    }
     object ValidationArrastreScreen : AppScreen("ValidationArrastreScreen")
     object ReceptionGuideScreen : AppScreen("ReceptionGuideScreen/{function}") {
         fun createRoute(

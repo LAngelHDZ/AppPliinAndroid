@@ -17,7 +17,6 @@ import androidx.compose.material.Text
 import androidx.compose.material.TextButton
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.ArrowRight
 import androidx.compose.material.icons.rounded.Cancel
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -29,7 +28,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.example.pliin.apppliin.domain.model.consecutivomanifestitem.Data
 import com.example.pliin.apppliin.domain.model.consecutivomanifestitem.FieldData
@@ -41,12 +39,12 @@ fun ManifestScreen(navigationController: NavHostController, mfViewModel: MFViewM
 
     val listManifest: List<Data> by mfViewModel.listManifest.observeAsState(listOf())
     val claveManifest:String by mfViewModel.claveManifest.observeAsState("")
-    val enableLoadManifest: Boolean by mfViewModel.enableLoadManifest.observeAsState(true)
+    val validarManifest: Boolean by mfViewModel.validarManifest.observeAsState(false)
     val optionsDialog: Boolean by mfViewModel.optionsDialog.observeAsState(false)
 
-    if (enableLoadManifest) {
-        mfViewModel.loadManifest()
-    }
+//    if (enableLoadManifest) {
+//        mfViewModel.loadManifest()
+//    }
 
     Box() {
         Column() {
@@ -69,7 +67,7 @@ fun ManifestScreen(navigationController: NavHostController, mfViewModel: MFViewM
         }
     }
 
-    dialogOptions(optionsDialog,mfViewModel,claveManifest,navigationController)
+    dialogOptions(optionsDialog,mfViewModel,claveManifest,navigationController,validarManifest)
 
 }
 
@@ -94,11 +92,27 @@ fun Header(modifier: Modifier, navigationController: NavHostController, mfViewMo
 @Composable
 fun Body(modifier: Modifier, listManifest: List<Data>, mfViewModel: MFViewModel) {
     Box(modifier = modifier.fillMaxWidth()) {
-        Column() {
+        Column {
+            ButtonTypeManifest(mfViewModel)
             manifestList(modifier.weight(3f), listManifest,mfViewModel)
         }
     }
+}
 
+@Composable
+fun ButtonTypeManifest(mfViewModel: MFViewModel) {
+    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center,
+        modifier = Modifier.fillMaxWidth()
+        ) {
+        Button(onClick = {mfViewModel.loadManifest("NO APLICADO")}, modifier = Modifier.weight(1f)) {
+            Text(text = "No aplicados")
+
+        }
+        Spacer(modifier = Modifier.size(4.dp))
+        Button(onClick = {mfViewModel.loadManifest("APLICADO")}, modifier = Modifier.weight(1f)) {
+            Text(text = "Aplicados")
+        }
+    }
 }
 
 
@@ -145,7 +159,8 @@ fun itemManifest(modifier: Modifier, manifest: FieldData, mfViewModel: MFViewMod
                     "${manifest.clavePrincipal}",
                     "${data.recordId}",
                     "${manifest.nombreOperador}",
-                    "${manifest.ruta}"
+                    "${manifest.ruta}",
+                    "${manifest.statusPreM}"
                 )
                 Log.i("Clic", "Le di clic al texto  ${manifest.clavePrincipal}")
             },
@@ -289,7 +304,8 @@ fun dialogOptions(
     optionsDialog: Boolean,
     mfViewModel: MFViewModel,
     claveManifest: String,
-    navigationController: NavHostController
+    navigationController: NavHostController,
+    validarManifest: Boolean
 ) {
     if (optionsDialog){
         Dialog(onDismissRequest = { mfViewModel.onOptionDialog()}) {
@@ -312,11 +328,20 @@ fun dialogOptions(
                     Text(text = "Ver")
                 }*/
                 Spacer(modifier =Modifier.size(2.dp))
-                Button(onClick = { mfViewModel.viewEditManifest(navigationController)},
-                    modifier = Modifier.width(100.dp)
-                ) {
-                    Text(text = "Editar")
+                if (validarManifest){
+                    Button(onClick = { mfViewModel.validateManifest(navigationController)},
+                        modifier = Modifier.width(100.dp)
+                    ) {
+                        Text(text = "Validar")
+                    }
+                }else{
+                    Button(onClick = { mfViewModel.viewEditManifest(navigationController)},
+                        modifier = Modifier.width(100.dp)
+                    ) {
+                        Text(text = "Editar")
+                    }
                 }
+
                 Spacer(modifier =Modifier.size(8.dp))
                 Box(modifier = Modifier.align(Alignment.CenterHorizontally),
                 contentAlignment = Alignment.BottomEnd) {
