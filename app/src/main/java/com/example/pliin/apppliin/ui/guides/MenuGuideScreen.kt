@@ -19,7 +19,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.pliin.R
-import com.example.pliin.apppliin.ui.manifest.Header
 import com.example.pliin.navigation.AppScreen
 
 @Composable
@@ -43,11 +42,11 @@ fun MenuGuideScreen(navigationController: NavHostController) {
 }
 
 @Composable
-fun HeadText(modifier: Modifier) {
+fun Header(modifier: Modifier) {
     Box(modifier = modifier.fillMaxWidth()) {
         Text(
             modifier = modifier.padding(vertical = 16.dp),
-            text = "Menu principal",
+            text = "Menu guias",
             fontSize = 30.sp,
             fontWeight = FontWeight.SemiBold,
             color = Color.White

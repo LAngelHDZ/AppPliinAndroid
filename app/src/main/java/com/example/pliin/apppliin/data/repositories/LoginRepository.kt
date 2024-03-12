@@ -10,6 +10,8 @@ import com.example.pliin.apppliin.data.network.services.LoginService
 import com.example.pliin.apppliin.data.network.services.LogoutService
 import com.example.pliin.apppliin.domain.model.TokenItem
 import com.example.pliin.apppliin.domain.model.UserItem
+import com.example.pliin.apppliin.domain.model.avisopagoitem.AvisoItem
+import com.example.pliin.apppliin.domain.model.avisopagoitem.toDomain
 import com.example.pliin.apppliin.domain.model.responselogoutitem.ResponseLogoutItem
 import com.example.pliin.apppliin.domain.model.responselogoutitem.toDomain
 import com.example.pliin.apppliin.domain.model.toDomain
@@ -58,6 +60,13 @@ class LoginRepository @Inject constructor(
     //Elimina el token  de la DB
     suspend fun clearToken() {
         tokenDao.deleteToken()
+    }
+
+
+    //COnsulta si el aviso de pago de la factura actual
+    suspend fun avisoPago():AvisoItem?{
+      val response =  login.avisoPago()
+        return response?.toDomain()
     }
 
 }

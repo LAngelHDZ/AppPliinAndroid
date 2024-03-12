@@ -1,6 +1,5 @@
 package com.example.pliin.apppliin.ui.manifest.validatemanifest
 
-import android.annotation.SuppressLint
 import android.util.Log
 import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.lifecycle.LiveData
@@ -8,8 +7,6 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
-import com.example.pliin.apppliin.data.network.dto.datospqt.DatosPqtDto
-import com.example.pliin.apppliin.data.network.dto.datospqt.FieldDataDP
 import com.example.pliin.apppliin.domain.model.GuideItem
 import com.example.pliin.apppliin.domain.model.direccionesguideitem.DatosGuideItem
 import com.example.pliin.apppliin.domain.model.direccionesguideitem.DireccionesGuideItem
@@ -30,16 +27,13 @@ import com.example.pliin.apppliin.domain.usecase.ValidateExistsAddressUseCase
 import com.example.pliin.apppliin.domain.usecase.ValidateExistsDataPqtUseCase
 import com.example.pliin.apppliin.domain.usecase.ValidateGuideSystemUseCase
 import com.example.pliin.apppliin.generals.GeneralMethodsGuide
+import com.example.pliin.navigation.AppScreen
 import com.journeyapps.barcodescanner.ScanIntentResult
 import com.journeyapps.barcodescanner.ScanOptions
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.text.NumberFormat
 import java.time.LocalDate
-import java.time.LocalTime
 import java.util.Locale
 import javax.inject.Inject
 
@@ -229,8 +223,12 @@ class VMViewModel @Inject constructor(
     private val _mapListGuide = MutableLiveData<Map<String, GuideItem>>()
     var mapListGuide: LiveData<Map<String, GuideItem>> = _mapListGuide
 
-    private val _mapListGuideAdd = MutableLiveData<Map<String, String>>()
-    var mapListGuideAdd: LiveData<Map<String, String>> = _mapListGuideAdd
+    /*Variable que alamcena las guias que se escanean*/
+    private val _mapListGuideTemp = MutableLiveData<Map<String, GuideItem>>()
+    var mapListGuideTemp: LiveData<Map<String, GuideItem>> = _mapListGuideTemp
+
+    private val _mapListGuideAdd = MutableLiveData<Map<String, GuideItem>>()
+    var mapListGuideAdd: LiveData<Map<String, GuideItem>> = _mapListGuideAdd
 
     private val _isGuideRegisted = MutableLiveData<Boolean>()
     var isGuideRegisted: LiveData<Boolean> = _isGuideRegisted
@@ -243,6 +241,9 @@ class VMViewModel @Inject constructor(
 
     private val _isLoadingDataGuide = MutableLiveData<Boolean>()
     var isLoadingDataGuide: LiveData<Boolean> = _isLoadingDataGuide
+
+    private val _openViewEditManifest = MutableLiveData<Boolean>()
+    var openViewEditManifest: LiveData<Boolean> = _openViewEditManifest
 
     private val _countRegisterGuide = MutableLiveData<Int>()
     var countRegisterGuide: LiveData<Int> = _countRegisterGuide
@@ -267,6 +268,7 @@ class VMViewModel @Inject constructor(
         route:String,
         claveManifest:String
     ){
+        _openViewEditManifest.value=false
         _countRegisterGuide.value=0
         _ruta.value =route
         _nameEmployye.value=nameEmploye
@@ -275,23 +277,52 @@ class VMViewModel @Inject constructor(
         loadGuidesManifest(claveManifest)
         _isLoadGuideManifest.value=false
     }
-    fun loadGuidesManifest(claveManifest: String){
+
+    fun reloadGuides(){
+        val claveManifest= _clavePreManifest.value
+        loadGuidesManifest(claveManifest!!)
+    }
+    fun  loadGuidesManifest(claveManifest: String){
         val currentmap = _mapListGuide.value?.toMutableMap() ?: mutableMapOf()
+        val currentmaptemp = _mapListGuideTemp.value?.toMutableMap() ?: mutableMapOf()
         viewModelScope.launch{
             val response= getGuidesManifestUseCase.invoke(claveManifest)
-            if (response != null) {
-                for (value in response){
-                    val data =value?.fieldData
-                    val guia = value?.fieldData?.idGuia.toString()
-                    currentmap[guia] = GuideItem(
-                        data?.idGuia,
-                        0xFFEBF5FB,
-                        false
-                    )
-                    _mapListGuide.value = currentmap
+            if(_openViewEditManifest.value!!){
+                if (response != null) {
+                    for (value in response){
+                        val data =value?.fieldData
+                        val guia = value?.fieldData?.idGuia.toString()
+                        if (currentmap.get(guia)?.idGuia.isNullOrEmpty()){
+                            currentmap[guia] = GuideItem(
+                                data?.idGuia,
+                                0xFFEBF5FB,
+                                true
+                            )
+                            _mapListGuide.value = currentmap
+                        }
+                    }
                     _countGuides.value = _mapListGuide.value?.size
                 }
+                _openViewEditManifest.value=false
+            }else{
+                if (response != null) {
+                    for (value in response){
+                        val data =value?.fieldData
+                        val guia = value?.fieldData?.idGuia.toString()
+
+
+                        currentmap[guia] = GuideItem(
+                            data?.idGuia,
+                            0xFFEBF5FB,
+                            false
+                        )
+                        _mapListGuide.value = currentmap
+                        _countGuides.value = _mapListGuide.value?.size
+                    }
+                }
+
             }
+
         }
     }
 
@@ -381,11 +412,6 @@ class VMViewModel @Inject constructor(
         _isDialogLoadEnable.value = false
     }
 
-
-
-
-
-
     fun getContentQR(guia: String, navigationController: NavHostController) {
         val formateValidate = generalMethodsGuide.validateFormatGuia(guia)
         val currentmap = _mapListGuide.value?.toMutableMap() ?: mutableMapOf()
@@ -414,8 +440,18 @@ class VMViewModel @Inject constructor(
             }
         }
     }
+    fun addGuideManifest(navigationController: NavHostController){
 
-
+        _mapListGuideTemp.value = _mapListGuide.value
+        Log.d("Map list Temp", "${_mapListGuideTemp.value}")
+        _isSesionDialog.value = false
+        navigationController.navigate(
+            AppScreen.EditManifestScreen.createRoute(_nameEmployye.value!!,_idRecord.value!!,
+                _ruta.value!!, _clavePreManifest.value!!
+            )
+        )
+        _openViewEditManifest.value = true
+    }
 
     fun getdatenow(): String {
         val year: String = LocalDate.now().year.toString()

@@ -57,10 +57,16 @@ fun ValidateManifestScreen(
 ) {
     val isLoadGuideManifest: Boolean by VMViewModel.isLoadGuideManifest.observeAsState(true)
     val isDialogExitScreen: Boolean by VMViewModel.isAlertDialogexit.observeAsState(false)
+    val openEditManifest: Boolean by VMViewModel.openViewEditManifest.observeAsState(false)
 
     if (isLoadGuideManifest){
         VMViewModel.loadData(nameEmploye,idRecord,route,idPrem)
     }
+
+    if (openEditManifest) VMViewModel.reloadGuides()
+
+
+
 
     val nombre: String by VMViewModel.nombre.observeAsState("")
     val telefono: String by VMViewModel.telefono.observeAsState("")
@@ -170,7 +176,8 @@ fun ValidateManifestScreen(
             AlertDialogGuide(
                 show = isSesionDialog,
                 VMViewModel,
-                messageGuideValidate
+                messageGuideValidate,
+                navigationController
             )
 
             dataGuides(
@@ -730,18 +737,36 @@ fun Incon() {
 }
 
 @Composable
-fun AlertDialogGuide(show: Boolean, VMViewModel: VMViewModel, message: String) {
+fun AlertDialogGuide(
+    show: Boolean,
+    VMViewModel: VMViewModel,
+    message: String,
+    navigationController: NavHostController
+) {
     if (show) {
         AlertDialog(
             onDismissRequest = { VMViewModel.onAlertDialog() },
             title = { Text(text = "Advertencia") },
-            text = { Text(text = message) },
+            text = { TextDialog(message)},
             confirmButton = {
-                TextButton(onClick = { VMViewModel.onAlertDialog() }) {
-                    Text(text = "Cerrar")
+                TextButton(onClick = { VMViewModel.addGuideManifest(navigationController) }) {
+                    Text(text = "Si")
                 }
-            }
+            },
+            dismissButton = { TextButton(onClick = { VMViewModel.onAlertDialog()}) {
+                Text(text = "Cerrar")
+
+            }}
         )
+    }
+}
+
+@Composable
+fun TextDialog(message: String) {
+    Column {
+        Text(text = message)
+        Text(text = "¿Quiere agregar esta guia al manifiesto?",
+            fontWeight = FontWeight.Bold)
     }
 }
 
@@ -751,7 +776,7 @@ fun Header(modifier: Modifier, VMViewModel: VMViewModel, navigationController: N
         modifier = modifier.fillMaxWidth(),
         title = {
             Text(
-                text = "Manifiesto",
+                text = "Validar manifiesto",
                 fontWeight = FontWeight.SemiBold,
                 fontSize = 14.sp
             )

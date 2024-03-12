@@ -1,8 +1,13 @@
 package com.example.pliin.apppliin.data.network.response.clients
 
+import com.example.pliin.apppliin.data.model.avisopago.AvisoModel
+import com.example.pliin.apppliin.data.model.consecutivomanifestmodel.ConsecutivoManModel
+import com.example.pliin.apppliin.data.network.dto.AvisoPAgoDTO
+import com.example.pliin.apppliin.data.network.dto.getconsecutivomanifiesto.GetConsecutivoManifestDto
 import com.example.pliin.apppliin.data.network.response.loginresponse.LoginRensponse
 import com.example.pliin.apppliin.data.network.response.tokenapiresponse.ResponseLogoutModel
 import retrofit2.Response
+import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.FormUrlEncoded
 import retrofit2.http.Header
@@ -29,4 +34,11 @@ interface LoginClient {
     suspend fun dologout(
         @Path("token") token: String
     ): Response<ResponseLogoutModel>
+
+    @POST("/fmi/data/v2/databases/PLIIN/layouts/AvisoPagoApi/_find/")
+    suspend fun avisoPAgo(
+        @Header("Authorization") bearer: String,
+        @Body query: AvisoPAgoDTO,
+    ): Response<AvisoModel>
 }
+

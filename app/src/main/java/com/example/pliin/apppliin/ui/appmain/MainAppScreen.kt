@@ -16,14 +16,15 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.*
 import androidx.compose.ui.unit.*
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import com.example.pliin.R
+import com.example.pliin.apppliin.domain.model.avisopagoitem.FieldDataAvisoItem
 import com.example.pliin.navigation.AppScreen
 
 
@@ -34,9 +35,20 @@ fun MainAppScreen(navigationController: NavHostController,Employee: String,area:
     val isLoged: Boolean by mainAppViewModel.isLoged.observeAsState(true)
     val nameEmployee: String by mainAppViewModel.nameEmployee.observeAsState("")
     val areaEmployee: String by mainAppViewModel.areaEmployee.observeAsState("")
+    val showAviso:Int by mainAppViewModel.showAviso.observeAsState(initial = 1)
+    val lockedAviso:Int by mainAppViewModel.lockedAviso.observeAsState(initial = 0)
+    val avisoMessage: String by mainAppViewModel.avisoMessage.observeAsState("")
+    val avisoMessageTitle: String by mainAppViewModel.avisoMessageTitle.observeAsState("")
+    val progressUnlocked: Boolean by mainAppViewModel.progressUnlocked.observeAsState(false)
+    val countDias:Int by mainAppViewModel.countDias.observeAsState(initial = 0)
+    val isUnlokecd: Boolean by mainAppViewModel.isUnlocked.observeAsState(false)
+    val data:FieldDataAvisoItem by mainAppViewModel.data.observeAsState(initial = FieldDataAvisoItem(null,0,0,null,0,null,null,null,null))
 
-    if (area.equals("Operador Logistico") || area.equals("Auxiliar Administrativo") ){
-        mainAppViewModel.gsaveDataEmployee(Employee,area)
+
+    if (isLoged){
+        if (area.equals("Operador Logistico") || area.equals("Auxiliar Administrativo") ){
+            mainAppViewModel.gsaveDataEmployee(Employee,area)
+        }
     }
 
     Box(modifier = Modifier.fillMaxSize()) {
@@ -54,7 +66,95 @@ fun MainAppScreen(navigationController: NavHostController,Employee: String,area:
             )
             Body(Modifier.align(Alignment.Center), navigationController,areaEmployee)
             Footer(Modifier.align(Alignment.BottomCenter), navigationController, mainAppViewModel)
+
+            AvisoPAgo(showAviso,lockedAviso,avisoMessage,mainAppViewModel,progressUnlocked,countDias,data,isUnlokecd,avisoMessageTitle)
         }
+    }
+}
+
+@Composable
+fun AvisoPAgo(
+    showAviso: Int,
+    lockedAviso: Int,
+    avisoMessage: String,
+    mainAppViewModel: MainAppViewModel,
+    progressUnlocked: Boolean,
+    countDias: Int,
+    data: FieldDataAvisoItem,
+    isUnlokecd: Boolean,
+    avisoMessageTitle: String
+) {
+
+    if (showAviso==1 || isUnlokecd){
+       /* AlertDialog(modifier = Modifier.fillMaxWidth()
+
+            ,
+            onDismissRequest = { },
+            title = { HeadModal()},
+            text = {
+
+                   if (progressUnlocked){
+                       Box(modifier = Modifier
+//                           .fillMaxWidth()
+                           .padding(top = 10.dp),
+                           contentAlignment = Alignment.Center) {
+                           Row(
+                               modifier = Modifier
+//                               .fillMaxWidth()
+                                   .padding(vertical = 10.dp),
+                               horizontalArrangement = Arrangement.Center,
+                               verticalAlignment = Alignment.CenterVertically
+                           ) {
+                               Text(text = "Verificando...")
+                               Spacer(modifier = Modifier.size(4.dp))
+                               CircularProgressIndicator()
+                           }
+                       }
+                   }else{
+                       if (isUnlokecd){
+                           Row(
+                               verticalAlignment = Alignment.CenterVertically,
+                               horizontalArrangement = Arrangement.Center
+                           ){
+                               Icon(imageVector = Icons.Rounded.CheckCircle, contentDescription = "CheckList")
+                               Spacer(modifier = Modifier.size(4.dp))
+                               Text(text = avisoMessage)
+                           }
+
+                       }else{
+                           Text(text = avisoMessage)
+
+                       }
+                   }
+            },
+            buttons = {
+                if (lockedAviso==0){
+                    TextButton(onClick = { mainAppViewModel.closeAviso() }) {
+                        Text(text = "Cerrar")
+                    }
+                }else{
+                    TextButton(onClick = { mainAppViewModel.verificarUnlocked() }) {
+                        Text(text = "Verificar desbloqueo")
+                    }
+                }
+            }
+        )*/
+    }
+}
+
+@Composable
+private fun HeadModal(){
+    Box(modifier = Modifier
+        .fillMaxWidth()
+        .background(brush = Brush.verticalGradient(listOf(Color(0xFF4c51c6), Color.White)))
+        ,
+        contentAlignment = Alignment.Center){
+        Image(
+            painter = painterResource(id = R.drawable.pliin_logo_blanco),
+            contentDescription = "PLIIN",
+            modifier = Modifier.size(70.dp)
+        )
+
     }
 }
 
