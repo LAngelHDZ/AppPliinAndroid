@@ -53,6 +53,9 @@ class MainAppViewModel @Inject constructor(
     private val _progressUnlocked = MutableLiveData<Boolean>()
     var progressUnlocked: LiveData<Boolean> = _progressUnlocked
 
+    private val _enabledButton = MutableLiveData<Boolean>()
+    var enabledButton: LiveData<Boolean> = _enabledButton
+
     private val _isUnlocked = MutableLiveData<Boolean>()
     var isUnlocked: LiveData<Boolean> = _isUnlocked
 
@@ -80,13 +83,14 @@ class MainAppViewModel @Inject constructor(
         _areaEmployye.value = area
         _isLoged.value = false
         viewModelScope.launch {
-//            avisoPago()
+           avisoPago()
 
         }
     }
 
     @SuppressLint("SuspiciousIndentation")
     suspend fun avisoPago() {
+
 //        viewModelScope.launch {
             val response = avisoPagoUseCase.invoke()
 
@@ -94,28 +98,41 @@ class MainAppViewModel @Inject constructor(
                 _lockedAviso.value = response.bloqueoAviso
                 _showAviso.value = response.avisoShow
 
-            }
+               val  mesFactura = response.mes!!
+              val  diaFactura = response.diaFactura!!
+               val  mesSuspencion = response.mesSuspencion!!
+                val diaSuspencion = response.diaSuspencion!!
+
+
             if (_lockedAviso.value == 0) {
-                _avisoMessageTitle.value="Mensaje de sistema"
+                if (response.contador!! < 4){
 
-                _avisoMessage.value =
-                    "Estimado usuario, su factura ya se encuestra en proceso de pago, favor de atenderlo a la brevedad"
+                    _avisoMessageTitle.value="¡Gracias por su atención!"
+                    _avisoMessage.value = "Hola estimado cliente SALTER le informamos que el corte del servicio es este $diaFactura de $mesFactura, la factura correspondiente ya ha sido enviada al correo electrónico notificado por la empresa. "
+                }else{
+
+                     _avisoMessageTitle.value="¡Gracias por su atención!"
+                    _avisoMessage.value="Hola estimado cliente SALTER le informamos que el corte del servicio fue este $diaFactura de $mesFactura, el servicio será suspendido este próximo $diaSuspencion de $mesSuspencion. por favor, verifique su bandeja de entrada para cubrir la factura correspondiente y evitar la suspensión temporal del servicio.\n"
+                }
+                _enabledButton.value=true
+
             } else {
-                _avisoMessageTitle.value="Mensaje de advertencia"
+                _avisoMessageTitle.value="¡Gracias por su atención!"
 
                 _avisoMessage.value =
-                    "El sistema se ha bloqueado por exceso de pago"
+                    "El sistema ha sido bloqueado, comunícate a servicio al cliente, será un placer ayudarte."
 
             }
 
             _data.value = response
-//        }
+       }
     }
 
     fun closeAviso() {
             _showAviso.value = 0
         _isUnlocked.value=false
-            _countDias.value =_data.value?.contador
+//        _enabledButton.value=true
+//            _countDias.value =_data.value?.contador
 
     }
 

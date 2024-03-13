@@ -39,12 +39,15 @@ fun ManifestScreen(navigationController: NavHostController, mfViewModel: MFViewM
 
     val listManifest: List<Data> by mfViewModel.listManifest.observeAsState(listOf())
     val claveManifest:String by mfViewModel.claveManifest.observeAsState("")
+    val area:String by mfViewModel.areaEmployee.observeAsState("")
     val validarManifest: Boolean by mfViewModel.validarManifest.observeAsState(false)
     val optionsDialog: Boolean by mfViewModel.optionsDialog.observeAsState(false)
+    mfViewModel.loadEmployess()
 
-//    if (enableLoadManifest) {
-//        mfViewModel.loadManifest()
-//    }
+    if (area.equals("Operador Logistico")) {
+        mfViewModel.loadManifest("APLICADO")
+    }
+
 
     Box() {
         Column() {
@@ -57,7 +60,7 @@ fun ManifestScreen(navigationController: NavHostController, mfViewModel: MFViewM
             Body(
                 Modifier
                     .weight(2.2f)
-                    .padding(horizontal = 2.dp), listManifest,mfViewModel
+                    .padding(horizontal = 2.dp), listManifest,mfViewModel,area
             )
             Footer(
                 Modifier
@@ -90,10 +93,12 @@ fun Header(modifier: Modifier, navigationController: NavHostController, mfViewMo
 }
 
 @Composable
-fun Body(modifier: Modifier, listManifest: List<Data>, mfViewModel: MFViewModel) {
+fun Body(modifier: Modifier, listManifest: List<Data>, mfViewModel: MFViewModel, area: String) {
     Box(modifier = modifier.fillMaxWidth()) {
         Column {
-            ButtonTypeManifest(mfViewModel)
+            if (!area.equals("Operador Logistico")){
+                ButtonTypeManifest(mfViewModel)
+            }
             manifestList(modifier.weight(3f), listManifest,mfViewModel)
         }
     }

@@ -11,7 +11,7 @@ interface EmployeeDao {
 
     //Comsulta la informacion del empleado
     @Query("SELECT * FROM Employee_table WHERE username = :user")
-    suspend fun getDataEmployee(user: String): EmployeeEntity
+    suspend fun getDataEmployee(user: String): EmployeeEntity?
 
     //Verifica si existe la informacion del empleado
     @Query("SELECT COUNT(*) FROM Employee_table WHERE username = :user")

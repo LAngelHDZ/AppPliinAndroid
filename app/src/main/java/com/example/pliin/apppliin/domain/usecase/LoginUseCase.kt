@@ -39,9 +39,11 @@ class LoginUseCase @Inject constructor(
             userValidate = Loginrepository.getTokenDB().token!!
             val existeEmployee =
                 employeeRepository.queryDataEmployee(generalMethodsGuide.toLowerLetter(user))
+
+            Log.d("Usuario Existe","$existeEmployee")
             if (!existeEmployee) {
                 val data = employeeRepository.getEmployeeApi(user)
-                employeeRepository.saveDataEmployee(data)
+                data.let { employeeRepository.saveDataEmployee(it) }
             }
             // employeeActive = employeeRepository.getEmployeeDB(user).statusLaboral.toString()
         }

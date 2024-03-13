@@ -22,9 +22,17 @@ data class FieldDataAvisoItem(
     @SerializedName("numero_pago_quincena")
     val numeroPagoQuincena: Int?, // 1
     @SerializedName("stattus_pago")
-    val stattusPago: Int? // false
+    val stattusPago: Int?, // false
+    @SerializedName("mes")
+    val mes: String?, // 04/13/2024
+    @SerializedName("dia_factura")
+    val diaFactura: Int?, // 1
+    @SerializedName("dia_suspencion")
+    val diaSuspencion: Int?, // 1
+    @SerializedName("mes_suspencion")
+    val mesSuspencion: String?, // 04/13/2024
 )
 
 fun FieldDataAvisoModel.toDomain() = FieldDataAvisoItem(
-    access, avisoShow, bloqueoAviso, clavePrincipal, contador, enabledContador, fechaFactura, numeroPagoQuincena, stattusPago
+    access, avisoShow, bloqueoAviso, clavePrincipal, contador, enabledContador, fechaFactura, numeroPagoQuincena, stattusPago,mes, diaFactura, diaSuspencion, mesSuspencion
 )

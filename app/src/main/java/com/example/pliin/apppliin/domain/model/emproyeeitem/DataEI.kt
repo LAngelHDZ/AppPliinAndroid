@@ -17,8 +17,8 @@ data class DataEI(
 
 fun DataEM.toDomain() =
     DataEI(
-        fieldData!!.toDomain(),
+        fieldData?.toDomain(),
         modId,
-        portalData!!.toDomain(),
+        portalData?.toDomain(),
         recordId
     )

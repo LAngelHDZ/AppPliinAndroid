@@ -1768,7 +1768,7 @@ fun selectRutaDialog(
     )
 
 
-    if (area.equals("AuxiliarAdministrativo")) {
+//    if (area.equals("AuxiliarAdministrativo")) {
         Spacer(modifier = Modifier.size(16.dp))
         Text(text = "Tipo")
         DromMenuTM(selectedOptionTM, cmViewModel, typeManifest) {
@@ -1776,7 +1776,7 @@ fun selectRutaDialog(
                 selected = it
             )
         }
-    }
+//    }
 
     Spacer(modifier = Modifier.size(16.dp))
     Text(text = "Ruta")
@@ -1858,10 +1858,9 @@ fun DromMenuRuta(
     onTextChanged: (String) -> Unit
 ) {
     val listRutasistRutas: MutableList<String>
-    if (area == "OperadorLogistico") {
-        listRutasistRutas = listRutas
 
-    } else {
+
+//    } else {
         if (selectedOptionTM == "Local") {
             listRutasistRutas = remember {
                 mutableStateListOf(
@@ -1880,7 +1879,7 @@ fun DromMenuRuta(
                 )
             }
         }
-    }
+//    }
 
     var expand by remember { mutableStateOf(false) }
     var textFiledSize by remember { mutableStateOf(Size.Zero) }
@@ -1907,7 +1906,7 @@ fun DromMenuRuta(
         singleLine = true,
     )
     Box() {
-        if (isSelectRutaEnabled || area == "OperadorLogistico") {
+//        if (isSelectRutaEnabled || area == "OperadorLogistico") {
             DropdownMenu(
                 expanded = expand,
                 onDismissRequest = { expand = false },
@@ -1927,7 +1926,7 @@ fun DromMenuRuta(
                     }
                 }
             }
-        }
+//        }
     }
 }
 

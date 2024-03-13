@@ -27,7 +27,7 @@ class LoginService @Inject constructor(private val loginClient: LoginClient, pri
         }
     }
 
-    suspend fun avisoPago():AvisoModel?{
+    suspend fun avisoPago(): AvisoModel?{
         val query = AvisoPAgoDTO(listOf(
             QueryAvisoPago(
                 "api"

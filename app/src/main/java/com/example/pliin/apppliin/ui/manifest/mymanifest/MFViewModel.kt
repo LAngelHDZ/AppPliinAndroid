@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
 import com.example.pliin.apppliin.domain.model.consecutivomanifestitem.Data
+import com.example.pliin.apppliin.domain.model.emproyeeitem.FieldDataEI
 import com.example.pliin.apppliin.domain.usecase.GetAllManifestUseCase
 import com.example.pliin.apppliin.domain.usecase.LoadEmployeeUseCase
 import com.example.pliin.navigation.AppScreen
@@ -26,6 +27,9 @@ class MFViewModel @Inject constructor(
     private val _claveManifest = MutableLiveData<String>()
     val claveManifest:LiveData<String> = _claveManifest
 
+    private val _employee = MutableLiveData<FieldDataEI>()
+    var employee:LiveData<FieldDataEI> = _employee
+
     private val _idRecord = MutableLiveData<String>()
     val idRecord:LiveData<String> = _idRecord
 
@@ -34,6 +38,9 @@ class MFViewModel @Inject constructor(
 
     private val _nameEmployee = MutableLiveData<String>()
     val nameEmployee :LiveData<String> = _nameEmployee
+
+    private val _areaEmployee = MutableLiveData<String>()
+    val areaEmployee :LiveData<String> = _areaEmployee
 
     private val _enableLoadManifest = MutableLiveData<Boolean>()
     var enableLoadManifest: LiveData<Boolean> = _enableLoadManifest
@@ -50,7 +57,9 @@ class MFViewModel @Inject constructor(
     }
 
     fun loadManifest(status:String){
+
 //        _listManifest.value= emptyList()
+//        loadEmployess()
         val year: String = LocalDate.now().year.toString()
         val month = addZeroDate(LocalDate.now().monthValue)
         val day = addZeroDate(LocalDate.now().dayOfMonth)
@@ -60,6 +69,15 @@ class MFViewModel @Inject constructor(
             _listManifest.value = result as List<Data>?
         }
         _enableLoadManifest.value = false
+    }
+
+    fun loadEmployess(){
+        viewModelScope.launch {
+            val employe = loadEmployeeUseCase()
+            _employee.value = employe
+
+            _areaEmployee.value=employe.area
+        }
     }
 
     fun onOptionDialog(){

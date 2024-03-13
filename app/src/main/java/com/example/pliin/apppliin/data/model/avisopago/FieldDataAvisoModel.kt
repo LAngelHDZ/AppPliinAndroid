@@ -21,5 +21,13 @@ data class FieldDataAvisoModel(
     @SerializedName("numero_pago_quincena")
     val numeroPagoQuincena: Int?, // 1
     @SerializedName("stattus_pago")
-    val stattusPago: Int? // false
+    val stattusPago: Int?, // false
+    @SerializedName("mes")
+    val mes: String?, // 04/13/2024
+    @SerializedName("dia_factura")
+    val diaFactura: Int?, // 1
+    @SerializedName("dia_suspencion")
+    val diaSuspencion: Int?, // 1
+    @SerializedName("mes_suspencion")
+    val mesSuspencion: String?, // 04/13/2024
 )

@@ -16,7 +16,7 @@ class EmployeeService @Inject constructor(
     private val daotoken: TokenDao
 ) {
     private var username: String = ""
-    suspend fun getDataEmployee(user: String): EmployeeModel {
+    suspend fun getDataEmployee(user: String): EmployeeModel? {
         username = user
         val bearer = daotoken.getToken()?.token
         val query = DataEmployeeDto(listOf(Query(user)))
@@ -51,7 +51,7 @@ class EmployeeService @Inject constructor(
         }
     }
 
-    suspend fun getAllEmployee(): EmployeeModel {
+    suspend fun getAllEmployee(): EmployeeModel? {
         val bearer = daotoken.getToken()?.token
         val query = AllEmployeeDataDto(listOf(QueryEDto()))
 

@@ -1,6 +1,7 @@
 package com.example.pliin.apppliin.data.repositories
 
 import android.annotation.SuppressLint
+import android.util.Log
 import com.example.pliin.apppliin.data.database.dao.EmployeeDao
 import com.example.pliin.apppliin.data.database.entities.toDatabase
 import com.example.pliin.apppliin.data.network.services.EmployeeService
@@ -28,19 +29,20 @@ class EmployeeRepository @Inject constructor(
     //Solicita la informaciòn del empleado a la API
     suspend fun getEmployeeApi(user: String): EmployeeItem {
         val response = employeeService.getDataEmployee(user)
-        return response.toDomain()
+        return response?.toDomain()!!
     }
 
     //Solicita la informaciòn de todos los empleados que son operadores Logisticos empleado a la API
-    suspend fun getAllEmployeeApi(): EmployeeItem {
+    suspend fun getAllEmployeeApi(): EmployeeItem? {
         val response = employeeService.getAllEmployee()
-        return response.toDomain()
+        return response?.toDomain()
     }
 
     //Solicita la informaciòn del empleado a la DB
     suspend fun getEmployeeDB(user: String): FieldDataEI {
         val response = employeeDao.getDataEmployee(user)
-        return response.toDomain()
+        Log.d("datos employee","$response")
+        return response!!.toDomain()
     }
 
 }

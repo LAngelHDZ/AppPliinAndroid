@@ -83,8 +83,8 @@ fun BodyLogo() {
 fun GroupButton(modifier: Modifier, navigationController: NavHostController) {
     val spaces = (Modifier.size(20.dp))
     ButtonRegisterGuide(modifier, navigationController)
-    Spacer(modifier = spaces)
-    ButtonRecolection(modifier, navigationController)
+//    Spacer(modifier = spaces)
+//    ButtonRecolection(modifier, navigationController)
     Spacer(modifier = spaces)
     ButtonValidateArrastre(modifier, navigationController)
     //  Spacer(modifier = spaces)

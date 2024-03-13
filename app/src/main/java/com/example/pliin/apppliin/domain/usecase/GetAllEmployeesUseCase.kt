@@ -13,6 +13,6 @@ class GetAllEmployeesUseCase @Inject constructor(
     suspend operator fun invoke(): List<DataEI?>? {
         reloginUseCase()
         val response = employeeRepository.getAllEmployeeApi()
-        return response.response?.data
+        return response?.response?.data
     }
 }
