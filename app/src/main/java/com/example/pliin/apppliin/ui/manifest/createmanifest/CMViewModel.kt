@@ -62,6 +62,12 @@ class CMViewModel @Inject constructor(
     private val _isDialogMessageGuide = MutableLiveData<Boolean>()
     var isDialogMessageGuide: LiveData<Boolean> = _isDialogMessageGuide
 
+    private val _enabledSupRuta = MutableLiveData<Boolean>()
+    var enabledSupRuta: LiveData<Boolean> = _enabledSupRuta
+
+    private val _selectLocal = MutableLiveData<String>()
+    var selectLocal: LiveData<String> = _selectLocal
+
     private val _isDialogExitScreen = MutableLiveData<Boolean>()
     var isDialogExitScreen: LiveData<Boolean> = _isDialogExitScreen
 
@@ -106,6 +112,8 @@ class CMViewModel @Inject constructor(
 
     private val _selectedOptionRuta = MutableLiveData<String>()
     var selectedOptionRuta: LiveData<String> = _selectedOptionRuta
+    private val _selectedOptionSubRuta = MutableLiveData<String>()
+    var selectedOptionSubRuta: LiveData<String> = _selectedOptionSubRuta
 
     private val _selectedOptionTM = MutableLiveData<String>()
     var selectedOptionTM: LiveData<String> = _selectedOptionTM
@@ -122,7 +130,7 @@ class CMViewModel @Inject constructor(
 
 //Variables para agregar la direccion a la guia
 
-private val _isAlertDialogHighValue = MutableLiveData<Boolean>()
+    private val _isAlertDialogHighValue = MutableLiveData<Boolean>()
     var isAlertDialogHighValue: LiveData<Boolean> = _isAlertDialogHighValue
 
     /*Variable que alamcena las guias que se escanean*/
@@ -352,8 +360,25 @@ private val _isAlertDialogHighValue = MutableLiveData<Boolean>()
     }
 
     fun onValueChangedRuta(selected: String) {
-        _selectedOptionRuta.value = selected
-        _isSelectbtn.value = enableSelectbtn(selected)
+        if (selected.equals("Local 1") || selected.equals("Local 2")) {
+            _selectLocal.value = selected
+            _enabledSupRuta.value = true
+            _selectedOptionRuta.value = selected
+        } else {
+            _selectLocal.value = ""
+            _selectedOptionSubRuta.value = ""
+
+            _enabledSupRuta.value = false
+            _selectedOptionRuta.value = selected
+            _isSelectbtn.value = enableSelectbtn(selected)
+        }
+    }
+
+    fun onValueChangedSubRuta(selected: String) {
+
+            _selectedOptionSubRuta.value = selected
+            _isSelectbtn.value = enableSelectbtn(selected)
+
     }
 
     fun enableSelectTM(select: String) = select.length > 1
@@ -361,7 +386,7 @@ private val _isAlertDialogHighValue = MutableLiveData<Boolean>()
     fun enableSelectbtn(select: String) = select.length > 1
 
     fun guideregistedOk(navigationController: NavHostController) {
-        onAlertDialogexit(false,navigationController)
+        onAlertDialogexit(false, navigationController)
         _isDialogLoadEnable.value = false
         _isLoadingDataGuide.value = false
         _isGuideRegisted.value = false
@@ -372,34 +397,34 @@ private val _isAlertDialogHighValue = MutableLiveData<Boolean>()
         reset()
     }
 
-    fun backScreen(navigationController: NavHostController,modal:String) {
-        if(modal.equals("SelectRuta")){
+    fun backScreen(navigationController: NavHostController, modal: String) {
+        if (modal.equals("SelectRuta")) {
             navigationController.popBackStack()
-        }else{
-            _isDialogExitScreen.value=true
+        } else {
+            _isDialogExitScreen.value = true
         }
     }
 
-    fun onAlertDialogexit(exit:Boolean, navigationController: NavHostController){
-        if (exit){
+    fun onAlertDialogexit(exit: Boolean, navigationController: NavHostController) {
+        if (exit) {
             navigationController.popBackStack()
-            _isDialogExitScreen.value=false
+            _isDialogExitScreen.value = false
             _isDialogRuta.value = false
-        }else{
+        } else {
             navigationController.popBackStack()
             reset()
-            _isDialogExitScreen.value=false
+            _isDialogExitScreen.value = false
         }
     }
 
-    fun saveChanges(){
+    fun saveChanges() {
         _isSaveChanges.value = true
     }
 
-    fun onHighValuePqt(highValue:String){
-        _isAlertDialogHighValue.value=false
-        _isDireccionDialog.value=true
-        _altoValor.value=highValue
+    fun onHighValuePqt(highValue: String) {
+        _isAlertDialogHighValue.value = false
+        _isDireccionDialog.value = true
+        _altoValor.value = highValue
 
     }
 
@@ -422,8 +447,8 @@ private val _isAlertDialogHighValue = MutableLiveData<Boolean>()
         _typePreManifest.value = ""
     }
 
-    fun reset(){
-        createOne=0
+    fun reset() {
+        createOne = 0
         _nombre.value = ""
         _telefono.value = ""
         _dir1.value = ""
@@ -446,7 +471,7 @@ private val _isAlertDialogHighValue = MutableLiveData<Boolean>()
         _selectedOptionRuta.value = ""
         _selectedOptionTM.value = ""
         _ruta.value = ""
-        _nameEmployye.value=""
+        _nameEmployye.value = ""
         _consecutiveMan.value = 0
         _countGuides.value = 0
         _clavePreManifest.value = ""
@@ -456,6 +481,9 @@ private val _isAlertDialogHighValue = MutableLiveData<Boolean>()
         _isSelectbtn.value = false
         _isSelectRutaEnabled.value = false
         _isDialogRuta.value = true
+
+        _enabledSupRuta.value = false
+        _selectLocal.value=""
     }
 
     fun onAlertDialog() {
@@ -484,6 +512,10 @@ private val _isAlertDialogHighValue = MutableLiveData<Boolean>()
     }
 
     fun continueSetGuides(area: String) {
+
+        if (!_selectedOptionSubRuta.value.isNullOrEmpty()){
+            _selectedOptionRuta.value = _selectedOptionSubRuta.value
+        }
         _isDialogRuta.value = false
         _ruta.value = selectedOptionRuta.value
         _isSelectbtn.value = false
@@ -600,7 +632,7 @@ private val _isAlertDialogHighValue = MutableLiveData<Boolean>()
                     Log.d("mesage en validación", "$codeMessage")
                     if (codeValidate) {
 //                        val guideAtManifest = guideOtherManifest(guia)
-                        val guideOtherManifest = getGuideUseCase.invoke(guia,"Asignado")
+                        val guideOtherManifest = getGuideUseCase.invoke(guia, "Asignado")
                         val code400 = guideOtherManifest.component1().isNullOrEmpty()
                         Log.d("mesage en validación", "$code400")
                         if (code400) {
@@ -650,7 +682,7 @@ private val _isAlertDialogHighValue = MutableLiveData<Boolean>()
         }
     }
 
-    fun mesageValidateGuide(message:String){
+    fun mesageValidateGuide(message: String) {
         _isDialogMessageGuide.value = true
         _messageGuideValidate.value = message
     }
@@ -658,7 +690,7 @@ private val _isAlertDialogHighValue = MutableLiveData<Boolean>()
     fun guideOtherManifest(guide: String): Boolean {
         var guideOtherManifest: List<String?> = emptyList()
         viewModelScope.launch {
-            guideOtherManifest = getGuideUseCase.invoke(guide,"Asignado")
+            guideOtherManifest = getGuideUseCase.invoke(guide, "Asignado")
             codeMessage = guideOtherManifest.isEmpty()
         }
         Thread.sleep(3000)
@@ -727,8 +759,8 @@ private val _isAlertDialogHighValue = MutableLiveData<Boolean>()
     }
 
     fun create(navigationController: NavHostController) {
-        if(createOne<=0){
-            createOne+=1
+        if (createOne <= 0) {
+            createOne += 1
             viewModelScope.launch {
                 getConsecutivoManifest()
                 Thread.sleep(1000)
@@ -757,7 +789,7 @@ private val _isAlertDialogHighValue = MutableLiveData<Boolean>()
     fun selectEmployye(employee: FieldDataEI): String? {
         val nameEmployee: String? = if (areaEmployye.value.equals("Operador Logistico")) {
             "${employee.nombre} ${employee.aPaterno} ${employee.aMaterno}"
-        } else{
+        } else {
             nameEmployye.value
         }
 
@@ -775,10 +807,10 @@ private val _isAlertDialogHighValue = MutableLiveData<Boolean>()
             var nameEmployee = selectEmployye(employee)
             val typeManifest = typePreManifest.value
             val ruta = generalMethodsGuide.toUpperLetter(ruta.value!!)
-            val statusPreM = if(nameEmployee.isNullOrEmpty() || nameEmployee == "-"){
+            val statusPreM = if (nameEmployee.isNullOrEmpty() || nameEmployee == "-") {
                 "NO APLICADO"
-            }else{
-               "APLICADO"
+            } else {
+                "APLICADO"
             }
 
             if (nameEmployee.isNullOrEmpty()) {
