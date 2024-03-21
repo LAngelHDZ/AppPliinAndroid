@@ -1,5 +1,6 @@
 package com.example.pliin.apppliin.ui.manifest.createmanifest
 
+import android.annotation.SuppressLint
 import android.util.Log
 import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -97,8 +98,8 @@ fun CreateManifestScreen(
     val date: String = getdatenow()
     val scanLauncher = rememberLauncherForActivityResult(
         contract = ScanContract(),
-    ){ result ->
-        if (result.contents != null){
+    ) { result ->
+        if (result.contents != null) {
             Log.i("quide scanner", result.contents)
             cmViewModel.getContentQR(result.contents, navigationController)
         }
@@ -150,9 +151,7 @@ fun CreateManifestScreen(
                 )
             }
             AlertDialogGuide(
-                show = isSesionDialog,
-                cmViewModel,
-                messageGuideValidate
+                show = isSesionDialog, cmViewModel, messageGuideValidate
             )
             selectRuta(
                 cmViewModel,
@@ -171,31 +170,34 @@ fun CreateManifestScreen(
                 navigationController,
                 nombre,
                 telefono,
-                dir1, dir2, dir3,
-                cp, municipio,
-                alto, ancho, largo, pesoKg, pesoVol, typeEmbalaje,
+                dir1,
+                dir2,
+                dir3,
+                cp,
+                municipio,
+                alto,
+                ancho,
+                largo,
+                pesoKg,
+                pesoVol,
+                typeEmbalaje,
                 typeExcedente,
                 isSelectbtn,
                 isFormDatosPqt,
                 isEnableBtnCalcular
             )
-            alertDialogHighValue(cmViewModel,isDialogHighValue)
+            alertDialogHighValue(cmViewModel, isDialogHighValue)
             AlertDialogLoadGuides(
-                isDialogLoadGuides,
-                cmViewModel,
-                messageGuideValidate,
-                navigationController
+                isDialogLoadGuides, cmViewModel, messageGuideValidate, navigationController
             )
-            AlertDialogexitScreen(isDialogExitScreen,cmViewModel,navigationController)
+            AlertDialogexitScreen(isDialogExitScreen, cmViewModel, navigationController)
         }
     }
 }
 
 @Composable
 fun AlertDialogexitScreen(
-    show: Boolean,
-    cmViewModel: CMViewModel,
-    navigationController: NavHostController
+    show: Boolean, cmViewModel: CMViewModel, navigationController: NavHostController
 ) {
     if (show) {
         AlertDialog(onDismissRequest = {},
@@ -204,8 +206,7 @@ fun AlertDialogexitScreen(
             confirmButton = {
                 TextButton(onClick = {
                     cmViewModel.onAlertDialogexit(
-                        true,
-                        navigationController
+                        true, navigationController
                     )
                 }) {
                     Text(text = "Si")
@@ -214,20 +215,18 @@ fun AlertDialogexitScreen(
             dismissButton = {
                 TextButton(onClick = {
                     cmViewModel.onAlertDialogexit(
-                        false,
-                        navigationController
+                        false, navigationController
                     )
                 }) {
                     Text(text = "No")
                 }
-            }
-        )
+            })
     }
 }
 
 @Composable
 fun alertDialogHighValue(cmViewModel: CMViewModel, isDialogHighValue: Boolean) {
-    if(isDialogHighValue){
+    if (isDialogHighValue) {
         AlertDialog(onDismissRequest = {
 
         },
@@ -243,11 +242,10 @@ fun alertDialogHighValue(cmViewModel: CMViewModel, isDialogHighValue: Boolean) {
             dismissButton = {
                 TextButton(onClick = {
                     cmViewModel.onHighValuePqt("NO")
-                }){
+                }) {
                     Text(text = "No")
                 }
-            }
-        )
+            })
     }
 }
 
@@ -288,14 +286,7 @@ fun dataGuides(
             ) {
                 if (isDialogDireccion) {
                     formDireccion(
-                        nombre,
-                        telefono,
-                        dir1,
-                        dir2,
-                        dir3,
-                        cp,
-                        municipio,
-                        cmViewModel
+                        nombre, telefono, dir1, dir2, dir3, cp, municipio, cmViewModel
                     )
                     Spacer(modifier = Modifier.size(4.dp))
                     ButtonsForm(cmViewModel, "direccion", isSelectbtn)
@@ -450,8 +441,7 @@ fun textFieldNameClient(
 
 @Composable
 fun textFieldNumberPhone(
-    telefono: (String),
-    onChangedFormDireccion: (String) -> Unit
+    telefono: (String), onChangedFormDireccion: (String) -> Unit
 ) {
     OutlinedTextField(
         value = telefono,
@@ -471,8 +461,7 @@ fun textFieldNumberPhone(
 
 @Composable
 fun textFieldDir1(
-    dir1: (String),
-    onChangedFormDireccion: (String) -> Unit
+    dir1: (String), onChangedFormDireccion: (String) -> Unit
 ) {
     OutlinedTextField(
         value = dir1,
@@ -491,8 +480,7 @@ fun textFieldDir1(
 
 @Composable
 fun textFieldDir2(
-    dir2: (String),
-    onChangedFormDireccion: (String) -> Unit
+    dir2: (String), onChangedFormDireccion: (String) -> Unit
 ) {
     OutlinedTextField(
         value = dir2,
@@ -511,8 +499,7 @@ fun textFieldDir2(
 
 @Composable
 fun textFieldDir3(
-    dir3: (String),
-    onChangedFormDireccion: (String) -> Unit
+    dir3: (String), onChangedFormDireccion: (String) -> Unit
 ) {
     OutlinedTextField(
         value = dir3,
@@ -531,8 +518,7 @@ fun textFieldDir3(
 
 @Composable
 fun textFieldCP(
-    cp: (String),
-    onChangedFormDireccion: (String) -> Unit
+    cp: (String), onChangedFormDireccion: (String) -> Unit
 ) {
     OutlinedTextField(
         value = cp,
@@ -552,8 +538,7 @@ fun textFieldCP(
 
 @Composable
 fun textFieldMunicipio(
-    municipio: (String),
-    onChangedFormDireccion: (String) -> Unit
+    municipio: (String), onChangedFormDireccion: (String) -> Unit
 ) {
     OutlinedTextField(
         value = municipio,
@@ -623,9 +608,7 @@ fun formDatosPqt(
 
 @Composable
 fun btnCalcularPesoV(
-    isFormDatosPqt: Boolean,
-    cmViewModel: CMViewModel,
-    isEnableBtnCalcular: Boolean
+    isFormDatosPqt: Boolean, cmViewModel: CMViewModel, isEnableBtnCalcular: Boolean
 ) {
     Button(
         onClick = { cmViewModel.calcularPesoVol() },
@@ -653,8 +636,7 @@ fun typeEmbalaje(typeEmbalaje: Boolean, cmViewModel: CMViewModel) {
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(text = "Chico")
-                RadioButton(
-                    selected = !typeEmbalaje,
+                RadioButton(selected = !typeEmbalaje,
                     onClick = { cmViewModel.onRadioBtnSeleted("Chico") })
             }
         }
@@ -664,8 +646,7 @@ fun typeEmbalaje(typeEmbalaje: Boolean, cmViewModel: CMViewModel) {
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(text = "Grande")
-                RadioButton(
-                    selected = typeEmbalaje,
+                RadioButton(selected = typeEmbalaje,
                     onClick = { cmViewModel.onRadioBtnSeleted("Grande") })
             }
         }
@@ -674,8 +655,7 @@ fun typeEmbalaje(typeEmbalaje: Boolean, cmViewModel: CMViewModel) {
 
 @Composable
 fun textFieldAlto(
-    alto: String, isFormDatosPqt: Boolean,
-    onChangedFormDatos: (String) -> Unit
+    alto: String, isFormDatosPqt: Boolean, onChangedFormDatos: (String) -> Unit
 ) {
     OutlinedTextField(
         value = alto,
@@ -696,8 +676,7 @@ fun textFieldAlto(
 
 @Composable
 fun textFieldAncho(
-    ancho: String, isFormDatosPqt: Boolean,
-    onChangedFormDatos: (String) -> Unit
+    ancho: String, isFormDatosPqt: Boolean, onChangedFormDatos: (String) -> Unit
 ) {
     OutlinedTextField(
         value = ancho,
@@ -718,8 +697,7 @@ fun textFieldAncho(
 
 @Composable
 fun textFieldLargo(
-    largo: String, isFormDatosPqt: Boolean,
-    onChangedFormDatos: (String) -> Unit
+    largo: String, isFormDatosPqt: Boolean, onChangedFormDatos: (String) -> Unit
 ) {
     OutlinedTextField(
         value = largo,
@@ -740,8 +718,7 @@ fun textFieldLargo(
 
 @Composable
 fun textFieldPesoKg(
-    pesoKg: String, isFormDatosPqt: Boolean,
-    onChangedFormDatos: (String) -> Unit
+    pesoKg: String, isFormDatosPqt: Boolean, onChangedFormDatos: (String) -> Unit
 ) {
     OutlinedTextField(
         value = pesoKg,
@@ -762,10 +739,7 @@ fun textFieldPesoKg(
 
 @Composable
 fun infoPesoVolExcedente(
-    pesoVol: String,
-    isFormDatosPqt: Boolean,
-    typeExcedente: String,
-    cmViewModel: CMViewModel
+    pesoVol: String, isFormDatosPqt: Boolean, typeExcedente: String, cmViewModel: CMViewModel
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -788,9 +762,7 @@ fun infoPesoVolExcedente(
 
 @Composable
 fun textFieldPesoVol(
-    pesoVol: String,
-    isFormDatosPqt: Boolean,
-    enableBtnFormDatosPqt: (String) -> Unit
+    pesoVol: String, isFormDatosPqt: Boolean, enableBtnFormDatosPqt: (String) -> Unit
 ) {
     OutlinedTextField(
         value = pesoVol,
@@ -811,9 +783,7 @@ fun textFieldPesoVol(
 
 @Composable
 fun textFieldTypeExcedente(
-    typeExcedente: String,
-    isFormDatosPqt: Boolean,
-    enableBtnFormDatosPqt: (String) -> Unit
+    typeExcedente: String, isFormDatosPqt: Boolean, enableBtnFormDatosPqt: (String) -> Unit
 ) {
     OutlinedTextField(
         value = typeExcedente,
@@ -843,8 +813,7 @@ fun ScreenConfirmation(
     val countRegisterGuide: Int by cmViewModel.countRegisterGuide.observeAsState(0)
     val progressCircular: Float by cmViewModel.progressCircularLoad.observeAsState(0.1f)
     Column(
-        modifier = modifier.fillMaxWidth(),
-        horizontalAlignment = Alignment.CenterHorizontally
+        modifier = modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally
     ) {
         /*  Icon(
               imageVector = Icons.Rounded.LocalShipping,
@@ -874,8 +843,7 @@ fun ScreenConfirmation(
                 )
                 Spacer(modifier = modifier.size(4.dp))
                 CircularProgressIndicator(
-                    modifier = modifier.size(30.dp),
-                    color = Color(0xFF4c51c6)
+                    modifier = modifier.size(30.dp), color = Color(0xFF4c51c6)
                 )
             }
             cmViewModel.loadingOk(countRegisterGuide, countGuide)
@@ -899,44 +867,37 @@ fun Incon() {
 @Composable
 fun AlertDialogGuide(show: Boolean, cmViewModel: CMViewModel, message: String) {
     if (show) {
-        AlertDialog(
-            onDismissRequest = { cmViewModel.onAlertDialog() },
+        AlertDialog(onDismissRequest = { cmViewModel.onAlertDialog() },
             title = { Text(text = "Advertencia") },
             text = { Text(text = message) },
             confirmButton = {
                 TextButton(onClick = { cmViewModel.onAlertDialog() }) {
                     Text(text = "Cerrar")
                 }
-            }
-        )
+            })
     }
 }
 
 @Composable
 fun Header(modifier: Modifier, cmViewModel: CMViewModel, navigationController: NavHostController) {
-    TopAppBar(
-        modifier = modifier.fillMaxWidth(),
+    TopAppBar(modifier = modifier.fillMaxWidth(),
         title = {
             Text(
-                text = "Manifiesto",
-                fontWeight = FontWeight.SemiBold,
-                fontSize = 14.sp
+                text = "Manifiesto", fontWeight = FontWeight.SemiBold, fontSize = 14.sp
             )
         },
         backgroundColor = Color(0xFF4425a7),
         contentColor = Color.White,
         elevation = 4.dp,
         navigationIcon = {
-            IconButton(onClick = { cmViewModel.backScreen(navigationController,"btnBack") }
-            ) {
+            IconButton(onClick = { cmViewModel.backScreen(navigationController, "btnBack") }) {
                 Icon(
                     imageVector = Icons.Rounded.Cancel,
                     contentDescription = null,
                     modifier = Modifier.size(30.dp),
                 )
             }
-        }
-    )
+        })
 }
 
 @Composable
@@ -959,14 +920,14 @@ fun Body(
     ) {
         Column {
             Row(modifier = Modifier.padding(horizontal = 2.dp)) {
-                Box(modifier = modifier
-                    .weight(1f)
-                    .fillMaxWidth()) {
+                Box(
+                    modifier = modifier
+                        .weight(1f)
+                        .fillMaxWidth()
+                ) {
                     Row() {
                         Text(
-                            text = "Nodo:",
-                            fontWeight = FontWeight.SemiBold,
-                            fontSize = 14.sp
+                            text = "Nodo:", fontWeight = FontWeight.SemiBold, fontSize = 14.sp
                         )
                         Text(text = "UPS", fontSize = 14.sp)
                     }
@@ -978,9 +939,7 @@ fun Body(
                     contentAlignment = Alignment.TopEnd
                 ) {
                     Text(
-                        text = date,
-                        fontWeight = FontWeight.SemiBold,
-                        fontSize = 14.sp
+                        text = date, fontWeight = FontWeight.SemiBold, fontSize = 14.sp
                     )
                 }
 
@@ -996,9 +955,7 @@ fun Body(
                 listEmployees
             )
             ListGuide(
-                Modifier
-                    .weight(3f),
-                cmViewModel, mapListGuide, countGuide
+                Modifier.weight(3f), cmViewModel, mapListGuide, countGuide
             )
             FooterTable(countGuide)
         }
@@ -1021,12 +978,9 @@ fun DataManifest(
     ) {
 
         Card(
-            modifier = modifier
-                .fillMaxWidth()
+            modifier = modifier.fillMaxWidth()
             // .background(Color(0xFFcfd9fb))
-            ,
-            border = BorderStroke(2.dp, Color(0xFF4425a7)),
-            backgroundColor = Color(0xFFcfd9fb)
+            , border = BorderStroke(2.dp, Color(0xFF4425a7)), backgroundColor = Color(0xFFcfd9fb)
         ) {
             Column(
                 modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp),
@@ -1090,8 +1044,7 @@ fun ClaveManifest(ruta: String, claveManifest: String) {
         }
         Spacer(modifier = Modifier.size(4.dp))
         Box(
-            modifier = Modifier
-                .weight(0.8f)
+            modifier = Modifier.weight(0.8f)
             //.background(Color(0xFFf9f9f9)),
         ) {
             RutaTextField(ruta)
@@ -1103,15 +1056,11 @@ fun ClaveManifest(ruta: String, claveManifest: String) {
 fun NameOPTextField(nameEmployee: String) {
     Column() {
         TextLabelNameOp()
-        BasicTextField(
-            value = nameEmployee,
+        BasicTextField(value = nameEmployee,
             readOnly = true,
-            onValueChange = {
-            },
+            onValueChange = {},
             textStyle = TextStyle(
-                fontSize = 12.sp,
-                fontWeight = FontWeight.Normal,
-                color = Color.DarkGray
+                fontSize = 12.sp, fontWeight = FontWeight.Normal, color = Color.DarkGray
             ),
             decorationBox = { innerTextField ->
                 Row(
@@ -1131,16 +1080,13 @@ fun NameOPTextField(nameEmployee: String) {
                     Spacer(modifier = Modifier.width(width = 8.dp))
                     innerTextField()
                 }
-            }
-        )
+            })
     }
 }
 
 @Composable
 fun SelectOPTextField(
-    nameEmployee: String,
-    listEmployees: List<DataEI>,
-    onTextChanged: (FieldDataEI) -> Unit
+    nameEmployee: String, listEmployees: List<DataEI>, onTextChanged: (FieldDataEI) -> Unit
 ) {
     var expand by remember { mutableStateOf(false) }
     var textFiledSize by remember { mutableStateOf(Size.Zero) }
@@ -1157,22 +1103,18 @@ fun SelectOPTextField(
 
     Column() {
         TextLabelNameOp()
-        BasicTextField(
-            modifier = Modifier
-                .clickable { expand = true }
-                .fillMaxWidth()
-                .onGloballyPositioned { coordinates ->
-                    textFiledSize = coordinates.size.toSize()
-                },
+        BasicTextField(modifier = Modifier
+            .clickable { expand = true }
+            .fillMaxWidth()
+            .onGloballyPositioned { coordinates ->
+                textFiledSize = coordinates.size.toSize()
+            },
             value = nameEmployee,
             enabled = false,
             readOnly = true,
-            onValueChange = {
-            },
+            onValueChange = {},
             textStyle = TextStyle(
-                fontSize = 12.sp,
-                fontWeight = FontWeight.Normal,
-                color = Color.DarkGray
+                fontSize = 12.sp, fontWeight = FontWeight.Normal, color = Color.DarkGray
             ),
             decorationBox = { innerTextField ->
                 Row(
@@ -1192,8 +1134,7 @@ fun SelectOPTextField(
                     Spacer(modifier = Modifier.width(width = 8.dp))
                     innerTextField()
                 }
-            }
-        )
+            })
         Box() {
             DropdownMenu(
                 expanded = expand,
@@ -1204,12 +1145,10 @@ fun SelectOPTextField(
             ) {
                 Log.i("lista de empleados", employees.toString())
                 listEmployees.forEach { option ->
-                    DropdownMenuItem(
-                        onClick = {
-                            expand = false
-                            onTextChanged(option.fieldData!!)
-                        }
-                    ) {
+                    DropdownMenuItem(onClick = {
+                        expand = false
+                        onTextChanged(option.fieldData!!)
+                    }) {
                         val name = option.fieldData
                         Text(text = "${name?.nombre} ${name?.aPaterno} ${name?.aMaterno}")
                     }
@@ -1223,15 +1162,11 @@ fun SelectOPTextField(
 fun ClavePMTextField(claveManifest: String) {
     Column() {
         TextLabelClavePM()
-        BasicTextField(
-            value = "$claveManifest-XXX",
+        BasicTextField(value = "$claveManifest-XXX",
             readOnly = true,
-            onValueChange = {
-            },
+            onValueChange = {},
             textStyle = TextStyle(
-                fontSize = 12.sp,
-                fontWeight = FontWeight.Normal,
-                color = Color.DarkGray
+                fontSize = 12.sp, fontWeight = FontWeight.Normal, color = Color.DarkGray
             ),
             decorationBox = { innerTextField ->
                 Row(
@@ -1251,8 +1186,7 @@ fun ClavePMTextField(claveManifest: String) {
                     Spacer(modifier = Modifier.width(width = 8.dp))
                     innerTextField()
                 }
-            }
-        )
+            })
     }
 }
 
@@ -1260,36 +1194,27 @@ fun ClavePMTextField(claveManifest: String) {
 fun RutaTextField(ruta: String) {
     Column() {
         TextLabelEmpresa()
-        BasicTextField(
-            value = ruta,
-            readOnly = true,
-            onValueChange = {
-            },
-            textStyle = TextStyle(
-                fontSize = 12.sp,
-                fontWeight = FontWeight.Normal,
-                color = Color.DarkGray
-            ),
-            decorationBox = { innerTextField ->
-                Row(
-                    modifier = Modifier
-                        // .padding(horizontal = 64.dp) // margin left and right
-                        .fillMaxWidth()
-                        .background(color = Color.White, shape = RoundedCornerShape(size = 6.dp))
-                        .border(
-                            width = 1.dp,
-                            color = Color(0xFF4425a7),
-                            shape = RoundedCornerShape(size = 6.dp)
-                        )
-                        .padding(all = 4.dp), // inner padding,
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Center
-                ) {
-                    Spacer(modifier = Modifier.width(width = 8.dp))
-                    innerTextField()
-                }
+        BasicTextField(value = ruta, readOnly = true, onValueChange = {}, textStyle = TextStyle(
+            fontSize = 12.sp, fontWeight = FontWeight.Normal, color = Color.DarkGray
+        ), decorationBox = { innerTextField ->
+            Row(
+                modifier = Modifier
+                    // .padding(horizontal = 64.dp) // margin left and right
+                    .fillMaxWidth()
+                    .background(color = Color.White, shape = RoundedCornerShape(size = 6.dp))
+                    .border(
+                        width = 1.dp,
+                        color = Color(0xFF4425a7),
+                        shape = RoundedCornerShape(size = 6.dp)
+                    )
+                    .padding(all = 4.dp), // inner padding,
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center
+            ) {
+                Spacer(modifier = Modifier.width(width = 8.dp))
+                innerTextField()
             }
-        )
+        })
     }
 }
 
@@ -1358,9 +1283,11 @@ fun ListGuide(
                     modifier = modifier.padding(horizontal = 4.dp)
                 ) {
                     Box(modifier = Modifier.weight(2f)) {
-                        Row(horizontalArrangement = Arrangement.Start,
-                            verticalAlignment = Alignment.CenterVertically) {
-                            Box(modifier  = Modifier.weight(0.1f)){
+                        Row(
+                            horizontalArrangement = Arrangement.Start,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Box(modifier = Modifier.weight(0.1f)) {
                                 Icon(
                                     imageVector = Icons.Rounded.ArrowRight,
                                     contentDescription = null,
@@ -1374,8 +1301,7 @@ fun ListGuide(
                                 Text(
                                     text = it.first,
                                     //modifier =modifier.padding(horizontal = 4.dp),
-                                    fontWeight = FontWeight.Normal,
-                                    fontSize = 12.sp
+                                    fontWeight = FontWeight.Normal, fontSize = 12.sp
                                 )
                             }
                         }
@@ -1386,14 +1312,12 @@ fun ListGuide(
                             .fillMaxWidth()
                             .weight(1.5f)
 //                            .padding(start = 8.dp)
-                        ,
-                        contentAlignment = Alignment.Center
+                        , contentAlignment = Alignment.Center
                     ) {
                         IconButton(
                             onClick = {
                                 cmViewModel.onRemoveguideList(it.first, it.second)
-                            },
-                            modifier = modifier
+                            }, modifier = modifier
                         ) {
                             Icon(
                                 imageVector = Icons.Rounded.Delete,
@@ -1417,29 +1341,24 @@ fun HeadTable() {
         border = BorderStroke(1.dp, Color(0xFF4425a7)),
     ) {
         Row(
-            modifier = Modifier
-                .padding(vertical = 6.dp)
+            modifier = Modifier.padding(vertical = 6.dp)
         ) {
             Box(
                 modifier = Modifier
                     .weight(2f)
-                    .fillMaxWidth(),
-                contentAlignment = Alignment.Center
+                    .fillMaxWidth(), contentAlignment = Alignment.Center
             ) {
                 Text(
-                    text = "Guia", fontWeight = FontWeight.SemiBold,
-                    fontSize = 12.sp
+                    text = "Guia", fontWeight = FontWeight.SemiBold, fontSize = 12.sp
                 )
             }
             Box(
                 modifier = Modifier
                     .weight(1.5f)
-                    .fillMaxWidth(),
-                contentAlignment = Alignment.Center
+                    .fillMaxWidth(), contentAlignment = Alignment.Center
             ) {
                 Text(
-                    text = "Acciones", fontWeight = FontWeight.SemiBold,
-                    fontSize = 12.sp
+                    text = "Acciones", fontWeight = FontWeight.SemiBold, fontSize = 12.sp
                 )
             }
             Spacer(modifier = Modifier.size(2.dp))
@@ -1455,8 +1374,7 @@ fun FooterTable(countGuide: Int) {
         border = BorderStroke(1.dp, Color.White),
     ) {
         Row(
-            modifier = Modifier
-                .padding(vertical = 6.dp)
+            modifier = Modifier.padding(vertical = 6.dp)
         ) {
             Box(
                 modifier = Modifier
@@ -1466,7 +1384,8 @@ fun FooterTable(countGuide: Int) {
                 contentAlignment = Alignment.CenterStart
             ) {
                 Text(
-                    text = "Total guias: $countGuide", fontWeight = FontWeight.SemiBold,
+                    text = "Total guias: $countGuide",
+                    fontWeight = FontWeight.SemiBold,
                     fontSize = 12.sp
                 )
             }
@@ -1494,28 +1413,19 @@ fun Footer(
     isSearchEnable: Boolean
 ) {
     Box(
-        modifier = modifier.fillMaxWidth(),
-        contentAlignment = Alignment.BottomCenter
-    ){
+        modifier = modifier.fillMaxWidth(), contentAlignment = Alignment.BottomCenter
+    ) {
         Column() {
             val StyleBox = (Modifier
                 // .weight(1f)
                 .height(55.dp))
             groupBtnInsertGuide(
-                cmViewModel,
-                navigationController,
-                scanLauncher,
-                StyleBox,
-                guia,
-                isSearchEnable
+                cmViewModel, navigationController, scanLauncher, StyleBox, guia, isSearchEnable
             )
             //ButtonScanner(StyleBox, cmViewModel, navigationController, scanLauncher)
             Spacer(modifier = Modifier.size(8.dp))
             ButtonLoadServer(
-                StyleBox,
-                isLoadBtnEnable,
-                cmViewModel,
-                navigationController
+                StyleBox, isLoadBtnEnable, cmViewModel, navigationController
             )
         }
     }
@@ -1531,21 +1441,15 @@ fun groupBtnInsertGuide(
     isSearchEnable: Boolean
 ) {
     Row(
-        horizontalArrangement = Arrangement.Center,
-        verticalAlignment = Alignment.CenterVertically
+        horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.CenterVertically
     ) {
         Box(
-            modifier = Modifier
-                .weight(1f),
+            modifier = Modifier.weight(1f),
             // .background(Color.Green),
             contentAlignment = Alignment.Center
         ) {
             TextFieldGuia(
-                guia,
-                isSearchEnable,
-                cmViewModel,
-                navigationController,
-                StyleBox, scanLauncher
+                guia, isSearchEnable, cmViewModel, navigationController, StyleBox, scanLauncher
             ) {
                 cmViewModel.onSearchChanged(guia = it)
             }
@@ -1571,8 +1475,7 @@ fun TextFieldGuia(
         onValueChange = { onTextChanged(it) },
         label = {
             Text(
-                text = "No. de guia",
-                fontSize = 12.sp
+                text = "No. de guia", fontSize = 12.sp
             )
         },
         shape = RoundedCornerShape(10),
@@ -1601,8 +1504,7 @@ fun TextFieldGuia(
                         Icon(
                             imageVector = Icons.Rounded.AddCircle,
                             contentDescription = null,
-                            modifier = Modifier
-                                .size(35.dp),
+                            modifier = Modifier.size(35.dp),
                             // tint = Color(0xFF4425a7)
                         )
                     }
@@ -1628,8 +1530,7 @@ fun ButtonScanner(
         onClick = { cmViewModel.initScanner(scanLauncher = scanLauncher) },
         shape = RoundedCornerShape(10),
         colors = ButtonDefaults.buttonColors(
-            backgroundColor = Color(96, 127, 243),
-            contentColor = Color.White
+            backgroundColor = Color(96, 127, 243), contentColor = Color.White
         )
     ) {
         Row(
@@ -1715,12 +1616,8 @@ fun selectRuta(
                     .height(350.dp)
             ) {
 
-                selectRutaDialog(
-                    cmViewModel,
-                    selectedOptionRuta,
-                    selectedOptionTM,
-                    isSelectRutaEnabled,
-                    area
+                SelectRutaDialog(
+                    cmViewModel, selectedOptionRuta, selectedOptionTM, isSelectRutaEnabled, area
                 )
                 Spacer(modifier = Modifier.size(4.dp))
                 ButtonsConfirmation(cmViewModel, navigationController, isSelectbtn, area)
@@ -1730,14 +1627,20 @@ fun selectRuta(
 }
 
 
+@SuppressLint("SuspiciousIndentation")
 @Composable
-fun selectRutaDialog(
+fun SelectRutaDialog(
     cmViewModel: CMViewModel,
     selectedOptionRuta: String,
     selectedOptionTM: String,
     isSelectRutaEnabled: Boolean,
     area: String,
 ) {
+
+    val enabledSubruta by cmViewModel.enabledSupRuta.observeAsState(initial = false)
+    val selectLocal by cmViewModel.selectLocal.observeAsState(initial = "")
+    val selectedOptionSubRuta by cmViewModel.selectedOptionSubRuta.observeAsState(initial = "")
+
 
     val typeManifest = remember {
         mutableStateListOf(
@@ -1748,13 +1651,7 @@ fun selectRutaDialog(
 
     val items = remember {
         mutableStateListOf(
-            "Corta",
-            "Local",
-            "Costa Chica",
-            "Zihuatanejo",
-            "Ixtapa",
-            "Petatlan",
-            "La unión"
+            "Corta", "Local", "Costa Chica", "Zihuatanejo", "Ixtapa", "Petatlan", "La unión"
         )
     }
 
@@ -1769,30 +1666,34 @@ fun selectRutaDialog(
 
 
 //    if (area.equals("AuxiliarAdministrativo")) {
-        Spacer(modifier = Modifier.size(16.dp))
-        Text(text = "Tipo")
-        DromMenuTM(selectedOptionTM, cmViewModel, typeManifest) {
-            cmViewModel.onValueChangedMT(
-                selected = it
-            )
-        }
+    Spacer(modifier = Modifier.size(16.dp))
+    Text(text = "Tipo")
+    DromMenuTM(selectedOptionTM, cmViewModel, typeManifest) {
+        cmViewModel.onValueChangedMT(
+            selected = it
+        )
+    }
 //    }
 
     Spacer(modifier = Modifier.size(16.dp))
     Text(text = "Ruta")
     DromMenuRuta(
-        selectedOptionRuta,
-        selectedOptionTM,
-        cmViewModel,
-        items,
-        isSelectRutaEnabled,
-        area
+        selectedOptionRuta, selectedOptionTM, cmViewModel, items, isSelectRutaEnabled, area
     ) { cmViewModel.onValueChangedRuta(selected = it) }
     Spacer(modifier = Modifier.size(14.dp))
 
+
+    if (enabledSubruta) {
+        Text(text = "Sub ruta")
+        DromMenuSubRuta(
+            selectedOptionSubRuta,
+            selectLocal,
+            cmViewModel,
+            items,
+        ) { cmViewModel.onValueChangedSubRuta(selected = it) }
+    }
     // Text(text = "")
     // Recibe(parents) { dgsViewModel.onValueChangedRecibe(nameparent = it) }
-
 }
 
 @Composable
@@ -1834,12 +1735,10 @@ fun DromMenuTM(
         ) {
             Log.i("lista dedevoluciones", listRutas.toString())
             listRutas.forEach { option ->
-                DropdownMenuItem(
-                    onClick = {
-                        expand = false
-                        onTextChanged(option)
-                    }
-                ) {
+                DropdownMenuItem(onClick = {
+                    expand = false
+                    onTextChanged(option)
+                }) {
                     Text(text = option)
                 }
             }
@@ -1847,6 +1746,7 @@ fun DromMenuTM(
     }
 }
 
+@SuppressLint("SuspiciousIndentation")
 @Composable
 fun DromMenuRuta(
     selectedOptionRuta: String,
@@ -1861,24 +1761,22 @@ fun DromMenuRuta(
 
 
 //    } else {
-        if (selectedOptionTM == "Local") {
-            listRutasistRutas = remember {
-                mutableStateListOf(
-                    "Corta",
-                    "Local",
-                    "Costa Chica",
-                )
-            }
-        } else {
-            listRutasistRutas = remember {
-                mutableStateListOf(
-                    "Zihuatanejo",
-                    "Ixtapa",
-                    "Petatlan",
-                    "La unión"
-                )
-            }
+    if (selectedOptionTM == "Local") {
+        listRutasistRutas = remember {
+            mutableStateListOf(
+                "Corta",
+                "Local 1",
+                "Local 2",
+                "Costa Chica",
+            )
         }
+    } else {
+        listRutasistRutas = remember {
+            mutableStateListOf(
+                "Zihuatanejo", "Ixtapa", "Petatlan", "La unión"
+            )
+        }
+    }
 //    }
 
     var expand by remember { mutableStateOf(false) }
@@ -1907,25 +1805,102 @@ fun DromMenuRuta(
     )
     Box() {
 //        if (isSelectRutaEnabled || area == "OperadorLogistico") {
-            DropdownMenu(
-                expanded = expand,
-                onDismissRequest = { expand = false },
-                modifier = Modifier
-                    .height(200.dp)
-                    .width(with(LocalDensity.current) { textFiledSize.width.toDp() })
-            ) {
-                Log.i("lista de rutas", listRutas.toString())
-                listRutasistRutas.forEach { option ->
-                    DropdownMenuItem(
-                        onClick = {
-                            expand = false
-                            onTextChanged(option)
-                        }
-                    ) {
-                        Text(text = option)
-                    }
+        DropdownMenu(
+            expanded = expand,
+            onDismissRequest = { expand = false },
+            modifier = Modifier
+                .height(200.dp)
+                .width(with(LocalDensity.current) { textFiledSize.width.toDp() })
+        ) {
+            Log.i("lista de rutas", listRutas.toString())
+            listRutasistRutas.forEach { option ->
+                DropdownMenuItem(onClick = {
+                    expand = false
+                    onTextChanged(option)
+                }) {
+                    Text(text = option)
                 }
             }
+        }
+//        }
+    }
+}
+
+@SuppressLint("SuspiciousIndentation")
+@Composable
+fun DromMenuSubRuta(
+    selectedOptionRuta: String,
+    selectocal: String,
+    cmViewModel: CMViewModel,
+    listRutas: MutableList<String>,
+    onTextChanged: (String) -> Unit
+) {
+    val listRutasistRutas: MutableList<String>
+
+
+//    } else {
+    if (selectocal == "Local 1") {
+        listRutasistRutas = remember {
+            mutableStateListOf(
+                "San Isidro",
+                "Pied de la Cuesta",
+                "Pedregoso",
+                "Luces en el mar",
+                "Barra de Coyuca",
+            )
+        }
+    } else {
+        listRutasistRutas = remember {
+            mutableStateListOf(
+                "Bonfil", "Barra vieja", "San Agustin", "Kilometro 30"
+            )
+        }
+    }
+//    }
+
+    var expand by remember { mutableStateOf(false) }
+    var textFiledSize by remember { mutableStateOf(Size.Zero) }
+    OutlinedTextField(
+        value = selectedOptionRuta,
+        onValueChange = { },
+        enabled = false,
+        readOnly = true,
+        modifier = Modifier
+            .clickable {
+                expand = true
+            }
+            .fillMaxWidth()
+            .onGloballyPositioned { coordinates ->
+                textFiledSize = coordinates.size.toSize()
+            },
+        shape = RoundedCornerShape(10),
+        colors = TextFieldDefaults.outlinedTextFieldColors(
+            focusedBorderColor = Color(96, 127, 243),
+            unfocusedBorderColor = Color(76, 81, 198),
+            backgroundColor = Color.White
+        ),
+        maxLines = 1,
+        singleLine = true,
+    )
+    Box() {
+//        if (isSelectRutaEnabled || area == "OperadorLogistico") {
+        DropdownMenu(
+            expanded = expand,
+            onDismissRequest = { expand = false },
+            modifier = Modifier
+                .height(200.dp)
+                .width(with(LocalDensity.current) { textFiledSize.width.toDp() })
+        ) {
+            Log.i("lista de rutas", listRutas.toString())
+            listRutasistRutas.forEach { option ->
+                DropdownMenuItem(onClick = {
+                    expand = false
+                    onTextChanged(option)
+                }) {
+                    Text(text = option)
+                }
+            }
+        }
 //        }
     }
 }
@@ -1938,12 +1913,11 @@ fun ButtonsConfirmation(
     area: String,
 ) {
     Row() {
-        TextButton(onClick = { cmViewModel.backScreen(navigationController,"SelectRuta") }) {
+        TextButton(onClick = { cmViewModel.backScreen(navigationController, "SelectRuta") }) {
             Text(text = "Cancelar")
         }
         TextButton(
-            onClick = { cmViewModel.continueSetGuides(area) },
-            enabled = isSelectbtn
+            onClick = { cmViewModel.continueSetGuides(area) }, enabled = isSelectbtn
         ) {
             Text(text = "Continuar")
         }
@@ -1955,12 +1929,10 @@ fun ButtonsForm(
     cmViewModel: CMViewModel, typeForm: String, isSelectbtn: Boolean
 ) {
     Box(
-        modifier = Modifier.fillMaxWidth(),
-        contentAlignment = Alignment.Center
+        modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center
     ) {
         TextButton(
-            onClick = { cmViewModel.onContinueForm(typeForm) },
-            enabled = isSelectbtn
+            onClick = { cmViewModel.onContinueForm(typeForm) }, enabled = isSelectbtn
         ) {
             Text(text = "Continuar")
         }
@@ -1973,10 +1945,9 @@ fun AlertDialogLoadGuides(
     cmViewModel: CMViewModel,
     message: String,
     navigationController: NavHostController
-){
-    if (show){
-        AlertDialog(
-            onDismissRequest = { cmViewModel.onAlertDialog() },
+) {
+    if (show) {
+        AlertDialog(onDismissRequest = { cmViewModel.onAlertDialog() },
             title = { Text(text = "Advertencia") },
             text = { Text(text = message) },
             confirmButton = {
@@ -1988,7 +1959,6 @@ fun AlertDialogLoadGuides(
                 TextButton(onClick = { cmViewModel.onAlertDialog() }) {
                     Text(text = "Cancelar")
                 }
-            }
-        )
+            })
     }
 }
