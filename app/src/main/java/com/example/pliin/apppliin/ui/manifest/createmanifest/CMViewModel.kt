@@ -360,7 +360,9 @@ class CMViewModel @Inject constructor(
     }
 
     fun onValueChangedRuta(selected: String) {
-        if (selected.equals("Local 1") || selected.equals("Local 2")) {
+
+        if (selected.equals("Local 1") || selected.equals("Local 2") || selected.equals("Costa Chica")) {
+            _selectedOptionSubRuta.value = ""
             _selectLocal.value = selected
             _enabledSupRuta.value = true
             _selectedOptionRuta.value = selected
@@ -375,8 +377,9 @@ class CMViewModel @Inject constructor(
     }
 
     fun onValueChangedSubRuta(selected: String) {
+       val  selecccion =  if (_selectedOptionRuta.value.equals("Costa Chica")) "Costa Chica $selected" else selected
 
-            _selectedOptionSubRuta.value = selected
+            _selectedOptionSubRuta.value = selecccion
             _isSelectbtn.value = enableSelectbtn(selected)
 
     }

@@ -1839,14 +1839,39 @@ fun DromMenuSubRuta(
 
 
 //    } else {
-    if (selectocal == "Local 1") {
+    when(selectocal){
+        "Local 1" ->{
+            listRutasistRutas = remember {
+                mutableStateListOf(
+                    "San Isidro",
+                    "Pied de la Cuesta",
+                    "Pedregoso",
+                    "Luces en el mar",
+                    "Barra de Coyuca",
+                )
+            }
+        }
+        "Local 2" ->{
+            listRutasistRutas = remember {
+                mutableStateListOf(
+                    "Bonfil", "Barra vieja", "San Agustin", "Kilometro 30"
+                )
+            }
+        }
+        else ->{
+            listRutasistRutas = remember {
+                mutableStateListOf(
+                    "Corta", "Larga"
+                )
+            }
+        }
+    }
+
+
+  /*  if (selectocal == "Local 1") {
         listRutasistRutas = remember {
             mutableStateListOf(
-                "San Isidro",
-                "Pied de la Cuesta",
-                "Pedregoso",
-                "Luces en el mar",
-                "Barra de Coyuca",
+                "Bonfil", "Barra vieja", "San Agustin", "Kilometro 30"
             )
         }
     } else {
@@ -1855,7 +1880,7 @@ fun DromMenuSubRuta(
                 "Bonfil", "Barra vieja", "San Agustin", "Kilometro 30"
             )
         }
-    }
+    }*/
 //    }
 
     var expand by remember { mutableStateOf(false) }
